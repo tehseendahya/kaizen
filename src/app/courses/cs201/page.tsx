@@ -81,14 +81,45 @@ export default function CS201Course() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-xl font-semibold text-gray-900 leading-tight">
-            {courseData.title}
-          </h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <Link 
+                href="/"
+                className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors duration-200"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Courses
+              </Link>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <h1 className="text-xl font-semibold text-gray-900">CS201: Data Structures and Algorithms</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600">
+                Welcome back, Student
+              </div>
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">S</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </header>
+
+      {/* Main Content with Sidebar */}
+      <div className="flex h-[calc(100vh-4rem)]">
+        {/* Sidebar */}
+        <div className="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900 leading-tight">
+              Course Content
+            </h2>
+          </div>
         
         <div className="flex-1 overflow-y-auto">
           <nav className="p-4">
@@ -114,15 +145,18 @@ export default function CS201Course() {
                 {expandedUnits.includes(unit.id) && (
                   <div className="ml-4 mt-2 space-y-1">
                     {unit.lessons.map((lesson) => (
-                      <Link
+                      <button
                         key={lesson.id}
-                        href={`/courses/cs201/${lesson.id}`}
                         onClick={() => handleLessonClick(lesson.id)}
-                        className="block p-3 rounded-lg hover:bg-blue-50 transition-colors duration-200 border-l-2 border-transparent hover:border-blue-500"
+                        className={`w-full text-left p-3 rounded-lg transition-colors duration-200 border-l-2 ${
+                          selectedLesson === lesson.id 
+                            ? 'bg-blue-50 border-blue-500 text-blue-900' 
+                            : 'hover:bg-blue-50 border-transparent hover:border-blue-500 text-gray-900'
+                        }`}
                       >
-                        <div className="text-sm font-medium text-gray-900">{lesson.title}</div>
+                        <div className="text-sm font-medium">{lesson.title}</div>
                         <div className="text-xs text-gray-500 mt-1">{lesson.description}</div>
-                      </Link>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -156,6 +190,69 @@ export default function CS201Course() {
         <div className="flex-1 p-6">
           {selectedLesson ? (
             <div className="space-y-6">
+              {/* Lesson Content */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                  {courseData.units
+                    .flatMap(unit => unit.lessons)
+                    .find(lesson => lesson.id === selectedLesson)?.title}
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  {courseData.units
+                    .flatMap(unit => unit.lessons)
+                    .find(lesson => lesson.id === selectedLesson)?.description}
+                </p>
+                
+                <div className="prose max-w-none">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Lesson Content</h4>
+                  <p className="text-gray-700 leading-relaxed mb-6">
+                    {selectedLesson === 'overview' && 'This lesson provides an overview of the CS201 course, including learning objectives, course structure, and expectations for students.'}
+                    {selectedLesson === 'java-review' && 'A comprehensive review of Java programming fundamentals including syntax, data types, control structures, and basic object-oriented concepts.'}
+                    {selectedLesson === 'object-oriented' && 'Deep dive into object-oriented programming concepts including classes, objects, inheritance, polymorphism, and encapsulation in Java.'}
+                    {selectedLesson === 'array-basics' && 'Understanding arrays as fundamental data structures, including declaration, initialization, indexing, and basic operations.'}
+                    {selectedLesson === 'arraylist-practice' && 'Hands-on practice with ArrayList, understanding dynamic arrays, and common operations like add, remove, and search.'}
+                    {selectedLesson === 'array-algorithms' && 'Implementation and analysis of fundamental array algorithms including linear search, binary search, bubble sort, and selection sort.'}
+                    {selectedLesson === 'linked-list-intro' && 'Introduction to linked lists as dynamic data structures, understanding nodes, pointers, and basic linked list concepts.'}
+                    {selectedLesson === 'linked-list-operations' && 'Implementation of core linked list operations including insertion at various positions, deletion, and traversal algorithms.'}
+                    {selectedLesson === 'doubly-linked' && 'Understanding and implementing doubly linked lists with bidirectional traversal capabilities and their advantages.'}
+                    {selectedLesson === 'stack-implementation' && 'Implementation of stack data structure using arrays and linked lists, understanding LIFO (Last In, First Out) principle.'}
+                    {selectedLesson === 'queue-implementation' && 'Implementation of queue data structure, understanding FIFO (First In, First Out) principle and various queue implementations.'}
+                    {selectedLesson === 'stack-queue-applications' && 'Exploring real-world applications of stacks and queues including expression evaluation, function calls, and scheduling algorithms.'}
+                    {selectedLesson === 'tree-basics' && 'Introduction to tree data structures, understanding nodes, edges, root, leaves, and basic tree terminology.'}
+                    {selectedLesson === 'binary-trees' && 'Understanding binary trees, their properties, and basic operations including insertion, deletion, and search.'}
+                    {selectedLesson === 'tree-traversal' && 'Implementation and understanding of different tree traversal algorithms: preorder, inorder, and postorder traversal.'}
+                    {selectedLesson === 'hash-functions' && 'Understanding hash functions, their properties, and various collision resolution techniques including chaining and open addressing.'}
+                    {selectedLesson === 'hash-table-implementation' && 'Implementation of hash tables with different collision resolution strategies and analysis of time complexity.'}
+                    {selectedLesson === 'hash-applications' && 'Exploring real-world applications of hash tables including databases, caches, and symbol tables.'}
+                  </p>
+                </div>
+
+                <div className="pt-6 border-t border-gray-200">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Learning Objectives</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-gray-700">Understand the fundamental concepts</span>
+                    </li>
+                    <li className="flex items-start">
+                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-gray-700">Implement practical examples</span>
+                    </li>
+                    <li className="flex items-start">
+                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-gray-700">Analyze time and space complexity</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Resources Section */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Resources</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -262,6 +359,7 @@ export default function CS201Course() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
