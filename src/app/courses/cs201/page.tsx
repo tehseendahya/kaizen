@@ -68,6 +68,9 @@ export default function CS201Course() {
   const [expandedUnits, setExpandedUnits] = useState<string[]>(['unit1']);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchAnswer, setSearchAnswer] = useState('');
 
   const toggleUnit = (unitId: string) => {
     setExpandedUnits(prev => 
@@ -83,8 +86,50 @@ export default function CS201Course() {
     setSidebarOpen(false);
   };
 
+  // Common syllabus questions with answers
+  const syllabusQuestions = [
+    "When is the next test?",
+    "What do I do if I have to skip lab?",
+    "How do I submit assignments?",
+    "What is the grading policy?",
+    "When are office hours?",
+    "How do I get help with programming assignments?",
+    "What textbooks do I need?",
+    "How do I access the course materials?"
+  ];
+
+  const questionAnswers: Record<string, string> = {
+    "When is the next test?": "The next test is scheduled for March 15th, 2024. It will cover Units 1-3 (Introduction, Arrays and ArrayLists, and Linked Lists). The test will be held during regular class time and will be 90 minutes long.",
+    "What do I do if I have to skip lab?": "If you need to skip lab, please email your TA at least 24 hours in advance. You can make up the lab during office hours or by completing the lab assignment independently. All lab work must be completed within one week of the original lab date.",
+    "How do I submit assignments?": "All assignments should be submitted through the course's online portal. Make sure to submit your Java files (.java) and any required documentation. Late submissions will receive a 10% penalty per day, up to 3 days late.",
+    "What is the grading policy?": "Your final grade is calculated as follows: 40% exams (2 midterms + final), 30% programming assignments, 20% lab work, and 10% participation. You must pass the final exam to pass the course.",
+    "When are office hours?": "Office hours are held Monday and Wednesday from 2:00-4:00 PM in the CS building, room 201. You can also schedule appointments by emailing the instructor. Virtual office hours are available on Fridays from 1:00-3:00 PM via Zoom.",
+    "How do I get help with programming assignments?": "You can get help through office hours, the course discussion forum, or by emailing your TA. The CS tutoring center is also available Monday-Friday from 9 AM to 5 PM. Remember to start assignments early and don't hesitate to ask questions!",
+    "What textbooks do I need?": "The required textbook is 'Data Structures and Algorithms in Java' by Goodrich, Tamassia, and Goldwasser (6th edition). You can purchase it from the campus bookstore or online. The library also has copies available for short-term loan.",
+    "How do I access the course materials?": "All course materials are available on the course website. You'll need to log in with your university credentials. Lecture slides, assignments, and additional resources are organized by unit. Make sure to check the announcements regularly for updates."
+  };
+
+  const handleQuestionSelect = (question: string) => {
+    setSearchQuery(question);
+    setShowDropdown(false);
+    // Show the answer immediately when selecting from dropdown
+    setSearchAnswer(questionAnswers[question] || '');
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Check if the search query matches any of our hardcoded questions
+    const answer = questionAnswers[searchQuery];
+    if (answer) {
+      setSearchAnswer(answer);
+    } else {
+      // For other queries, show a generic response
+      setSearchAnswer("I don't have a specific answer for that question. Please try one of the common questions from the dropdown, or contact your instructor for more information.");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden" style={{ minHeight: '100vh' }}>
       {/* Navigation Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -136,7 +181,7 @@ export default function CS201Course() {
       )}
 
       {/* Main Content with Sidebar */}
-      <div className="flex h-[calc(100vh-4rem)]">
+      <div className="flex h-[calc(100vh-4rem)] bg-gray-50">
         {/* Sidebar */}
         <div className={`
           w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col
@@ -197,6 +242,77 @@ export default function CS201Course() {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col lg:ml-0">
+          {/* Search Bar */}
+          <div className="bg-white border-b border-gray-200 p-4 sm:p-6">
+            <div className="max-w-2xl">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Ask about the course</h3>
+              <form onSubmit={handleSearch} className="relative">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setShowDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                    placeholder="Ask a question about the course..."
+                    className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 placeholder:text-gray-600"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-blue-600 transition-colors duration-200"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Dropdown with common questions */}
+                {showDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                    <div className="p-2">
+                      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Common Questions</div>
+                      {syllabusQuestions.map((question, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleQuestionSelect(question)}
+                          className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                        >
+                          {question}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </form>
+            </div>
+            
+            {/* Search Answer Display */}
+            {searchAnswer && (
+              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 mb-2">Answer:</h4>
+                    <p className="text-gray-700 leading-relaxed">{searchAnswer}</p>
+                  </div>
+                  <button
+                    onClick={() => setSearchAnswer('')}
+                    className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="bg-white border-b border-gray-200 p-4 sm:p-6">
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
               {selectedLesson 
@@ -388,7 +504,7 @@ export default function CS201Course() {
             </div>
           )}
         </div>
-      </div>
+        </div>
       </div>
     </div>
   );
