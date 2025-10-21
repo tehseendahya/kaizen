@@ -2,8 +2,13 @@
 @import 'katex/dist/katex.min.css';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base palette */
+  --background: #000000; /* Black */
+  --foreground: #e6e7ea; /* Light gray for contrast */
+
+  /* Duke Blue palette (approx.) */
+  --duke-blue-navy: #001a57; /* Duke Navy */
+  --duke-blue-royal: #0032a0; /* Duke Royal */
 }
 
 @theme inline {
@@ -11,28 +16,54 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Map Tailwind blue scale to Duke blues */
+  --color-blue-50:  #e6ecf7;
+  --color-blue-100: #ccd9ef;
+  --color-blue-200: #99b3df;
+  --color-blue-300: #668dcc;
+  --color-blue-400: #3367b8;
+  --color-blue-500: #0032a0; /* Royal */
+  --color-blue-600: #002a82;
+  --color-blue-700: #002266;
+  --color-blue-800: #001a57; /* Navy */
+  --color-blue-900: #00163f;
 }
 
+/* Keep dark scheme consistent */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #000000;
+    --foreground: #e6e7ea;
   }
 }
 
 html {
-  background-color: #f9fafb; /* gray-50 */
+  background-color: #000; /* black */
   height: 100%;
 }
 
 body {
-  background: #f9fafb; /* gray-50 */
+  background: #000; /* black */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
   min-height: 100vh;
+}
+
+/* Global link & focus accents in Duke blue */
+a {
+  color: var(--duke-blue-royal);
+}
+a:hover {
+  color: var(--duke-blue-navy);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--duke-blue-royal);
+  outline-offset: 2px;
 }
 
 /* Ensure no unwanted elements appear */
