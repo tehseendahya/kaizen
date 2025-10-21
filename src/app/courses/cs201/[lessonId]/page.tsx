@@ -100,8 +100,9 @@ const lessonData: Record<string, { title: string; description: string; content: 
   }
 };
 
-export default function LessonPage({ params }: LessonPageProps) {
-  const lesson = lessonData[params.lessonId];
+export default async function LessonPage({ params }: LessonPageProps) {
+  const resolvedParams = await params;
+  const lesson = lessonData[resolvedParams.lessonId];
 
   if (!lesson) {
     return (
