@@ -199,6 +199,126 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* My Courses (moved to top) */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h2>
+          <p className="text-gray-600">Continue your learning journey</p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Courses</p>
+                <p className="text-2xl font-semibold text-gray-900">4</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Completed Lessons</p>
+                <p className="text-2xl font-semibold text-gray-900">22</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Study Streak</p>
+                <p className="text-2xl font-semibold text-gray-900">7 days</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Courses Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {courses.map((course) => (
+            <Link
+              key={course.id}
+              href={course.id === 'cs201' ? '/courses/cs201' : course.id === 'physics-152' ? '/courses/physics-152' : '#'}
+              className="block"
+            >
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+                {/* Course Header */}
+                <div className={`h-2 ${course.color === 'blue' ? 'bg-blue-500' : course.color === 'green' ? 'bg-green-500' : 'bg-purple-500'}`}></div>
+                
+                <div className="p-6">
+                  {/* Course Title and Difficulty */}
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{course.title}</h3>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(course.difficulty)}`}>
+                      {course.difficulty}
+                    </span>
+                  </div>
+
+                  {/* Instructor */}
+                  <p className="text-sm text-gray-600 mb-3">by {course.instructor}</p>
+
+                  {/* Description */}
+                  <p className="text-sm text-gray-700 mb-4 line-clamp-2">{course.description}</p>
+
+                  {/* Progress Bar */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                      <span>Progress</span>
+                      <span>{course.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${course.color === 'blue' ? 'bg-blue-500' : course.color === 'green' ? 'bg-green-500' : 'bg-purple-500'}`}
+                        style={{ width: `${course.progress}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {course.completedLessons} of {course.totalLessons} lessons completed
+                    </p>
+                  </div>
+
+                  {/* Course Meta */}
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span className="flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {course.duration}
+                    </span>
+                    <span className="flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      {course.totalLessons} lessons
+                    </span>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className={`w-full py-2 px-4 rounded-lg text-white text-center font-medium transition-colors duration-200 ${getColorClasses(course.color)}`}>
+                    {course.progress === 0 ? 'Start Course' : course.progress === 100 ? 'Review Course' : 'Continue Learning'}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h2>
@@ -334,49 +454,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Course Progress Overview */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Course Progress</h3>
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {courses.map((course) => (
-              <Link
-                key={course.id}
-                href={course.id === 'cs201' ? '/courses/cs201' : course.id === 'physics-152' ? '/courses/physics-152' : '#'}
-                className="p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors duration-200"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium text-gray-900 truncate">{course.title.split(':')[0]}</h4>
-                  <span className="text-xs text-gray-500">{course.progress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                  <div 
-                    className={`h-2 rounded-full ${
-                      course.color === 'blue' ? 'bg-blue-500' : 
-                      course.color === 'green' ? 'bg-green-500' : 
-                      'bg-purple-500'
-                    }`}
-                    style={{ width: `${course.progress}%` }}
-                  ></div>
-                </div>
-                <p className="text-xs text-gray-500">
-                  {course.completedLessons} of {course.totalLessons} lessons
-                </p>
-                <button className={`mt-2 w-full py-1 px-3 text-xs font-medium rounded-lg text-white transition-colors duration-200 ${
-                  course.color === 'blue' ? 'bg-blue-500 hover:bg-blue-600' :
-                  course.color === 'green' ? 'bg-green-500 hover:bg-green-600' :
-                  'bg-purple-500 hover:bg-purple-600'
-                }`}>
-                  {course.progress === 0 ? 'Start Course' : 'Continue'}
-                </button>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* Removed smaller Course Progress overview */}
 
         {/* Announcements */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
@@ -409,126 +487,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Courses Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h2>
-          <p className="text-gray-600">Continue your learning journey</p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Courses</p>
-                <p className="text-2xl font-semibold text-gray-900">4</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Completed Lessons</p>
-                <p className="text-2xl font-semibold text-gray-900">22</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Study Streak</p>
-                <p className="text-2xl font-semibold text-gray-900">7 days</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Courses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course) => (
-            <Link
-              key={course.id}
-              href={course.id === 'cs201' ? '/courses/cs201' : course.id === 'physics-152' ? '/courses/physics-152' : '#'}
-              className="block"
-            >
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden">
-                {/* Course Header */}
-                <div className={`h-2 ${course.color === 'blue' ? 'bg-blue-500' : course.color === 'green' ? 'bg-green-500' : 'bg-purple-500'}`}></div>
-                
-                <div className="p-6">
-                  {/* Course Title and Difficulty */}
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{course.title}</h3>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(course.difficulty)}`}>
-                      {course.difficulty}
-                    </span>
-                  </div>
-
-                  {/* Instructor */}
-                  <p className="text-sm text-gray-600 mb-3">by {course.instructor}</p>
-
-                  {/* Description */}
-                  <p className="text-sm text-gray-700 mb-4 line-clamp-2">{course.description}</p>
-
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
-                      <span>Progress</span>
-                      <span>{course.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full ${course.color === 'blue' ? 'bg-blue-500' : course.color === 'green' ? 'bg-green-500' : 'bg-purple-500'}`}
-                        style={{ width: `${course.progress}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {course.completedLessons} of {course.totalLessons} lessons completed
-                    </p>
-                  </div>
-
-                  {/* Course Meta */}
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span className="flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {course.duration}
-                    </span>
-                    <span className="flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                      {course.totalLessons} lessons
-                    </span>
-                  </div>
-
-                  {/* Action Button */}
-                  <div className={`w-full py-2 px-4 rounded-lg text-white text-center font-medium transition-colors duration-200 ${getColorClasses(course.color)}`}>
-                    {course.progress === 0 ? 'Start Course' : course.progress === 100 ? 'Review Course' : 'Continue Learning'}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {/* Courses section moved above; original removed */}
 
         {/* Quick Actions */}
         <div className="mt-12 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
