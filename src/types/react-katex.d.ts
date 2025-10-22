@@ -22,3 +22,4 @@ declare module 'react-katex' {
   export const InlineMath: React.FC<MathComponentProps>;
   export const BlockMath: React.FC<MathComponentProps>;
 }
+     
