@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kaizen",
+  title: "Axis",
   description: "Learning Platform",
 };
 
