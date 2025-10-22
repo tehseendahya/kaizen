@@ -51,7 +51,7 @@ export default function CS201Course() {
   };
 
   const renderOverview = () => (
-    <div className="max-w-5xl">
+    <div className="w-full">
       {/* Up next section */}
       <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-lg p-6">
         <div className="flex items-start space-x-3">
@@ -83,7 +83,7 @@ export default function CS201Course() {
       {/* Sub-units grid */}
       <div className="mb-8">
         <h3 className="text-xl font-bold text-gray-900 mb-6">Topics in this unit</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {selectedUnit.subUnits.map((subUnit, index) => (
             <button
               key={subUnit.id}
@@ -302,7 +302,7 @@ export default function CS201Course() {
   };
 
   const renderLab = () => (
-    <div className="max-w-4xl space-y-6">
+    <div className="w-full space-y-6">
       <button
         onClick={backToOverview}
         className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm cursor-pointer"
@@ -349,7 +349,7 @@ export default function CS201Course() {
   );
 
   const renderProject = () => (
-    <div className="max-w-4xl space-y-6">
+    <div className="w-full space-y-6">
       <button
         onClick={backToOverview}
         className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm cursor-pointer"
@@ -386,7 +386,7 @@ export default function CS201Course() {
   );
 
   const renderChecklist = () => (
-    <div className="max-w-4xl space-y-6">
+    <div className="w-full space-y-6">
       <button
         onClick={backToOverview}
         className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm cursor-pointer"
