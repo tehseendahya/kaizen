@@ -172,7 +172,7 @@ export default function CS201Course() {
   const renderSubUnit = () => {
     if (!selectedSubUnit) return null;
 
-    const currentIndex = selectedUnit.subUnits.findIndex(su => su.id === selectedSubUnit.id);
+    // current subunit index not needed for rendering, remove to avoid unused var
 
     return (
       <div className="space-y-8">
@@ -496,7 +496,7 @@ export default function CS201Course() {
                     {/* Sub-units (shown when expanded) */}
                     {isExpanded && (
                       <div className="ml-7 mt-1 space-y-1">
-                        {unit.subUnits.map((subUnit, subIndex) => {
+                        {unit.subUnits.map((subUnit) => {
                           const isActiveSubUnit = selectedSubUnit?.id === subUnit.id && viewMode === 'subunit';
                           return (
                       <button

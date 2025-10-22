@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { BlockMath } from 'react-katex';
+import Quiz from '@/components/study/Quiz';
 
 // Static data for Physics 152 course
 const courseData = {
@@ -282,7 +283,7 @@ export default function Physics152Course() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden" style={{ minHeight: '100vh' }}>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navigation Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -334,14 +335,16 @@ export default function Physics152Course() {
       )}
 
       {/* Main Content with Sidebar */}
-      <div className="flex h-[calc(100vh-4rem)] bg-gray-50">
+      <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <div className={`
           w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col
           fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}>
+        `}
+        style={{ top: '64px', height: 'calc(100vh - 64px)' }}
+        >
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900 leading-tight">
               Course Content
@@ -400,247 +403,82 @@ export default function Physics152Course() {
       </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col lg:ml-0">
-          {/* Search Bar */}
-          <div className="bg-white border-b border-gray-200 p-4 sm:p-6">
-            <div className="max-w-2xl">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Ask about the course</h3>
-              <form onSubmit={handleSearch} className="relative">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setShowDropdown(true)}
-                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                    placeholder="Ask a question about the course..."
-                    className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 placeholder:text-gray-600"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-blue-600 transition-colors duration-200"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+        <div id="course-content" className="flex-1 flex flex-col lg:ml-0">
+          {/* Title + actions (CS201 style) */}
+          <div className="bg-white border-b border-gray-200 p-6">
+            {selectedLesson ? (
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                  {courseData.units.flatMap(u => u.lessons).find(l => l.id === selectedLesson)?.title}
+                </h1>
+                <p className="text-lg text-gray-600 mb-6">
+                  {courseData.units.flatMap(u => u.lessons).find(l => l.id === selectedLesson)?.description}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-md hover:shadow-lg cursor-pointer">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    <span className="font-medium text-sm">Generate Quiz</span>
+                  </button>
+                  <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-md hover:shadow-lg cursor-pointer">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    <span className="font-medium text-sm">Make Flashcards</span>
+                  </button>
+                  <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-md hover:shadow-lg cursor-pointer">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    <span className="font-medium text-sm">Take Notes</span>
+                  </button>
+                  <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-md hover:shadow-lg cursor-pointer">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <span className="font-medium text-sm">Study Guide</span>
+                  </button>
+                  <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-md hover:shadow-lg cursor-pointer">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span className="font-medium text-sm">Ask AI</span>
                   </button>
                 </div>
-                
-                {/* Dropdown with common questions */}
-                {showDropdown && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-                    <div className="p-2">
-                      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Common Questions</div>
-                      {syllabusQuestions.map((question, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleQuestionSelect(question)}
-                          className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200"
-                        >
-                          {question}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </form>
-            </div>
-            
-            {/* Search Answer Display */}
-            {searchAnswer && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-2">Answer:</h4>
-                    <p className="text-gray-700 leading-relaxed">{searchAnswer}</p>
-                  </div>
-                  <button
-                    onClick={() => setSearchAnswer('')}
-                    className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900">Welcome to Physics 152</h2>
+                <p className="text-gray-600 mt-2">Choose a lesson from the sidebar to get started</p>
               </div>
             )}
           </div>
 
-          <div className="bg-white border-b border-gray-200 p-4 sm:p-6">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
-              {selectedLesson 
-                ? courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.title || 'Select a Lesson'
-                : 'Welcome to Physics 152'
-              }
-            </h2>
-            <p className="text-gray-600 mt-2 text-sm sm:text-base">
-              {selectedLesson 
-                ? courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.description || ''
-                : 'Choose a lesson from the sidebar to get started'
-              }
-            </p>
-          </div>
+          {/* Removed small title bar to match CS201 header block above */}
 
           <div className="flex-1 p-4 sm:p-6">
           {selectedLesson ? (
             <div className="space-y-6">
-              {/* Lesson Content */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
-                  {courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.title}
-                </h3>
-                <p className="text-gray-600 mb-6 text-sm sm:text-base">
-                  {courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.description}
-                </p>
-                
-                <div className="prose max-w-none">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Lesson Content</h4>
-                  <p className="text-gray-700 leading-relaxed mb-6">
-                    {getLessonContent(selectedLesson)}
-                  </p>
-                  
-                  {/* Display equations if available */}
-                  {getLessonEquations(selectedLesson).length > 0 && (
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                      <h5 className="text-md font-semibold text-gray-900 mb-3">Key Equations</h5>
-                      <div className="space-y-3">
-                        {getLessonEquations(selectedLesson).map((equation, index) => (
-                          <div key={index} className="text-center">
-                            <BlockMath math={equation} />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-6 border-t border-gray-200">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Learning Objectives</h4>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-gray-700">Understand the fundamental concepts</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-gray-700">Apply mathematical tools and equations</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-gray-700">Solve practical problems and analyze systems</span>
-                    </li>
-                  </ul>
-                </div>
+              {/* Key Concepts (CS201 style) */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-xl p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Key Concepts
+                </h2>
+                <ul className="space-y-3">
+                  <li className="flex items-start"><span className="text-blue-600 mr-3">•</span><span className="text-gray-800 leading-relaxed">{getLessonContent(selectedLesson)}</span></li>
+                  {getLessonEquations(selectedLesson).map((eq, i) => (
+                    <li key={i} className="flex items-start"><span className="text-blue-600 mr-3">•</span><span className="text-gray-800 leading-relaxed"><BlockMath math={eq} /></span></li>
+                  ))}
+                </ul>
               </div>
 
-              {/* Resources Section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Resources</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Lecture Notes</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">PDF slides and materials</p>
-                      </div>
-                    </div>
-                  </div>
+              {/* Practice (CS201 style) */}
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Practice</h2>
+                <p className="text-sm font-medium text-gray-600 mb-2">Think about it</p>
+                <ol className="space-y-3 list-decimal list-inside text-gray-700">
+                  <li>Paraphrase the core idea of this lesson in your own words.</li>
+                  <li>Create a small example that demonstrates the concept.</li>
+                  <li>Explain one common misconception and why it’s incorrect.</li>
+                </ol>
+              </div>
 
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Problem Sets</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Practice problems with solutions</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Lab Manuals</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Laboratory procedures and guides</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Video Lectures</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Recorded class sessions</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Homework</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Weekly assignments</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Quizzes</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Knowledge assessments</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* Check Your Understanding */}
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Check Your Understanding</h2>
+                <Quiz questions={[]} />
               </div>
             </div>
           ) : (

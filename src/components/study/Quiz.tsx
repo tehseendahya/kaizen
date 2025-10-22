@@ -78,7 +78,6 @@ export default function Quiz({ questions }: QuizProps) {
         const isSubmitted = submitted.has(question.id);
         const selectedChoice = question.choices.find(c => c.id === userAnswer);
         const correctChoice = question.choices.find(c => c.correct);
-        const isCorrect = isSubmitted && selectedChoice?.correct;
 
         return (
           <div key={question.id} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
@@ -226,4 +225,3 @@ export default function Quiz({ questions }: QuizProps) {
     </div>
   );
 }
-
