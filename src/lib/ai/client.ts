@@ -1,2 +1,1 @@
-export { mockStreamAnswer as sendChat } from './mock';
-
+export { sendGeminiChat as sendChat } from './gemini';

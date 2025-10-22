@@ -71,12 +71,12 @@ export default function ChatSidebar({
     setMessages((m) => [...m, { id: id + '-u', role: 'user', content: q }, { id: id + '-a', role: 'assistant', content: '' }]);
     setSpeaking(true);
     let acc = '';
-    for await (const chunk of sendChat(q)) {
+    for await (const chunk of sendChat(q, courseId)) {
       acc += chunk;
       setMessages((m) => m.map((msg) => (msg.id === id + '-a' ? { ...msg, content: acc } : msg)));
     }
     setSpeaking(false);
-  }, [input]);
+  }, [input, courseId]);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
