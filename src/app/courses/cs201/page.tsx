@@ -1,511 +1,416 @@
+/**
+ * CS201 Study Pack — Units 1–3
+ * 
+ * A comprehensive study resource section covering Computer Science fundamentals:
+ * - Unit 1: CS and OOP in Java
+ * - Unit 2: Arrays, ArrayLists, Strings
+ * - Unit 3: Maps, Sets, Hashing
+ */
+
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { cs201 } from '@/data/study/cs201';
+import SectionHeading from '@/components/study/SectionHeading';
+import LessonCard from '@/components/study/LessonCard';
+import Accordion from '@/components/study/Accordion';
+import CodeBlock from '@/components/study/CodeBlock';
+import Checklist from '@/components/study/Checklist';
+import Quiz from '@/components/study/Quiz';
+import SolutionsDrawer from '@/components/study/SolutionsDrawer';
 
-// Static data for CS201 course based on Duke schedule
-const courseData = {
-  title: "CS201: Data Structures and Algorithms",
-  units: [
-    {
-      id: "unit1",
-      title: "Unit 1: Introduction",
-      lessons: [
-        { id: "overview", title: "Course Overview", description: "Introduction to the course and expectations" },
-        { id: "java-review", title: "Java Review", description: "Review of Java fundamentals" },
-        { id: "object-oriented", title: "Object-Oriented Programming", description: "Classes, objects, and inheritance" }
-      ]
-    },
-    {
-      id: "unit2", 
-      title: "Unit 2: Arrays and ArrayLists",
-      lessons: [
-        { id: "array-basics", title: "Array Basics", description: "Introduction to arrays and indexing" },
-        { id: "arraylist-practice", title: "ArrayList Practice", description: "Working with dynamic arrays" },
-        { id: "array-algorithms", title: "Array Algorithms", description: "Searching and sorting algorithms" }
-      ]
-    },
-    {
-      id: "unit3",
-      title: "Unit 3: Linked Lists",
-      lessons: [
-        { id: "linked-list-intro", title: "Introduction to Linked Lists", description: "Understanding node-based data structures" },
-        { id: "linked-list-operations", title: "Linked List Operations", description: "Insertion, deletion, and traversal" },
-        { id: "doubly-linked", title: "Doubly Linked Lists", description: "Bidirectional traversal and operations" }
-      ]
-    },
-    {
-      id: "unit4",
-      title: "Unit 4: Stacks and Queues",
-      lessons: [
-        { id: "stack-implementation", title: "Stack Implementation", description: "LIFO data structure implementation" },
-        { id: "queue-implementation", title: "Queue Implementation", description: "FIFO data structure implementation" },
-        { id: "stack-queue-applications", title: "Applications", description: "Real-world uses of stacks and queues" }
-      ]
-    },
-    {
-      id: "unit5",
-      title: "Unit 5: Trees",
-      lessons: [
-        { id: "tree-basics", title: "Tree Basics", description: "Introduction to tree data structures" },
-        { id: "binary-trees", title: "Binary Trees", description: "Binary tree properties and operations" },
-        { id: "tree-traversal", title: "Tree Traversal", description: "Preorder, inorder, and postorder traversal" }
-      ]
-    },
-    {
-      id: "unit6",
-      title: "Unit 6: Hash Tables",
-      lessons: [
-        { id: "hash-functions", title: "Hash Functions", description: "Understanding hash functions and collision handling" },
-        { id: "hash-table-implementation", title: "Hash Table Implementation", description: "Building efficient hash tables" },
-        { id: "hash-applications", title: "Hash Table Applications", description: "Real-world applications of hash tables" }
-      ]
-    }
-  ]
-};
+type SubSection = 
+  | 'overview'
+  | 'lectures'
+  | 'examples'
+  | 'notes'
+  | 'practice'
+  | 'lab'
+  | 'project'
+  | 'quiz'
+  | 'checklist';
 
 export default function CS201Course() {
-  const [expandedUnits, setExpandedUnits] = useState<string[]>(['unit1']);
-  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
+  const [selectedUnitIndex, setSelectedUnitIndex] = useState(0);
+  const [selectedSubSection, setSelectedSubSection] = useState<SubSection | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [searchAnswer, setSearchAnswer] = useState('');
 
-  const toggleUnit = (unitId: string) => {
-    setExpandedUnits(prev => 
-      prev.includes(unitId) 
-        ? prev.filter(id => id !== unitId)
-        : [...prev, unitId]
-    );
-  };
+  const selectedUnit = cs201.units[selectedUnitIndex];
 
-  const handleLessonClick = (lessonId: string) => {
-    setSelectedLesson(lessonId);
-    // Close sidebar on mobile after selecting a lesson
-    setSidebarOpen(false);
-  };
-
-  // Common syllabus questions with answers
-  const syllabusQuestions = [
-    "When is the next test?",
-    "What do I do if I have to skip lab?",
-    "How do I submit assignments?",
-    "What is the grading policy?",
-    "When are office hours?",
-    "How do I get help with programming assignments?",
-    "What textbooks do I need?",
-    "How do I access the course materials?"
+  const subSections: { id: SubSection; label: string; icon: string }[] = [
+    { id: 'overview', label: 'Overview', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { id: 'lectures', label: 'Lectures', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
+    { id: 'examples', label: 'Worked Examples', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { id: 'notes', label: 'Guided Notes', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
+    { id: 'practice', label: 'Practice Problems', icon: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4' },
+    { id: 'lab', label: 'Lab', icon: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z' },
+    { id: 'project', label: 'Mini-Project', icon: 'M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM14 15a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1v-2z' },
+    { id: 'quiz', label: 'Quiz', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+    { id: 'checklist', label: 'Checklist', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
   ];
 
-  const questionAnswers: Record<string, string> = {
-    "When is the next test?": "The next test is scheduled for March 15th, 2024. It will cover Units 1-3 (Introduction, Arrays and ArrayLists, and Linked Lists). The test will be held during regular class time and will be 90 minutes long.",
-    "What do I do if I have to skip lab?": "If you need to skip lab, please email your TA at least 24 hours in advance. You can make up the lab during office hours or by completing the lab assignment independently. All lab work must be completed within one week of the original lab date.",
-    "How do I submit assignments?": "All assignments should be submitted through the course's online portal. Make sure to submit your Java files (.java) and any required documentation. Late submissions will receive a 10% penalty per day, up to 3 days late.",
-    "What is the grading policy?": "Your final grade is calculated as follows: 40% exams (2 midterms + final), 30% programming assignments, 20% lab work, and 10% participation. You must pass the final exam to pass the course.",
-    "When are office hours?": "Office hours are held Monday and Wednesday from 2:00-4:00 PM in the CS building, room 201. You can also schedule appointments by emailing the instructor. Virtual office hours are available on Fridays from 1:00-3:00 PM via Zoom.",
-    "How do I get help with programming assignments?": "You can get help through office hours, the course discussion forum, or by emailing your TA. The CS tutoring center is also available Monday-Friday from 9 AM to 5 PM. Remember to start assignments early and don't hesitate to ask questions!",
-    "What textbooks do I need?": "The required textbook is 'Data Structures and Algorithms in Java' by Goodrich, Tamassia, and Goldwasser (6th edition). You can purchase it from the campus bookstore or online. The library also has copies available for short-term loan.",
-    "How do I access the course materials?": "All course materials are available on the course website. You'll need to log in with your university credentials. Lecture slides, assignments, and additional resources are organized by unit. Make sure to check the announcements regularly for updates."
-  };
+  const renderSubSectionContent = () => {
+    if (!selectedSubSection) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center max-w-md">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              {selectedUnit.title}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Select a section from the menu on the right to view study materials, lectures, practice problems, and more.
+            </p>
+          </div>
+        </div>
+      );
+    }
 
-  const handleQuestionSelect = (question: string) => {
-    setSearchQuery(question);
-    setShowDropdown(false);
-    // Show the answer immediately when selecting from dropdown
-    setSearchAnswer(questionAnswers[question] || '');
-  };
+    switch (selectedSubSection) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="overview" level={2}>Overview</SectionHeading>
+            <div className="p-6 bg-blue-50 border-l-4 border-blue-500 rounded">
+              <ul className="space-y-3">
+                {selectedUnit.overview.map((point, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-blue-600 mr-3 flex-shrink-0 text-xl" aria-hidden="true">→</span>
+                    <span className="leading-relaxed text-gray-800">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        );
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Check if the search query matches any of our hardcoded questions
-    const answer = questionAnswers[searchQuery];
-    if (answer) {
-      setSearchAnswer(answer);
-    } else {
-      // For other queries, show a generic response
-      setSearchAnswer("I don't have a specific answer for that question. Please try one of the common questions from the dropdown, or contact your instructor for more information.");
+      case 'lectures':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="lectures" level={2}>Lectures</SectionHeading>
+            <div className="grid grid-cols-1 gap-4">
+              {selectedUnit.lectures.map(lecture => (
+                <LessonCard key={lecture.id} lecture={lecture} />
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'examples':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="examples" level={2}>Worked Examples</SectionHeading>
+            <div className="space-y-4">
+              {selectedUnit.workedExamples.map((example, index) => (
+                <Accordion key={index} title={example.title}>
+                  <p className="mb-4 leading-relaxed text-gray-700">{example.content}</p>
+                  {example.snippet && <CodeBlock snippet={example.snippet} />}
+                </Accordion>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'notes':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="notes" level={2}>Guided Notes (Fill-in-the-Blank)</SectionHeading>
+            <div className="p-6 bg-yellow-50 border rounded-lg print:bg-white">
+              <p className="text-sm text-gray-600 mb-4 print:hidden">
+                Print-friendly format. Fill in the blanks to test your understanding.
+              </p>
+              <ol className="space-y-4 list-decimal list-inside">
+                {selectedUnit.guidedNotes.map((note, index) => (
+                  <li key={index} className="leading-relaxed font-mono text-sm text-gray-800 pl-2">
+                    {note}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        );
+
+      case 'practice':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="practice" level={2}>Practice Problems</SectionHeading>
+            <div className="space-y-6">
+              {selectedUnit.practice.map((group, groupIndex) => (
+                <div key={groupIndex} className="border rounded-lg p-6 bg-white">
+                  <h3 className="font-semibold text-xl mb-4 flex items-center">
+                    {group.title}
+                    <span 
+                      className={`ml-3 px-3 py-1 text-xs rounded-full ${
+                        group.title === 'Warm-ups' 
+                          ? 'bg-green-100 text-green-800'
+                          : group.title === 'Core'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {group.title === 'Warm-ups' ? 'Easy' : group.title === 'Core' ? 'Medium' : 'Hard'}
+                    </span>
+                  </h3>
+                  <ol className="space-y-3 list-decimal list-inside">
+                    {group.items.map((item, itemIndex) => (
+                      <li key={itemIndex} className="leading-relaxed text-gray-700 pl-2">
+                        {item}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'lab':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="lab" level={2}>{selectedUnit.lab.title}</SectionHeading>
+            <div className="border-2 border-purple-300 rounded-lg p-6 bg-purple-50">
+              <h3 className="font-semibold text-lg mb-3 text-purple-900">Specification</h3>
+              <ul className="space-y-2 mb-6">
+                {selectedUnit.lab.spec.map((item, index) => (
+                  <li key={index} className="leading-relaxed text-gray-800">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              
+              <h3 className="font-semibold text-lg mb-3 text-purple-900">Tasks</h3>
+              <ol className="space-y-2 mb-6 list-decimal list-inside">
+                {selectedUnit.lab.tasks.map((task, index) => (
+                  <li key={index} className="leading-relaxed text-gray-800 pl-2">
+                    {task}
+                  </li>
+                ))}
+              </ol>
+              
+              {selectedUnit.lab.extension && selectedUnit.lab.extension.length > 0 && (
+                <>
+                  <h3 className="font-semibold text-lg mb-3 text-purple-900">Extension</h3>
+                  <ul className="space-y-2">
+                    {selectedUnit.lab.extension.map((item, index) => (
+                      <li key={index} className="leading-relaxed text-gray-800">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          </div>
+        );
+
+      case 'project':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="project" level={2}>{selectedUnit.miniProject.title}</SectionHeading>
+            <div className="border-2 border-orange-300 rounded-lg p-6 bg-orange-50">
+              <h3 className="font-semibold text-lg mb-3 text-orange-900">Specification</h3>
+              <ul className="space-y-2 mb-6">
+                {selectedUnit.miniProject.spec.map((item, index) => (
+                  <li key={index} className="leading-relaxed text-gray-800">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              
+              <h3 className="font-semibold text-lg mb-3 text-orange-900">Focus Areas</h3>
+              <ul className="space-y-2">
+                {selectedUnit.miniProject.focus.map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-orange-600 mr-2 flex-shrink-0" aria-hidden="true">★</span>
+                    <span className="leading-relaxed text-gray-800">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        );
+
+      case 'quiz':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="quiz" level={2}>Quiz</SectionHeading>
+            <Quiz questions={selectedUnit.quiz} />
+          </div>
+        );
+
+      case 'checklist':
+        return (
+          <div className="space-y-6">
+            <SectionHeading id="checklist" level={2}>Checklist</SectionHeading>
+            <div className="border rounded-lg p-6 bg-gray-50">
+              <Checklist unitId={selectedUnit.unitId} items={selectedUnit.checklist} />
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden" style={{ minHeight: '100vh' }}>
-      {/* Navigation Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 flex-shrink-0">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-4">
               <Link 
                 href="/"
-                className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors"
               >
-                <svg className="w-5 h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 <span className="hidden sm:inline">Back to Courses</span>
                 <span className="sm:hidden">Back</span>
               </Link>
-              <div className="h-6 w-px bg-gray-300 hidden sm:block"></div>
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
-                <span className="hidden sm:inline">CS201: Data Structures and Algorithms</span>
-                <span className="sm:hidden">CS201</span>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <h1 className="text-xl font-semibold text-gray-900">
+                CS201 Study Pack
               </h1>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Mobile menu button */}
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-              <div className="hidden sm:block text-sm text-gray-600">
-                Welcome back, Student
-              </div>
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">S</span>
-              </div>
-            </div>
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile sidebar overlay */}
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
-        ></div>
+        />
       )}
 
-      {/* Main Content with Sidebar */}
-      <div className="flex h-[calc(100vh-4rem)] bg-gray-50">
-        {/* Sidebar */}
-        <div className={`
-          w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col
+      {/* Main Layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar - Unit Selection */}
+        <aside className={`
+          w-64 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto
           fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}>
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 leading-tight">
-              Course Content
+          lg:block
+        `}
+        style={{ top: '64px', height: 'calc(100vh - 64px)' }}
+        >
+          <div className="p-4">
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-3">
+              Units
             </h2>
-          </div>
-        
-        <div className="flex-1 overflow-y-auto">
-          <nav className="p-4">
-            {courseData.units.map((unit) => (
-              <div key={unit.id} className="mb-2">
+            <nav className="space-y-1">
+              {cs201.units.map((unit, index) => (
                 <button
-                  onClick={() => toggleUnit(unit.id)}
-                  className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center justify-between"
+                  key={unit.unitId}
+                  onClick={() => {
+                    setSelectedUnitIndex(index);
+                    setSelectedSubSection(null);
+                    setSidebarOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    selectedUnitIndex === index
+                      ? 'bg-blue-100 text-blue-900 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
                 >
-                  <span className="font-medium text-gray-700">{unit.title}</span>
-                  <svg
-                    className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
-                      expandedUnits.includes(unit.id) ? 'rotate-180' : ''
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <div className="text-xs text-gray-500 mb-1">Unit {index + 1}</div>
+                  <div className="text-sm leading-tight">
+                    {unit.title.replace(/^Unit \d+: /, '')}
+                  </div>
                 </button>
-                
-                {expandedUnits.includes(unit.id) && (
-                  <div className="ml-4 mt-2 space-y-1">
-                    {unit.lessons.map((lesson) => (
-                      <button
-                        key={lesson.id}
-                        onClick={() => handleLessonClick(lesson.id)}
-                        className={`w-full text-left p-3 rounded-lg transition-colors duration-200 border-l-2 ${
-                          selectedLesson === lesson.id 
-                            ? 'bg-blue-50 border-blue-500 text-blue-900' 
-                            : 'hover:bg-blue-50 border-transparent hover:border-blue-500 text-gray-900'
-                        }`}
-                      >
-                        <div className="text-sm font-medium">{lesson.title}</div>
-                        <div className="text-xs text-gray-500 mt-1">{lesson.description}</div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </nav>
-        </div>
+              ))}
+            </nav>
+
+            <div className="mt-8 pt-6 border-t">
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="w-full px-4 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors text-sm"
+              >
+                View Solutions
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="lg:flex lg:h-full">
+            {/* Center Content */}
+            <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
+              {renderSubSectionContent()}
+            </div>
+
+            {/* Right Sidebar - Sub-section Menu */}
+            <aside className="w-full lg:w-64 bg-white border-t lg:border-t-0 lg:border-l border-gray-200 p-4 lg:overflow-y-auto flex-shrink-0">
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">
+                Sections
+              </h2>
+              <nav className="space-y-1">
+                {subSections.map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => setSelectedSubSection(section.id)}
+                    className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center ${
+                      selectedSubSection === section.id
+                        ? 'bg-blue-100 text-blue-900 font-medium'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <svg 
+                      className="w-5 h-5 mr-3 flex-shrink-0" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={section.icon} />
+                    </svg>
+                    <span className="text-sm">{section.label}</span>
+                  </button>
+                ))}
+              </nav>
+            </aside>
+          </div>
+        </main>
       </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col lg:ml-0">
-          {/* Search Bar */}
-          <div className="bg-white border-b border-gray-200 p-4 sm:p-6">
-            <div className="max-w-2xl">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Ask about the course</h3>
-              <form onSubmit={handleSearch} className="relative">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setShowDropdown(true)}
-                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                    placeholder="Ask a question about the course..."
-                    className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 placeholder:text-gray-600"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-blue-600 transition-colors duration-200"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
-                </div>
-                
-                {/* Dropdown with common questions */}
-                {showDropdown && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-                    <div className="p-2">
-                      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Common Questions</div>
-                      {syllabusQuestions.map((question, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleQuestionSelect(question)}
-                          className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200"
-                        >
-                          {question}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </form>
-            </div>
-            
-            {/* Search Answer Display */}
-            {searchAnswer && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-2">Answer:</h4>
-                    <p className="text-gray-700 leading-relaxed">{searchAnswer}</p>
-                  </div>
-                  <button
-                    onClick={() => setSearchAnswer('')}
-                    className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+      {/* Solutions Drawer */}
+      <SolutionsDrawer
+        title={selectedUnit.selectedSolutions.title}
+        items={selectedUnit.selectedSolutions.items}
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      />
 
-          <div className="bg-white border-b border-gray-200 p-4 sm:p-6">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
-              {selectedLesson 
-                ? courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.title || 'Select a Lesson'
-                : 'Welcome to CS201'
-              }
-            </h2>
-            <p className="text-gray-600 mt-2 text-sm sm:text-base">
-              {selectedLesson 
-                ? courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.description || ''
-                : 'Choose a lesson from the sidebar to get started'
-              }
-            </p>
-          </div>
-
-          <div className="flex-1 p-4 sm:p-6">
-          {selectedLesson ? (
-            <div className="space-y-6">
-              {/* Lesson Content */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
-                  {courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.title}
-                </h3>
-                <p className="text-gray-600 mb-6 text-sm sm:text-base">
-                  {courseData.units
-                    .flatMap(unit => unit.lessons)
-                    .find(lesson => lesson.id === selectedLesson)?.description}
-                </p>
-                
-                <div className="prose max-w-none">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Lesson Content</h4>
-                  <p className="text-gray-700 leading-relaxed mb-6">
-                    {selectedLesson === 'overview' && 'This lesson provides an overview of the CS201 course, including learning objectives, course structure, and expectations for students.'}
-                    {selectedLesson === 'java-review' && 'A comprehensive review of Java programming fundamentals including syntax, data types, control structures, and basic object-oriented concepts.'}
-                    {selectedLesson === 'object-oriented' && 'Deep dive into object-oriented programming concepts including classes, objects, inheritance, polymorphism, and encapsulation in Java.'}
-                    {selectedLesson === 'array-basics' && 'Understanding arrays as fundamental data structures, including declaration, initialization, indexing, and basic operations.'}
-                    {selectedLesson === 'arraylist-practice' && 'Hands-on practice with ArrayList, understanding dynamic arrays, and common operations like add, remove, and search.'}
-                    {selectedLesson === 'array-algorithms' && 'Implementation and analysis of fundamental array algorithms including linear search, binary search, bubble sort, and selection sort.'}
-                    {selectedLesson === 'linked-list-intro' && 'Introduction to linked lists as dynamic data structures, understanding nodes, pointers, and basic linked list concepts.'}
-                    {selectedLesson === 'linked-list-operations' && 'Implementation of core linked list operations including insertion at various positions, deletion, and traversal algorithms.'}
-                    {selectedLesson === 'doubly-linked' && 'Understanding and implementing doubly linked lists with bidirectional traversal capabilities and their advantages.'}
-                    {selectedLesson === 'stack-implementation' && 'Implementation of stack data structure using arrays and linked lists, understanding LIFO (Last In, First Out) principle.'}
-                    {selectedLesson === 'queue-implementation' && 'Implementation of queue data structure, understanding FIFO (First In, First Out) principle and various queue implementations.'}
-                    {selectedLesson === 'stack-queue-applications' && 'Exploring real-world applications of stacks and queues including expression evaluation, function calls, and scheduling algorithms.'}
-                    {selectedLesson === 'tree-basics' && 'Introduction to tree data structures, understanding nodes, edges, root, leaves, and basic tree terminology.'}
-                    {selectedLesson === 'binary-trees' && 'Understanding binary trees, their properties, and basic operations including insertion, deletion, and search.'}
-                    {selectedLesson === 'tree-traversal' && 'Implementation and understanding of different tree traversal algorithms: preorder, inorder, and postorder traversal.'}
-                    {selectedLesson === 'hash-functions' && 'Understanding hash functions, their properties, and various collision resolution techniques including chaining and open addressing.'}
-                    {selectedLesson === 'hash-table-implementation' && 'Implementation of hash tables with different collision resolution strategies and analysis of time complexity.'}
-                    {selectedLesson === 'hash-applications' && 'Exploring real-world applications of hash tables including databases, caches, and symbol tables.'}
-                  </p>
-                </div>
-
-                <div className="pt-6 border-t border-gray-200">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Learning Objectives</h4>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-gray-700">Understand the fundamental concepts</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-gray-700">Implement practical examples</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-gray-700">Analyze time and space complexity</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Resources Section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Resources</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Lecture Notes</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">PDF slides and materials</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Code Examples</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Java source code files</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Practice Problems</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Exercises and solutions</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Video Lectures</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Recorded class sessions</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Assignments</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Homework and projects</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Quizzes</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Knowledge assessments</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Welcome to CS201</h3>
-              <p className="text-gray-600 mb-6 text-sm sm:text-base">
-                Select a lesson from the sidebar to view course materials and resources.
-              </p>
-              <div className="text-xs sm:text-sm text-gray-500">
-                This course covers fundamental data structures and algorithms using Java.
-              </div>
-            </div>
-          )}
-        </div>
-        </div>
-      </div>
+      {/* Reduced Motion Styles */}
+      <style jsx global>{`
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
