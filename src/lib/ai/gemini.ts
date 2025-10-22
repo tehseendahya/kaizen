@@ -1,10 +1,15 @@
 /**
  * Send a chat message to Gary the Penguin (powered by Gemini AI)
  * Returns an async generator that yields chunks of the response as they arrive
+ * 
+ * @param message - The user's message
+ * @param courseId - The course identifier (e.g., 'cs201')
+ * @param history - Optional conversation history for context
  */
 export async function* sendGeminiChat(
   message: string,
-  courseId: string = 'cs201'
+  courseId: string = 'cs201',
+  history: Array<{ role: 'user' | 'assistant'; content: string }> = []
 ): AsyncGenerator<string> {
   try {
     const response = await fetch('/api/chat', {
@@ -12,7 +17,7 @@ export async function* sendGeminiChat(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message, courseId }),
+      body: JSON.stringify({ message, courseId, history }),
     });
 
     if (!response.ok) {

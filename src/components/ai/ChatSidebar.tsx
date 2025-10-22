@@ -68,15 +68,25 @@ export default function ChatSidebar({
     if (!q) return;
     setInput('');
     const id = `${Date.now()}`;
+    
+    // Add user message and empty assistant message
     setMessages((m) => [...m, { id: id + '-u', role: 'user', content: q }, { id: id + '-a', role: 'assistant', content: '' }]);
     setSpeaking(true);
+    
+    // Get conversation history (exclude the messages we just added)
+    const history = messages.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
+    
     let acc = '';
-    for await (const chunk of sendChat(q, courseId)) {
+    // Pass history to maintain context across messages
+    for await (const chunk of sendChat(q, courseId, history)) {
       acc += chunk;
       setMessages((m) => m.map((msg) => (msg.id === id + '-a' ? { ...msg, content: acc } : msg)));
     }
     setSpeaking(false);
-  }, [input, courseId]);
+  }, [input, courseId, messages]);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
