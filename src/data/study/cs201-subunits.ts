@@ -95,11 +95,42 @@ export const cs201Data: CourseData = {
           quiz: [
             {
               id: 'q1_1_1',
-              prompt: 'What is Computer Science primarily about?',
+              prompt: 'Q1 (CS at scale). Which description best matches this course\'s view of Computer Science?',
               choices: [
-                { id: 'a', text: 'Writing as much code as possible', correct: false, rationale: 'CS is not about quantity of code, but quality of problem-solving.' },
-                { id: 'b', text: 'Automating step-by-step problem-solving so it works at scale', correct: true, rationale: 'CS focuses on creating algorithms that can handle problems efficiently for many users.' },
-                { id: 'c', text: 'Learning programming languages', correct: false, rationale: 'Languages are tools, not the core of CS.' }
+                { id: 'a', text: 'Writing code in any language.', correct: false, rationale: 'CS is more than just writing code—it\'s about solving problems algorithmically.' },
+                { id: 'b', text: 'Building devices that execute instructions.', correct: false, rationale: 'That\'s computer engineering, not computer science.' },
+                { id: 'c', text: 'Automating algorithmic processes so they work correctly and efficiently at scale.', correct: true, rationale: 'CS focuses on creating algorithms that work correctly for many users at large scale.' },
+                { id: 'd', text: 'Memorizing syntax rules.', correct: false, rationale: 'Syntax is a tool, not the essence of CS.' }
+              ]
+            },
+            {
+              id: 'q1_1_2',
+              prompt: 'Q2 (tiny vs. large). Which pair best illustrates "same task, different at scale"?',
+              choices: [
+                { id: 'a', text: 'Printing "Hello" once vs. twice.', correct: false, rationale: 'This is just repetition, not a scale problem.' },
+                { id: 'b', text: 'Sorting 10 names vs. sorting 100 million records across servers.', correct: true, rationale: 'This shows how scale requires different design approaches.' },
+                { id: 'c', text: 'Adding 2 + 2 vs. 3 + 3.', correct: false, rationale: 'These are different calculations, not the same task at different scales.' },
+                { id: 'd', text: 'Copying a file vs. renaming it.', correct: false, rationale: 'These are different operations entirely.' }
+              ]
+            },
+            {
+              id: 'q1_1_3',
+              prompt: 'Q3 (tradeoffs). A correct program uses 10× more memory than another correct program. At very large input sizes this is most likely to cause:',
+              choices: [
+                { id: 'a', text: 'Shorter runtime.', correct: false, rationale: 'More memory usage doesn\'t necessarily mean faster execution.' },
+                { id: 'b', text: 'Compile errors.', correct: false, rationale: 'Compile errors happen at compile time, not runtime.' },
+                { id: 'c', text: 'Memory exhaustion / frequent garbage collection pauses.', correct: true, rationale: 'Excessive memory use leads to running out of memory or GC overhead.' },
+                { id: 'd', text: 'Network congestion only.', correct: false, rationale: 'Memory usage affects local resources, not network.' }
+              ]
+            },
+            {
+              id: 'q1_1_4',
+              prompt: 'Q4 (design signal). The primary reason CS emphasizes efficiency is that:',
+              choices: [
+                { id: 'a', text: 'Style checkers demand it.', correct: false, rationale: 'Style checkers focus on code quality, not efficiency.' },
+                { id: 'b', text: 'Large-scale use amplifies tiny inefficiencies into big costs.', correct: true, rationale: 'At scale, small inefficiencies become major problems.' },
+                { id: 'c', text: 'Compilers reject slow code.', correct: false, rationale: 'Compilers don\'t check performance, only correctness.' },
+                { id: 'd', text: 'Java requires it.', correct: false, rationale: 'Efficiency is a CS principle, not a language requirement.' }
               ]
             }
           ]
@@ -129,11 +160,42 @@ export const cs201Data: CourseData = {
           quiz: [
             {
               id: 'q1_2_1',
-              prompt: 'Why does scale matter in system design?',
+              prompt: 'Q1 (latency math). Saving 50 ms per request for 500k daily requests saves roughly:',
               choices: [
-                { id: 'a', text: 'Small inefficiencies and biases multiply into large problems', correct: true, rationale: 'At scale, tiny issues affect millions of users and become significant.' },
-                { id: 'b', text: 'Larger systems always run faster', correct: false, rationale: 'Scale often introduces complexity and slowdowns if not designed well.' },
-                { id: 'c', text: 'Scale only matters for social media apps', correct: false, rationale: 'Scale affects any system serving many users.' }
+                { id: 'a', text: '25 seconds/day', correct: false, rationale: 'Check the math: 50ms × 500,000 = 25,000,000ms = 25,000 seconds.' },
+                { id: 'b', text: '25 minutes/day', correct: false, rationale: '25,000 seconds is more than 25 minutes.' },
+                { id: 'c', text: '~7 hours/day', correct: true, rationale: '50ms × 500k = 25,000 seconds ≈ 6.9 hours saved per day.' },
+                { id: 'd', text: '~14 days/day', correct: false, rationale: 'That would be physically impossible.' }
+              ]
+            },
+            {
+              id: 'q1_2_2',
+              prompt: 'Q2 (fairness). A classifier with 99% accuracy but systematic bias will:',
+              choices: [
+                { id: 'a', text: 'Be fine; 99% is high.', correct: false, rationale: 'High overall accuracy can hide serious bias for specific groups.' },
+                { id: 'b', text: 'Cause negligible harm at scale.', correct: false, rationale: 'Even 1% error affects many people at scale.' },
+                { id: 'c', text: 'Amplify harms to many users; fix with evaluation by subgroup + mitigation.', correct: true, rationale: 'Bias must be evaluated per group and actively mitigated.' },
+                { id: 'd', text: 'Always crash.', correct: false, rationale: 'Bias is a fairness issue, not a crash.' }
+              ]
+            },
+            {
+              id: 'q1_2_3',
+              prompt: 'Q3 (storage). Storing raw full-res images for millions of users primarily stresses:',
+              choices: [
+                { id: 'a', text: 'CPU only.', correct: false, rationale: 'Storage is the main concern, not just CPU.' },
+                { id: 'b', text: 'Disk, bandwidth, and processing time for thumbnails.', correct: true, rationale: 'Images affect storage, network transfer, and processing.' },
+                { id: 'c', text: 'Only memory.', correct: false, rationale: 'Long-term storage is on disk, not just in memory.' },
+                { id: 'd', text: 'None of the above.', correct: false, rationale: 'Images definitely stress system resources.' }
+              ]
+            },
+            {
+              id: 'q1_2_4',
+              prompt: 'Q4 (logs). Long-term detailed logs increase risk because:',
+              choices: [
+                { id: 'a', text: 'They slow printing.', correct: false, rationale: 'The risk is privacy, not performance.' },
+                { id: 'b', text: 'They can be joined with other datasets to re-identify users.', correct: true, rationale: 'Detailed logs can be combined with other data to reveal identities.' },
+                { id: 'c', text: 'JSON is unsafe.', correct: false, rationale: 'JSON format itself isn\'t the issue.' },
+                { id: 'd', text: 'Loops become O(n²).', correct: false, rationale: 'This is about privacy risk, not algorithm complexity.' }
               ]
             }
           ]
@@ -163,11 +225,22 @@ export const cs201Data: CourseData = {
           quiz: [
             {
               id: 'q1_3_1',
-              prompt: 'What did Latanya Sweeney\'s research demonstrate?',
+              prompt: 'Q1 (re-ID). DOB + gender + ZIP can re-identify many people because:',
               choices: [
-                { id: 'a', text: 'Date of birth + gender + ZIP code can identify most Americans', correct: true, rationale: 'This combination of "anonymous" data points can uniquely identify individuals.' },
-                { id: 'b', text: 'Removing names makes data completely anonymous', correct: false, rationale: 'Other data combinations can still identify people.' },
-                { id: 'c', text: 'Privacy doesn\'t matter for public data', correct: false, rationale: 'Public data can be combined to reveal private information.' }
+                { id: 'a', text: 'These fields are random.', correct: false, rationale: 'They\'re not random—they\'re specific personal attributes.' },
+                { id: 'b', text: 'They are common quasi-identifiers that are often unique in combination.', correct: true, rationale: 'This combination is unique enough to identify individuals even without names.' },
+                { id: 'c', text: 'Hash codes leak them.', correct: false, rationale: 'The issue is the combination itself, not hashing.' },
+                { id: 'd', text: 'Java exposes them by default.', correct: false, rationale: 'This is about data privacy, not Java features.' }
+              ]
+            },
+            {
+              id: 'q1_3_2',
+              prompt: 'Q2 (mitigation). Which pair reduces re-identification risk?',
+              choices: [
+                { id: 'a', text: 'Wider logging + plaintext IDs', correct: false, rationale: 'This increases risk by exposing more data.' },
+                { id: 'b', text: 'Publishing raw CSVs + long retention', correct: false, rationale: 'Raw data with long retention increases privacy risks.' },
+                { id: 'c', text: 'k-anonymity style grouping + minimizing fields retained', correct: true, rationale: 'Grouping data and keeping fewer fields reduces re-identification risk.' },
+                { id: 'd', text: 'None; re-ID is impossible to reduce', correct: false, rationale: 'There are proven techniques to reduce re-identification risk.' }
               ]
             }
           ]
@@ -246,11 +319,52 @@ int result3 = 1 + 2 * 3; // 7 (multiplication first)`,
           quiz: [
             {
               id: 'q2_1_1',
-              prompt: 'What is the result of 3/2 in Java?',
+              prompt: 'Q1. Type/value of 3/2 in Java is:',
               choices: [
-                { id: 'a', text: '1.5', correct: false, rationale: 'When both operands are integers, Java performs integer division.' },
-                { id: 'b', text: '1', correct: true, rationale: 'Integer division drops the decimal part.' },
-                { id: 'c', text: 'A compile error', correct: false, rationale: 'This is valid Java code.' }
+                { id: 'a', text: 'int, 1', correct: true, rationale: 'Integer division: both operands are int, so result is int with value 1.' },
+                { id: 'b', text: 'double, 1.0', correct: false, rationale: 'Both operands are int, so the result is int, not double.' },
+                { id: 'c', text: 'int, 2', correct: false, rationale: 'Integer division truncates, giving 1, not 2.' },
+                { id: 'd', text: 'double, 1.5', correct: false, rationale: 'This would only happen if at least one operand was a double.' }
+              ]
+            },
+            {
+              id: 'q2_1_2',
+              prompt: 'Q2. Type/value of 3/2.0 is:',
+              choices: [
+                { id: 'a', text: 'int, 1', correct: false, rationale: '2.0 is a double, so the result is promoted to double.' },
+                { id: 'b', text: 'double, 1.5', correct: true, rationale: 'One operand is double (2.0), so decimal division gives 1.5.' },
+                { id: 'c', text: 'double, 1.0', correct: false, rationale: 'With decimal division, 3/2.0 = 1.5, not 1.0.' },
+                { id: 'd', text: 'int, 2', correct: false, rationale: 'The result is a double, not an int.' }
+              ]
+            },
+            {
+              id: 'q2_1_3',
+              prompt: 'Q3. Which prints true without throwing?\n\nint a = 0;\nSystem.out.println((a != 0) && (10/a > 2));',
+              choices: [
+                { id: 'a', text: 'Always true', correct: false, rationale: 'Short-circuit prevents evaluation, but the result is false.' },
+                { id: 'b', text: 'Always false', correct: true, rationale: '(a != 0) is false, so && short-circuits without evaluating 10/a.' },
+                { id: 'c', text: 'True due to short-circuit, no divide by zero', correct: false, rationale: 'Short-circuit prevents the error, but the result is false, not true.' },
+                { id: 'd', text: 'Throws always', correct: false, rationale: 'Short-circuit evaluation prevents reaching the division.' }
+              ]
+            },
+            {
+              id: 'q2_1_4',
+              prompt: 'Q4. Which expression is true exactly when n is a positive even integer?',
+              choices: [
+                { id: 'a', text: 'n % 2 == 1 && n > 0', correct: false, rationale: 'This checks for positive odd numbers, not even.' },
+                { id: 'b', text: 'n % 2 == 0 && n > 0', correct: true, rationale: 'Even means divisible by 2 (n % 2 == 0), and positive means n > 0.' },
+                { id: 'c', text: 'n % 2 != 0 || n <= 0', correct: false, rationale: 'This is true for odd OR non-positive numbers.' },
+                { id: 'd', text: '!(n % 2 == 0)', correct: false, rationale: 'This checks for odd numbers only, ignoring the positive requirement.' }
+              ]
+            },
+            {
+              id: 'q2_1_5',
+              prompt: 'Q5. The operator == is appropriate for equality on:',
+              choices: [
+                { id: 'a', text: 'String contents', correct: false, rationale: 'Use .equals() for String content comparison.' },
+                { id: 'b', text: 'ArrayList contents', correct: false, rationale: 'Use .equals() for ArrayList content comparison.' },
+                { id: 'c', text: 'Primitive numbers like int or double', correct: true, rationale: '== works correctly for primitive types.' },
+                { id: 'd', text: 'All reference types', correct: false, rationale: '== checks reference equality, not content for objects.' }
               ]
             }
           ]
@@ -293,11 +407,92 @@ String s2 = s1;  // s2 points to the same object as s1`,
           quiz: [
             {
               id: 'q2_2_1',
-              prompt: 'What does a variable hold when it refers to an object?',
+              prompt: 'Q1. A variable of type ArrayList<String> stores:',
               choices: [
-                { id: 'a', text: 'The actual object data', correct: false, rationale: 'The variable holds a reference, not the object itself.' },
-                { id: 'b', text: 'A reference (address) to the object', correct: true, rationale: 'Object variables store references that point to objects in memory.' },
-                { id: 'c', text: 'Nothing until you call a method', correct: false, rationale: 'The reference is stored as soon as you assign it.' }
+                { id: 'a', text: 'The whole list by value', correct: false, rationale: 'Objects are not stored by value; variables hold references.' },
+                { id: 'b', text: 'A reference (like an address/label) to a list object', correct: true, rationale: 'Object variables store references that point to objects in memory.' },
+                { id: 'c', text: 'Its size() only', correct: false, rationale: 'The reference points to the entire object, not just one property.' },
+                { id: 'd', text: 'Bytes of the first element', correct: false, rationale: 'The reference points to the whole object.' }
+              ]
+            },
+            {
+              id: 'q2_2_2',
+              prompt: 'Q2. What prints?\n\nArrayList<Integer> x = new ArrayList<>();\nArrayList<Integer> y = x;\nx.add(7);\nSystem.out.println(x.size() + " / " + y.size());',
+              choices: [
+                { id: 'a', text: '0 / 0', correct: false, rationale: 'x.add(7) adds an element.' },
+                { id: 'b', text: '1 / 0', correct: false, rationale: 'y references the same list as x.' },
+                { id: 'c', text: '1 / 1', correct: true, rationale: 'y and x reference the same list, so both see the added element.' },
+                { id: 'd', text: 'Compile error', correct: false, rationale: 'This is valid Java code.' }
+              ]
+            },
+            {
+              id: 'q2_2_3',
+              prompt: 'Q3. Which line makes two independent lists?',
+              choices: [
+                { id: 'a', text: 'ArrayList<Integer> b = a;', correct: false, rationale: 'This creates an alias; both reference the same list.' },
+                { id: 'b', text: 'ArrayList<Integer> b = new ArrayList<>(a);', correct: true, rationale: 'This creates a new list with a copy of a\'s contents.' },
+                { id: 'c', text: 'ArrayList<Integer> b = null;', correct: false, rationale: 'This doesn\'t create a list at all.' },
+                { id: 'd', text: 'ArrayList<Integer> b = a; b.clear();', correct: false, rationale: 'This clears both a and b since they reference the same list.' }
+              ]
+            },
+            {
+              id: 'q2_2_4',
+              prompt: 'Q4. Reassigning a parameter list = new ArrayList<>(); inside a method:',
+              choices: [
+                { id: 'a', text: 'Mutates the caller\'s list', correct: false, rationale: 'Reassigning only changes the local parameter reference.' },
+                { id: 'b', text: 'Changes only the local reference; caller\'s reference still points to the old object', correct: true, rationale: 'Parameters are passed by value (the reference is copied).' },
+                { id: 'c', text: 'Deletes the caller\'s list', correct: false, rationale: 'The caller\'s reference remains unchanged.' },
+                { id: 'd', text: 'Throws', correct: false, rationale: 'This is valid Java code.' }
+              ]
+            },
+            {
+              id: 'q2_2_5',
+              prompt: 'Q5. new in Java primarily:',
+              choices: [
+                { id: 'a', text: 'Compares two objects', correct: false, rationale: 'Comparison is done with == or .equals().' },
+                { id: 'b', text: 'Allocates memory and returns a reference', correct: true, rationale: 'new creates a new object and returns a reference to it.' },
+                { id: 'c', text: 'Computes a hash code', correct: false, rationale: 'Hash codes are computed by hashCode().' },
+                { id: 'd', text: 'Declares a primitive', correct: false, rationale: 'Primitives don\'t use new.' }
+              ]
+            },
+            {
+              id: 'q2_2_6',
+              prompt: 'Q6. Dot-notation (e.g., s.length()) means:',
+              choices: [
+                { id: 'a', text: 'Static method call', correct: false, rationale: 'Static methods use the class name, not an instance.' },
+                { id: 'b', text: 'Field access only', correct: false, rationale: 'Dot-notation can access fields or call methods.' },
+                { id: 'c', text: 'Calling a method on that object reference', correct: true, rationale: 'Dot-notation invokes a method on the object.' },
+                { id: 'd', text: 'Casting', correct: false, rationale: 'Casting uses parentheses: (Type)obj.' }
+              ]
+            },
+            {
+              id: 'q2_2_7',
+              prompt: 'Q7. Two different variables can point to the same object. This situation is called:',
+              choices: [
+                { id: 'a', text: 'Boxing', correct: false, rationale: 'Boxing converts primitives to wrapper objects.' },
+                { id: 'b', text: 'Aliasing', correct: true, rationale: 'Aliasing occurs when multiple references point to the same object.' },
+                { id: 'c', text: 'Shadowing', correct: false, rationale: 'Shadowing is when a local variable hides a field.' },
+                { id: 'd', text: 'Hoisting', correct: false, rationale: 'Hoisting is a JavaScript concept, not Java.' }
+              ]
+            },
+            {
+              id: 'q2_2_8',
+              prompt: 'Q8. If a and b reference the same ArrayList, then a.add("x") followed by b.size() prints:',
+              choices: [
+                { id: 'a', text: 'Old size', correct: false, rationale: 'The change through a affects b since they reference the same list.' },
+                { id: 'b', text: 'New size reflecting the add', correct: true, rationale: 'Both references see the same list, so b.size() reflects the add.' },
+                { id: 'c', text: '0', correct: false, rationale: 'The size increases after the add.' },
+                { id: 'd', text: 'Throws', correct: false, rationale: 'This is valid Java code.' }
+              ]
+            },
+            {
+              id: 'q2_2_9',
+              prompt: 'Q9. The best explanation for "reference" in slides is:',
+              choices: [
+                { id: 'a', text: 'Copy of bytes of the whole object', correct: false, rationale: 'A reference is not a copy of the object.' },
+                { id: 'b', text: 'Pointer/label to where the object lives in memory', correct: true, rationale: 'A reference is like an address pointing to the object.' },
+                { id: 'c', text: 'A random number with no meaning', correct: false, rationale: 'References have specific meaning—they locate objects.' },
+                { id: 'd', text: 'A package name', correct: false, rationale: 'References are not package names.' }
               ]
             }
           ]
@@ -344,11 +539,72 @@ if (input == "yes") {  // WRONG! Don't do this!
           quiz: [
             {
               id: 'q2_3_1',
-              prompt: 'What is the correct way to compare two strings for the same content?',
+              prompt: 'Q1. Given\n\nString a = new String("duke");\nString b = new String("duke");\n\nWhich is true?',
               choices: [
-                { id: 'a', text: 'Use ==', correct: false, rationale: '== checks if they\'re the same object, not the same content.' },
+                { id: 'a', text: 'a == b and a.equals(b) are both true', correct: false, rationale: 'new creates separate objects, so == is false.' },
+                { id: 'b', text: 'a == b is false; a.equals(b) is true', correct: true, rationale: '== checks reference equality (false), .equals() checks content (true).' },
+                { id: 'c', text: 'Both are false', correct: false, rationale: 'The content is the same, so .equals() is true.' },
+                { id: 'd', text: 'Both are true only if interning is used', correct: false, rationale: 'new explicitly creates distinct objects.' }
+              ]
+            },
+            {
+              id: 'q2_3_2',
+              prompt: 'Q2. Correct fix for content comparison of two strings is:',
+              choices: [
+                { id: 'a', text: 'Use ==', correct: false, rationale: '== compares references, not content.' },
                 { id: 'b', text: 'Use .equals()', correct: true, rationale: '.equals() compares the actual characters in the strings.' },
-                { id: 'c', text: 'Either one works', correct: false, rationale: 'They have different meanings and different results.' }
+                { id: 'c', text: 'Convert to int first', correct: false, rationale: 'Converting doesn\'t help with string comparison.' },
+                { id: 'd', text: 'Use .hashCode() directly', correct: false, rationale: 'Hash codes can collide; use .equals().' }
+              ]
+            },
+            {
+              id: 'q2_3_3',
+              prompt: 'Q3. If s.equals(t) is true, what about s == t?',
+              choices: [
+                { id: 'a', text: 'Always true', correct: false, rationale: 'Equal content doesn\'t mean same object.' },
+                { id: 'b', text: 'Always false', correct: false, rationale: 'They could be the same object.' },
+                { id: 'c', text: 'Cannot be determined from given info', correct: true, rationale: 'Equal content doesn\'t tell us if they\'re the same object.' },
+                { id: 'd', text: 'Always throws', correct: false, rationale: 'This is valid Java code.' }
+              ]
+            },
+            {
+              id: 'q2_3_4',
+              prompt: 'Q4. If s.hashCode() == t.hashCode() for Strings:',
+              choices: [
+                { id: 'a', text: 's.equals(t) must be true', correct: false, rationale: 'Hash codes can collide; same hash doesn\'t guarantee equal content.' },
+                { id: 'b', text: 's.equals(t) must be false', correct: false, rationale: 'They could be equal or could be a collision.' },
+                { id: 'c', text: 'Cannot be determined from given info', correct: true, rationale: 'Same hash code doesn\'t guarantee equality.' },
+                { id: 'd', text: 'They are the same object', correct: false, rationale: 'Hash codes don\'t indicate reference equality.' }
+              ]
+            },
+            {
+              id: 'q2_3_5',
+              prompt: 'Q5. The contract linking equals and hashCode matters primarily for:',
+              choices: [
+                { id: 'a', text: 'HashSet/HashMap correctness', correct: true, rationale: 'Hash-based collections rely on consistent equals() and hashCode().' },
+                { id: 'b', text: 'For-each loops', correct: false, rationale: 'For-each loops don\'t depend on equals/hashCode.' },
+                { id: 'c', text: 'Printing speed', correct: false, rationale: 'Printing doesn\'t depend on equals/hashCode consistency.' },
+                { id: 'd', text: 'Primitive math', correct: false, rationale: 'Primitives don\'t have equals() or hashCode().' }
+              ]
+            },
+            {
+              id: 'q2_3_6',
+              prompt: 'Q6. Which literal vs. constructor pair may lead to == being true unexpectedly due to interning?',
+              choices: [
+                { id: 'a', text: 'String s = "hi"; String t = "hi";', correct: true, rationale: 'String literals are interned, so both reference the same object.' },
+                { id: 'b', text: 'String s = new String("hi"); String t = new String("hi");', correct: false, rationale: 'new creates separate objects.' },
+                { id: 'c', text: 'String s = "hi"; String t = new String("hi");', correct: false, rationale: 'One is interned, one is not, so == is false.' },
+                { id: 'd', text: 'None; == is never true', correct: false, rationale: 'Interned literals can make == true.' }
+              ]
+            },
+            {
+              id: 'q2_3_7',
+              prompt: 'Q7. In exam examples about @Override, it primarily helps to:',
+              choices: [
+                { id: 'a', text: 'Speed code up', correct: false, rationale: '@Override is a compile-time check, not a runtime optimization.' },
+                { id: 'b', text: 'Catch mistakes like tostring vs toString', correct: true, rationale: '@Override ensures you\'re actually overriding a parent method.' },
+                { id: 'c', text: 'Avoid NPEs', correct: false, rationale: '@Override doesn\'t prevent null pointer exceptions.' },
+                { id: 'd', text: 'Allocate memory', correct: false, rationale: '@Override doesn\'t affect memory allocation.' }
               ]
             }
           ]
@@ -406,11 +662,52 @@ System.out.println(cs201.getCredits());  // 4`,
           quiz: [
             {
               id: 'q2_4_1',
-              prompt: 'What are the two main things a class defines?',
+              prompt: 'Q1. A class is best described as:',
               choices: [
-                { id: 'a', text: 'Primitives and objects', correct: false, rationale: 'Classes define structure, not type categories.' },
-                { id: 'b', text: 'State (data) and behavior (methods)', correct: true, rationale: 'A class is a blueprint specifying what data objects store and what they can do.' },
-                { id: 'c', text: 'Variables and constants', correct: false, rationale: 'This is too narrow—classes define the full structure of objects.' }
+                { id: 'a', text: 'A running program', correct: false, rationale: 'A program runs from main, not from a class definition.' },
+                { id: 'b', text: 'A blueprint defining state and behavior for objects', correct: true, rationale: 'A class specifies what data objects store and what they can do.' },
+                { id: 'c', text: 'A single primitive', correct: false, rationale: 'Classes define complex objects, not primitives.' },
+                { id: 'd', text: 'A package', correct: false, rationale: 'A package groups classes, it\'s not a class itself.' }
+              ]
+            },
+            {
+              id: 'q2_4_2',
+              prompt: 'Q2. An object is:',
+              choices: [
+                { id: 'a', text: 'A file path', correct: false, rationale: 'File paths are strings, not objects in the OOP sense.' },
+                { id: 'b', text: 'An instance created from a class', correct: true, rationale: 'Objects are concrete instances created from a class blueprint.' },
+                { id: 'c', text: 'A primitive', correct: false, rationale: 'Primitives are not objects.' },
+                { id: 'd', text: 'A static method', correct: false, rationale: 'Static methods belong to classes, not individual objects.' }
+              ]
+            },
+            {
+              id: 'q2_4_3',
+              prompt: 'Q3. Fields are typically marked private mainly to:',
+              choices: [
+                { id: 'a', text: 'Save memory', correct: false, rationale: 'Access modifiers don\'t affect memory usage.' },
+                { id: 'b', text: 'Enforce encapsulation and control access', correct: true, rationale: 'Private fields hide implementation details and control how data is accessed.' },
+                { id: 'c', text: 'Enable recursion', correct: false, rationale: 'Recursion doesn\'t depend on access modifiers.' },
+                { id: 'd', text: 'Allow ==', correct: false, rationale: '== works regardless of access modifiers.' }
+              ]
+            },
+            {
+              id: 'q2_4_4',
+              prompt: 'Q4. Which call references object methods, not class (static) methods?',
+              choices: [
+                { id: 'a', text: 'Math.sqrt(25)', correct: false, rationale: 'This is a static method call on the Math class.' },
+                { id: 'b', text: 'str.length()', correct: true, rationale: 'This calls an instance method on the str object.' },
+                { id: 'c', text: 'Integer.parseInt("7")', correct: false, rationale: 'This is a static method call on the Integer class.' },
+                { id: 'd', text: 'Collections.sort(list)', correct: false, rationale: 'This is a static method call on the Collections class.' }
+              ]
+            },
+            {
+              id: 'q2_4_5',
+              prompt: 'Q5. The new object\'s fields should be initialized in:',
+              choices: [
+                { id: 'a', text: 'main', correct: false, rationale: 'main is the program entry point, not where objects are initialized.' },
+                { id: 'b', text: 'A constructor', correct: true, rationale: 'Constructors initialize new objects\' fields.' },
+                { id: 'c', text: 'toString', correct: false, rationale: 'toString returns a string representation, it doesn\'t initialize.' },
+                { id: 'd', text: 'A comment', correct: false, rationale: 'Comments don\'t execute code.' }
               ]
             }
           ]
@@ -527,11 +824,52 @@ System.out.println(p2.eatery());  // "Sazon"`,
           quiz: [
             {
               id: 'q3_2_1',
-              prompt: 'What does it mean for an object to be immutable?',
+              prompt: 'Q1. If Person201 is immutable, changing the favorite eatery requires:',
               choices: [
-                { id: 'a', text: 'It cannot be created', correct: false, rationale: 'Immutable objects can be created, they just can\'t be modified.' },
-                { id: 'b', text: 'It never changes after creation', correct: true, rationale: 'Immutable objects have fixed state after construction.' },
-                { id: 'c', text: 'It has no methods', correct: false, rationale: 'Immutable objects can have many methods, they just don\'t change state.' }
+                { id: 'a', text: 'p.setEatery("X")', correct: false, rationale: 'Immutable objects don\'t have setters.' },
+                { id: 'b', text: 'Reassigning fields directly', correct: false, rationale: 'Fields are private and final in immutable objects.' },
+                { id: 'c', text: 'Creating a new Person201 with the new eatery', correct: true, rationale: 'Immutable objects cannot be changed; create a new one instead.' },
+                { id: 'd', text: 'Using reflection', correct: false, rationale: 'Reflection bypasses encapsulation, but violates immutability principles.' }
+              ]
+            },
+            {
+              id: 'q3_2_2',
+              prompt: 'Q2. Marking fields private final most directly supports:',
+              choices: [
+                { id: 'a', text: 'Aliasing', correct: false, rationale: 'private final prevents modification, not aliasing.' },
+                { id: 'b', text: 'Immutability', correct: true, rationale: 'private final ensures fields can\'t be changed after initialization.' },
+                { id: 'c', text: 'Inheritance only', correct: false, rationale: 'Inheritance isn\'t directly related to private final fields.' },
+                { id: 'd', text: 'Casting', correct: false, rationale: 'Casting is about type conversion, not immutability.' }
+              ]
+            },
+            {
+              id: 'q3_2_3',
+              prompt: 'Q3. Encapsulation means:',
+              choices: [
+                { id: 'a', text: 'Hiding implementation details and exposing controlled methods', correct: true, rationale: 'Encapsulation hides internal state and provides controlled access.' },
+                { id: 'b', text: 'Storing everything in public fields', correct: false, rationale: 'Public fields violate encapsulation.' },
+                { id: 'c', text: 'Using only arrays', correct: false, rationale: 'Encapsulation is about access control, not data structures.' },
+                { id: 'd', text: 'Disabling methods', correct: false, rationale: 'Encapsulation uses methods to control access.' }
+              ]
+            },
+            {
+              id: 'q3_2_4',
+              prompt: 'Q4. A getter like name() provides:',
+              choices: [
+                { id: 'a', text: 'Controlled read access to private state', correct: true, rationale: 'Getters allow reading private fields in a controlled way.' },
+                { id: 'b', text: 'Mutation', correct: false, rationale: 'Getters read, they don\'t mutate.' },
+                { id: 'c', text: 'Static access', correct: false, rationale: 'Getters are instance methods, not static.' },
+                { id: 'd', text: 'Memory layout info', correct: false, rationale: 'Getters return values, not memory information.' }
+              ]
+            },
+            {
+              id: 'q3_2_5',
+              prompt: 'Q5. Immutability often improves:',
+              choices: [
+                { id: 'a', text: 'Garbage collector errors', correct: false, rationale: 'Immutability doesn\'t cause or fix GC errors.' },
+                { id: 'b', text: 'Reasoning/debugging by preventing hidden state changes', correct: true, rationale: 'Immutable objects are easier to reason about since they never change.' },
+                { id: 'c', text: 'Stack overflow', correct: false, rationale: 'Immutability doesn\'t prevent stack overflow.' },
+                { id: 'd', text: 'Loop syntax', correct: false, rationale: 'Immutability doesn\'t affect loop syntax.' }
               ]
             }
           ]
@@ -583,11 +921,42 @@ System.out.println(p2.eatery());  // "Sazon"`,
           quiz: [
             {
               id: 'q3_3_1',
-              prompt: 'What is special about a constructor?',
+              prompt: 'Q1. A constructor in Java:',
               choices: [
-                { id: 'a', text: 'It has the same name as the class', correct: true, rationale: 'Constructors are named exactly like their class.' },
-                { id: 'b', text: 'It must return void', correct: false, rationale: 'Constructors have no return type at all.' },
-                { id: 'c', text: 'It can only be called once', correct: false, rationale: 'You can create many objects with the same constructor.' }
+                { id: 'a', text: 'Has the same name as the class and no return type', correct: true, rationale: 'Constructors match the class name and have no return type.' },
+                { id: 'b', text: 'Must return the object', correct: false, rationale: 'Constructors implicitly return the new object; you don\'t write return.' },
+                { id: 'c', text: 'Can be called without new', correct: false, rationale: 'Constructors are invoked via new.' },
+                { id: 'd', text: 'Is optional for all classes', correct: false, rationale: 'If you don\'t define one, Java provides a default constructor.' }
+              ]
+            },
+            {
+              id: 'q3_3_2',
+              prompt: 'Q2. Which is most correct for initializing required fields?',
+              choices: [
+                { id: 'a', text: 'Assign in toString()', correct: false, rationale: 'toString() is for string representation, not initialization.' },
+                { id: 'b', text: 'Assign in the constructor', correct: true, rationale: 'Constructors are the proper place to initialize object fields.' },
+                { id: 'c', text: 'Assign in equals()', correct: false, rationale: 'equals() is for comparison, not initialization.' },
+                { id: 'd', text: 'Assign in comments', correct: false, rationale: 'Comments don\'t execute.' }
+              ]
+            },
+            {
+              id: 'q3_3_3',
+              prompt: 'Q3. If you define no constructors, Java:',
+              choices: [
+                { id: 'a', text: 'Fails to compile', correct: false, rationale: 'Java generates a default constructor for you.' },
+                { id: 'b', text: 'Generates a default no-arg constructor', correct: true, rationale: 'Java provides a no-argument constructor if you don\'t define any.' },
+                { id: 'c', text: 'Generates a full-arg constructor', correct: false, rationale: 'Java only generates a no-arg constructor.' },
+                { id: 'd', text: 'Calls main instead', correct: false, rationale: 'main is separate from constructors.' }
+              ]
+            },
+            {
+              id: 'q3_3_4',
+              prompt: 'Q4. Overloaded constructors primarily allow you to:',
+              choices: [
+                { id: 'a', text: 'Use different parameter lists for different ways to build valid objects', correct: true, rationale: 'Overloading lets you provide multiple ways to construct objects.' },
+                { id: 'b', text: 'Speed up loops', correct: false, rationale: 'Overloading doesn\'t affect loop performance.' },
+                { id: 'c', text: 'Avoid equals', correct: false, rationale: 'Overloading is unrelated to equals().' },
+                { id: 'd', text: 'Bypass new', correct: false, rationale: 'You still need new to invoke any constructor.' }
               ]
             }
           ]
@@ -633,11 +1002,22 @@ System.out.println(p);
           quiz: [
             {
               id: 'q3_4_1',
-              prompt: 'When is toString() automatically called?',
+              prompt: 'Q1. System.out.println(obj) typically prints meaningful text because:',
               choices: [
-                { id: 'a', text: 'Only when you explicitly call it', correct: false, rationale: 'Java calls it automatically in many situations.' },
-                { id: 'b', text: 'When you print an object', correct: true, rationale: 'System.out.println automatically calls toString().' },
-                { id: 'c', text: 'Never automatically', correct: false, rationale: 'Java\'s print system calls it for you.' }
+                { id: 'a', text: 'Java reads private fields directly', correct: false, rationale: 'Private fields are encapsulated; Java doesn\'t bypass that.' },
+                { id: 'b', text: 'Java automatically calls obj.toString()', correct: true, rationale: 'println invokes toString() on the object for you.' },
+                { id: 'c', text: 'The compiler inlines strings', correct: false, rationale: 'Inlining is an optimization, not why println works.' },
+                { id: 'd', text: 'println ignores objects', correct: false, rationale: 'println explicitly handles objects via toString().' }
+              ]
+            },
+            {
+              id: 'q3_4_2',
+              prompt: 'Q2. "Don\'t call us, we\'ll call you" refers to:',
+              choices: [
+                { id: 'a', text: 'Recursion', correct: false, rationale: 'Recursion is self-calling, not the Hollywood Principle.' },
+                { id: 'b', text: 'The Hollywood Principle—frameworks (like println) call your hooks (e.g., toString)', correct: true, rationale: 'You define toString(), and the framework calls it.' },
+                { id: 'c', text: 'main calling JVM', correct: false, rationale: 'JVM calls main, not the other way around.' },
+                { id: 'd', text: 'Autoboxing', correct: false, rationale: 'Autoboxing is about type conversion, not framework callbacks.' }
               ]
             }
           ]
@@ -668,11 +1048,22 @@ System.out.println(p);
           quiz: [
             {
               id: 'q3_5_1',
-              prompt: 'Why should you commit small changes often?',
+              prompt: 'Q1. Typical 201 project layout uses:',
               choices: [
-                { id: 'a', text: 'To slow down your work', correct: false, rationale: 'Frequent commits actually help you work faster.' },
-                { id: 'b', text: 'To track progress and have recovery points', correct: true, rationale: 'Small commits make it easy to undo mistakes and see what changed.' },
-                { id: 'c', text: 'Because Gradescope requires it', correct: false, rationale: 'Gradescope doesn\'t mandate commit frequency.' }
+                { id: 'a', text: 'src/ for code, data/ for inputs, lib/ for JARs', correct: true, rationale: 'Standard Java project structure separates source, data, and libraries.' },
+                { id: 'b', text: 'bin/ only', correct: false, rationale: 'bin/ is for compiled output, not source code.' },
+                { id: 'c', text: 'Random folders', correct: false, rationale: 'Organized structure is essential for maintainability.' },
+                { id: 'd', text: 'assets/ only', correct: false, rationale: 'assets/ might hold resources but not source code.' }
+              ]
+            },
+            {
+              id: 'q3_5_2',
+              prompt: 'Q2. Best practice with Git is to:',
+              choices: [
+                { id: 'a', text: 'Commit rarely with huge diffs', correct: false, rationale: 'Large commits are hard to review and debug.' },
+                { id: 'b', text: 'Commit small, incremental changes frequently', correct: true, rationale: 'Frequent small commits make it easy to track progress and undo mistakes.' },
+                { id: 'c', text: 'Never write commit messages', correct: false, rationale: 'Commit messages are essential for understanding history.' },
+                { id: 'd', text: 'Push only at the end', correct: false, rationale: 'Regular pushes back up your work and enable collaboration.' }
               ]
             }
           ]
@@ -761,11 +1152,72 @@ System.out.println(list.size());  // 4`,
           quiz: [
             {
               id: 'q4_1_1',
-              prompt: 'What is the main advantage of ArrayList over arrays?',
+              prompt: 'Q1. Arrays are best when you:',
               choices: [
-                { id: 'a', text: 'It\'s faster', correct: false, rationale: 'Both have similar access speed.' },
-                { id: 'b', text: 'It can grow and shrink dynamically', correct: true, rationale: 'ArrayList adjusts size automatically as you add/remove elements.' },
-                { id: 'c', text: 'It uses less memory', correct: false, rationale: 'ArrayList may use more memory due to its flexibility.' }
+                { id: 'a', text: 'Don\'t know the size up front', correct: false, rationale: 'Use ArrayList when size is unknown.' },
+                { id: 'b', text: 'Need a fixed size and fast random access', correct: true, rationale: 'Arrays have fixed size with O(1) access.' },
+                { id: 'c', text: 'Need hashing', correct: false, rationale: 'Hashing is provided by HashSet/HashMap, not arrays.' },
+                { id: 'd', text: 'Want automatic deduplication', correct: false, rationale: 'Use Set for deduplication.' }
+              ]
+            },
+            {
+              id: 'q4_1_2',
+              prompt: 'Q2. new String[3] creates:',
+              choices: [
+                { id: 'a', text: 'Three empty strings', correct: false, rationale: 'Arrays of objects are initialized with null.' },
+                { id: 'b', text: 'An array with three null references', correct: true, rationale: 'Object arrays start with null in each slot.' },
+                { id: 'c', text: 'An ArrayList<String> of size 3', correct: false, rationale: 'This creates an array, not an ArrayList.' },
+                { id: 'd', text: 'A HashSet<String>', correct: false, rationale: 'This is an array, not a Set.' }
+              ]
+            },
+            {
+              id: 'q4_1_3',
+              prompt: 'Q3. ArrayList<String> list = new ArrayList<>(); list.add("x"); results in:',
+              choices: [
+                { id: 'a', text: 'Compile error', correct: false, rationale: 'This is valid Java code.' },
+                { id: 'b', text: 'A resizable list with size 1', correct: true, rationale: 'ArrayList starts empty and grows as you add elements.' },
+                { id: 'c', text: 'A fixed array', correct: false, rationale: 'ArrayList is dynamic, not fixed.' },
+                { id: 'd', text: 'A set', correct: false, rationale: 'This creates a list, not a set.' }
+              ]
+            },
+            {
+              id: 'q4_1_4',
+              prompt: 'Q4. Random access complexity for arrays and ArrayList is typically:',
+              choices: [
+                { id: 'a', text: 'O(1) for both', correct: true, rationale: 'Both support constant-time indexing.' },
+                { id: 'b', text: 'O(n) for both', correct: false, rationale: 'Access is O(1), not O(n).' },
+                { id: 'c', text: 'O(log n) for both', correct: false, rationale: 'Access is O(1), not O(log n).' },
+                { id: 'd', text: 'Undefined', correct: false, rationale: 'Both have well-defined O(1) access.' }
+              ]
+            },
+            {
+              id: 'q4_1_5',
+              prompt: 'Q5. Inserting in the middle of an ArrayList generally costs:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'Elements must be shifted.' },
+                { id: 'b', text: 'O(log n)', correct: false, rationale: 'Insertion requires shifting, which is O(n).' },
+                { id: 'c', text: 'O(n) (due to shifting)', correct: true, rationale: 'Inserting in the middle requires shifting subsequent elements.' },
+                { id: 'd', text: 'O(n²)', correct: false, rationale: 'Shifting is O(n), not quadratic.' }
+              ]
+            },
+            {
+              id: 'q4_1_6',
+              prompt: 'Q6. Which allocates a new independent copy of a list?',
+              choices: [
+                { id: 'a', text: 'b = a', correct: false, rationale: 'This creates an alias, not a copy.' },
+                { id: 'b', text: 'b = new ArrayList<>(a)', correct: true, rationale: 'This constructor creates a new list with a\'s contents.' },
+                { id: 'c', text: 'b = Arrays.asList(a)', correct: false, rationale: 'asList returns a fixed-size list backed by the array.' },
+                { id: 'd', text: 'b = null', correct: false, rationale: 'This doesn\'t create a copy.' }
+              ]
+            },
+            {
+              id: 'q4_1_7',
+              prompt: 'Q7. Accessing arr[5] when arr.length == 5 causes:',
+              choices: [
+                { id: 'a', text: '0', correct: false, rationale: 'Valid indices are 0-4; 5 is out of bounds.' },
+                { id: 'b', text: 'Last element', correct: false, rationale: 'The last element is at arr[4].' },
+                { id: 'c', text: 'ArrayIndexOutOfBoundsException', correct: true, rationale: 'Index 5 is beyond the array bounds.' },
+                { id: 'd', text: 'Wrap-around', correct: false, rationale: 'Java doesn\'t wrap array indices.' }
               ]
             }
           ]
@@ -811,11 +1263,72 @@ ArrayList<String> list = new ArrayList<>(seen);`,
           quiz: [
             {
               id: 'q4_2_1',
-              prompt: 'What happens when you add a duplicate to a HashSet?',
+              prompt: 'Q1. A HashSet<String> will contain how many "duke" after adding it three times?',
               choices: [
-                { id: 'a', text: 'It throws an exception', correct: false, rationale: 'HashSet silently ignores duplicates.' },
-                { id: 'b', text: 'The duplicate is silently ignored', correct: true, rationale: 'Sets keep only unique elements.' },
-                { id: 'c', text: 'It creates a second copy', correct: false, rationale: 'Sets maintain uniqueness automatically.' }
+                { id: 'a', text: '0', correct: false, rationale: 'The first add succeeds.' },
+                { id: 'b', text: '1', correct: true, rationale: 'Sets automatically eliminate duplicates.' },
+                { id: 'c', text: '2', correct: false, rationale: 'All duplicates are ignored, leaving only one.' },
+                { id: 'd', text: '3', correct: false, rationale: 'Sets don\'t store duplicates.' }
+              ]
+            },
+            {
+              id: 'q4_2_2',
+              prompt: 'Q2. Fast membership tests are the hallmark of:',
+              choices: [
+                { id: 'a', text: 'ArrayList', correct: false, rationale: 'ArrayList.contains() is O(n).' },
+                { id: 'b', text: 'HashSet', correct: true, rationale: 'HashSet.contains() is O(1) average.' },
+                { id: 'c', text: 'Arrays only', correct: false, rationale: 'Arrays require O(n) search.' },
+                { id: 'd', text: 'StringBuilder', correct: false, rationale: 'StringBuilder is for building strings, not membership tests.' }
+              ]
+            },
+            {
+              id: 'q4_2_3',
+              prompt: 'Q3. Which removes duplicates while preserving no particular order?',
+              choices: [
+                { id: 'a', text: 'new ArrayList<>(list)', correct: false, rationale: 'This copies the list, including duplicates.' },
+                { id: 'b', text: 'new HashSet<>(list)', correct: true, rationale: 'HashSet removes duplicates but doesn\'t preserve order.' },
+                { id: 'c', text: 'Collections.reverse(list)', correct: false, rationale: 'Reversing doesn\'t remove duplicates.' },
+                { id: 'd', text: 'list.subList(… )', correct: false, rationale: 'subList returns a slice, not deduped data.' }
+              ]
+            },
+            {
+              id: 'q4_2_4',
+              prompt: 'Q4. set.add(x) returns false when:',
+              choices: [
+                { id: 'a', text: 'x was already present', correct: true, rationale: 'add() returns false if the element was already in the set.' },
+                { id: 'b', text: 'x is null', correct: false, rationale: 'HashSet allows null (though only one null).' },
+                { id: 'c', text: 'Set is full', correct: false, rationale: 'HashSet grows dynamically.' },
+                { id: 'd', text: 'Type is wrong', correct: false, rationale: 'Type mismatch causes a compile error, not a false return.' }
+              ]
+            },
+            {
+              id: 'q4_2_5',
+              prompt: 'Q5. If equals and hashCode are inconsistent on a key type, a HashSet can:',
+              choices: [
+                { id: 'a', text: 'Work faster', correct: false, rationale: 'Inconsistency causes bugs, not speed.' },
+                { id: 'b', text: 'Lose elements or allow duplicates', correct: true, rationale: 'HashSet relies on consistent equals() and hashCode().' },
+                { id: 'c', text: 'Auto-fix it', correct: false, rationale: 'Java doesn\'t automatically fix inconsistent implementations.' },
+                { id: 'd', text: 'Throw always', correct: false, rationale: 'Inconsistency causes silent bugs, not exceptions.' }
+              ]
+            },
+            {
+              id: 'q4_2_6',
+              prompt: 'Q6. Best explanation of different sizes in values().size() vs new HashSet<>(values()).size() on a Map:',
+              choices: [
+                { id: 'a', text: 'Hashing bug', correct: false, rationale: 'This is expected behavior, not a bug.' },
+                { id: 'b', text: 'Duplicated values collapse in the set', correct: true, rationale: 'A map can have duplicate values for different keys; a set removes duplicates.' },
+                { id: 'c', text: 'Compiler bug', correct: false, rationale: 'This is correct Java behavior.' },
+                { id: 'd', text: 'Network issue', correct: false, rationale: 'This is about data structures, not networking.' }
+              ]
+            },
+            {
+              id: 'q4_2_7',
+              prompt: 'Q7. Converting a large list to a set and back is often:',
+              choices: [
+                { id: 'a', text: 'A concise dedup pattern', correct: true, rationale: 'This idiom removes duplicates efficiently.' },
+                { id: 'b', text: 'Slower than O(n³)', correct: false, rationale: 'This is O(n), not cubic.' },
+                { id: 'c', text: 'Illegal in Java', correct: false, rationale: 'This is valid and common Java code.' },
+                { id: 'd', text: 'Only for primitives', correct: false, rationale: 'Works with any objects that implement equals/hashCode.' }
               ]
             }
           ]
@@ -864,11 +1377,42 @@ for (int i = 0; i < words.size(); i++) {
           quiz: [
             {
               id: 'q4_3_1',
-              prompt: 'What does Set.add() return?',
+              prompt: 'Q1. To keep only the first occurrence in order, the simplest code uses:',
               choices: [
-                { id: 'a', text: 'Always true', correct: false, rationale: 'It returns false if the element was already in the set.' },
-                { id: 'b', text: 'true if added, false if already present', correct: true, rationale: 'This return value is useful for detecting duplicates.' },
-                { id: 'c', text: 'The size of the set', correct: false, rationale: 'It returns a boolean, not a number.' }
+                { id: 'a', text: 'HashSet + check add return value to gate an output list', correct: true, rationale: 'Check if add() returns true, then add to output list.' },
+                { id: 'b', text: 'Sort then unique', correct: false, rationale: 'Sorting changes order and is more complex.' },
+                { id: 'c', text: 'Randomize then filter', correct: false, rationale: 'Randomizing loses original order.' },
+                { id: 'd', text: 'Nested loops only', correct: false, rationale: 'Nested loops work but are less efficient and more verbose.' }
+              ]
+            },
+            {
+              id: 'q4_3_2',
+              prompt: 'Q2. Skipping immediate repeats while scanning a list typically checks:',
+              choices: [
+                { id: 'a', text: 'i+1 only', correct: false, rationale: 'Looking ahead requires bounds checking at the end.' },
+                { id: 'b', text: 'i-1 (previous element) with bounds guard', correct: true, rationale: 'Compare current with previous to detect repeats.' },
+                { id: 'c', text: 'First element only', correct: false, rationale: 'Need to check throughout the list.' },
+                { id: 'd', text: 'Last element only', correct: false, rationale: 'Need to check throughout the list.' }
+              ]
+            },
+            {
+              id: 'q4_3_3',
+              prompt: 'Q3. Using a set inside a map to group unique items by key is a pattern for:',
+              choices: [
+                { id: 'a', text: 'Frequency calculation only', correct: false, rationale: 'Frequency uses counts, not sets.' },
+                { id: 'b', text: 'Grouping/aggregation', correct: true, rationale: 'Map<K, Set<V>> groups unique values by key.' },
+                { id: 'c', text: 'Sorting', correct: false, rationale: 'Sorting is a different operation.' },
+                { id: 'd', text: 'Tokenization', correct: false, rationale: 'Tokenization splits strings, not grouping.' }
+              ]
+            },
+            {
+              id: 'q4_3_4',
+              prompt: 'Q4. Which structure most naturally counts word frequencies?',
+              choices: [
+                { id: 'a', text: 'Set<String>', correct: false, rationale: 'Set only tracks presence, not counts.' },
+                { id: 'b', text: 'Map<String,Integer>', correct: true, rationale: 'Map word to count for frequency tracking.' },
+                { id: 'c', text: 'ArrayList<Integer>', correct: false, rationale: 'List of numbers doesn\'t map words to counts.' },
+                { id: 'd', text: 'StringBuilder', correct: false, rationale: 'StringBuilder builds strings, doesn\'t count.' }
               ]
             }
           ]
@@ -925,11 +1469,22 @@ public static String processText(String text) {
           quiz: [
             {
               id: 'q4_4_1',
-              prompt: 'Why should you use private helper methods?',
+              prompt: 'Q1. The main advantage of small private helpers (e.g., isVowel) is:',
               choices: [
-                { id: 'a', text: 'To make code run faster', correct: false, rationale: 'Helper methods improve readability, not performance.' },
-                { id: 'b', text: 'To break complex logic into testable pieces', correct: true, rationale: 'Small methods are easier to understand, test, and maintain.' },
-                { id: 'c', text: 'Because Java requires it', correct: false, rationale: 'It\'s a best practice, not a requirement.' }
+                { id: 'a', text: 'Slower runtime', correct: false, rationale: 'Well-designed helpers don\'t slow down code.' },
+                { id: 'b', text: 'Easier testing and readability', correct: true, rationale: 'Small methods are easier to understand, test, and maintain.' },
+                { id: 'c', text: 'More memory', correct: false, rationale: 'Helper methods don\'t significantly increase memory usage.' },
+                { id: 'd', text: 'Required by Java', correct: false, rationale: 'It\'s a best practice, not a requirement.' }
+              ]
+            },
+            {
+              id: 'q4_4_2',
+              prompt: 'Q2. A helper should usually be:',
+              choices: [
+                { id: 'a', text: 'Private, cohesive, with a single job', correct: true, rationale: 'Good helpers are focused, private utilities.' },
+                { id: 'b', text: 'Public, do many things', correct: false, rationale: 'Helpers should be focused and encapsulated.' },
+                { id: 'c', text: 'Static always', correct: false, rationale: 'Helpers can be instance methods when they need object state.' },
+                { id: 'd', text: 'Inlined everywhere', correct: false, rationale: 'Extracting helpers improves readability.' }
               ]
             }
           ]
@@ -1036,11 +1591,82 @@ static String txMsg(String line) {
           quiz: [
             {
               id: 'q5_1_1',
-              prompt: 'Why do we handle the all-vowels case first?',
+              prompt: 'Q1. First step for TxMsg is usually:',
               choices: [
-                { id: 'a', text: 'For performance', correct: false, rationale: 'It\'s about correctness, not speed.' },
-                { id: 'b', text: 'To avoid empty results from the main logic', correct: true, rationale: 'Special cases need special handling before applying general rules.' },
-                { id: 'c', text: 'Because Java requires it', correct: false, rationale: 'It\'s a logical design choice, not a language requirement.' }
+                { id: 'a', text: 'Join tokens', correct: false, rationale: 'Joining happens after transforming words.' },
+                { id: 'b', text: 'Replace spaces', correct: false, rationale: 'After splitting, spaces are already handled.' },
+                { id: 'c', text: 'split the sentence into words', correct: true, rationale: 'Split first, then process each word individually.' },
+                { id: 'd', text: 'Sort words', correct: false, rationale: 'Sorting isn\'t part of the TxMsg strategy.' }
+              ]
+            },
+            {
+              id: 'q5_1_2',
+              prompt: 'Q2. The all-vowels case is handled:',
+              choices: [
+                { id: 'a', text: 'Last, never', correct: false, rationale: 'All-vowels needs special handling.' },
+                { id: 'b', text: 'As a special case before general consonant rules', correct: true, rationale: 'Special cases must be checked first to avoid empty results.' },
+                { id: 'c', text: 'With ==', correct: false, rationale: 'Use .equals() for string comparison, but that\'s not the point here.' },
+                { id: 'd', text: 'Only by trimming', correct: false, rationale: 'Trimming removes whitespace, not handling vowel logic.' }
+              ]
+            },
+            {
+              id: 'q5_1_3',
+              prompt: 'Q3. Checking the previous character (k-1) is helpful to:',
+              choices: [
+                { id: 'a', text: 'Detect first-character edges', correct: false, rationale: 'At k=0, there is no k-1, so you need bounds checking.' },
+                { id: 'b', text: 'Avoid IndexOutOfBounds', correct: false, rationale: 'You need to check k>0 first.' },
+                { id: 'c', text: 'Both A and B', correct: true, rationale: 'Checking k-1 helps with edge detection but requires bounds checking.' },
+                { id: 'd', text: 'Neither', correct: false, rationale: 'Both A and B are relevant concerns.' }
+              ]
+            },
+            {
+              id: 'q5_1_4',
+              prompt: 'Q4. Which helper best fits TxMsg?',
+              choices: [
+                { id: 'a', text: 'boolean isVowel(char c)', correct: true, rationale: 'A focused helper for vowel detection improves readability.' },
+                { id: 'b', text: 'void fast()', correct: false, rationale: 'Too vague and doesn\'t match the problem.' },
+                { id: 'c', text: 'String[] main(String[] a)', correct: false, rationale: 'main is the entry point, not a helper.' },
+                { id: 'd', text: 'double sqrt(double x)', correct: false, rationale: 'Not relevant to text processing.' }
+              ]
+            },
+            {
+              id: 'q5_1_5',
+              prompt: 'Q5. General rules vs. specials should be implemented:',
+              choices: [
+                { id: 'a', text: 'Specials first always', correct: false, rationale: 'The order depends on the logic flow.' },
+                { id: 'b', text: 'General rules first, then minimal specials', correct: true, rationale: 'Handle the common case, then edge cases.' },
+                { id: 'c', text: 'Only specials', correct: false, rationale: 'Both general and special cases are needed.' },
+                { id: 'd', text: 'In random order', correct: false, rationale: 'Order matters for correctness.' }
+              ]
+            },
+            {
+              id: 'q5_1_6',
+              prompt: 'Q6. split + per-word transform + String.join yields:',
+              choices: [
+                { id: 'a', text: 'A clean, testable pipeline', correct: true, rationale: 'This pattern is clear and easy to test.' },
+                { id: 'b', text: 'A recursion tree', correct: false, rationale: 'This is iterative, not recursive.' },
+                { id: 'c', text: 'A sorting algorithm', correct: false, rationale: 'This is text transformation, not sorting.' },
+                { id: 'd', text: 'A stack overflow', correct: false, rationale: 'This pattern doesn\'t cause stack overflow.' }
+              ]
+            },
+            {
+              id: 'q5_1_7',
+              prompt: 'Q7. A failing edge case is most likely when:',
+              choices: [
+                { id: 'a', text: 'Word is empty or length 1', correct: true, rationale: 'Short or empty strings often expose edge case bugs.' },
+                { id: 'b', text: 'Word is long', correct: false, rationale: 'Long words are usually handled by general logic.' },
+                { id: 'c', text: 'There are many spaces', correct: false, rationale: 'split() handles spaces automatically.' },
+                { id: 'd', text: 'Using a set', correct: false, rationale: 'Sets are used for deduplication, not causing edge cases here.' }
+              ]
+            },
+            {
+              id: 'q5_1_8',
+              prompt: 'Q8. Using helpers improves:',
+              choices: [
+                { id: 'a', text: 'Mutability', correct: false, rationale: 'Helpers don\'t affect mutability.' },
+                { id: 'b', text: 'Readability and unit-testing', correct: true, rationale: 'Small focused helpers are easier to understand and test.' },
+                { id: 'c', text: 'Network throughput', correct: false, rationale: 'Helpers don\'t affect network performance.' },
+                { id: 'd', text: 'File permissions', correct: false, rationale: 'Helpers don\'t affect file system permissions.' }
               ]
             }
           ]
@@ -1092,11 +1718,72 @@ String sentence = String.join(" ", words);
           quiz: [
             {
               id: 'q5_2_1',
-              prompt: 'What does "a,b,c".split(",") return?',
+              prompt: 'Q1. "a,b,c".split(",") produces:',
               choices: [
-                { id: 'a', text: 'A String', correct: false, rationale: 'split() returns an array of strings.' },
-                { id: 'b', text: 'An array: ["a", "b", "c"]', correct: true, rationale: 'split() divides the string at each separator.' },
-                { id: 'c', text: 'An ArrayList', correct: false, rationale: 'It returns an array, not an ArrayList.' }
+                { id: 'a', text: '["a,b,c"]', correct: false, rationale: 'split() divides the string at commas.' },
+                { id: 'b', text: '["a","b","c"]', correct: true, rationale: 'split() creates an array with each part.' },
+                { id: 'c', text: '["a","b,c"]', correct: false, rationale: 'All commas are split, not just the first.' },
+                { id: 'd', text: '[]', correct: false, rationale: 'The string has content, so the array isn\'t empty.' }
+              ]
+            },
+            {
+              id: 'q5_2_2',
+              prompt: 'Q2. String.join(" ", List.of("this","is","fine")) is:',
+              choices: [
+                { id: 'a', text: '"this is fine"', correct: true, rationale: 'join() concatenates with the delimiter between elements.' },
+                { id: 'b', text: '["this","is","fine"]', correct: false, rationale: 'join() returns a String, not an array.' },
+                { id: 'c', text: '"this,is,fine"', correct: false, rationale: 'The delimiter is a space, not a comma.' },
+                { id: 'd', text: '"this is fine" (two spaces)', correct: false, rationale: 'Only one space is inserted between words.' }
+              ]
+            },
+            {
+              id: 'q5_2_3',
+              prompt: 'Q3. Splitting on space will not separate:',
+              choices: [
+                { id: 'a', text: '"a b"', correct: false, rationale: 'Single spaces are split correctly.' },
+                { id: 'b', text: '"a b" (multiple spaces) — unless using regex "\\\\s+"', correct: false, rationale: 'Multiple spaces create empty strings without regex.' },
+                { id: 'c', text: '"a\\tb" (tab) — unless using \\\\s', correct: false, rationale: 'Tabs aren\'t spaces without \\\\s.' },
+                { id: 'd', text: 'Both B and C (depending on pattern)', correct: true, rationale: 'Plain " " doesn\'t handle tabs or multiple spaces well.' }
+              ]
+            },
+            {
+              id: 'q5_2_4',
+              prompt: 'Q4. Which pair converts CSV to semicolon-separated?',
+              choices: [
+                { id: 'a', text: 'split(",") → join(",")', correct: false, rationale: 'This keeps commas.' },
+                { id: 'b', text: 'split(";") → join(",")', correct: false, rationale: 'This goes the wrong direction.' },
+                { id: 'c', text: 'split(",") → join(";")', correct: true, rationale: 'Split on comma, rejoin with semicolon.' },
+                { id: 'd', text: 'split(" ") → join("")', correct: false, rationale: 'This handles spaces, not commas.' }
+              ]
+            },
+            {
+              id: 'q5_2_5',
+              prompt: 'Q5. Arrays.asList(arr) returns:',
+              choices: [
+                { id: 'a', text: 'A fixed-size list backed by the array', correct: true, rationale: 'Changes to the list affect the array.' },
+                { id: 'b', text: 'A resizable ArrayList', correct: false, rationale: 'asList returns a fixed-size view.' },
+                { id: 'c', text: 'A HashSet', correct: false, rationale: 'asList returns a List, not a Set.' },
+                { id: 'd', text: 'A deep copy', correct: false, rationale: 'asList doesn\'t copy; it wraps the array.' }
+              ]
+            },
+            {
+              id: 'q5_2_6',
+              prompt: 'Q6. Building a sentence from many pieces is best done using:',
+              choices: [
+                { id: 'a', text: 'StringBuilder or join', correct: true, rationale: 'Both are efficient for building strings.' },
+                { id: 'b', text: 'Repeated + in a tight loop', correct: false, rationale: 'Repeated + is inefficient due to immutability.' },
+                { id: 'c', text: 'System.gc()', correct: false, rationale: 'Garbage collection doesn\'t help build strings.' },
+                { id: 'd', text: 'Casting to char[]', correct: false, rationale: 'This is low-level and less convenient.' }
+              ]
+            },
+            {
+              id: 'q5_2_7',
+              prompt: 'Q7. String in Java is:',
+              choices: [
+                { id: 'a', text: 'Mutable', correct: false, rationale: 'String is immutable.' },
+                { id: 'b', text: 'Immutable', correct: true, rationale: 'Strings never change; operations return new strings.' },
+                { id: 'c', text: 'A primitive', correct: false, rationale: 'String is a class, not a primitive.' },
+                { id: 'd', text: 'A package', correct: false, rationale: 'String is a class in the java.lang package.' }
               ]
             }
           ]
@@ -1146,11 +1833,42 @@ String[] newArr = back.toArray(new String[0]);`,
           quiz: [
             {
               id: 'q5_3_1',
-              prompt: 'What happens to duplicates when you convert a List to a Set?',
+              prompt: 'Q1. Remove duplicates from an array arr most concisely by:',
               choices: [
-                { id: 'a', text: 'They cause an error', correct: false, rationale: 'Sets handle duplicates gracefully.' },
-                { id: 'b', text: 'They are automatically removed', correct: true, rationale: 'Sets only store unique elements.' },
-                { id: 'c', text: 'They are kept', correct: false, rationale: 'Sets eliminate duplicates by definition.' }
+                { id: 'a', text: 'new HashSet<>(Arrays.asList(arr))', correct: true, rationale: 'Convert to list, then to set to remove duplicates.' },
+                { id: 'b', text: 'Sorting only', correct: false, rationale: 'Sorting doesn\'t remove duplicates.' },
+                { id: 'c', text: 'For-loops only', correct: false, rationale: 'For-loops work but are more verbose.' },
+                { id: 'd', text: 'arr.clear()', correct: false, rationale: 'clear() removes all elements, not just duplicates.' }
+              ]
+            },
+            {
+              id: 'q5_3_2',
+              prompt: 'Q2. Preserving insertion order while deduping is easiest with:',
+              choices: [
+                { id: 'a', text: 'HashSet', correct: false, rationale: 'HashSet doesn\'t preserve order.' },
+                { id: 'b', text: 'LinkedHashSet', correct: true, rationale: 'LinkedHashSet maintains insertion order.' },
+                { id: 'c', text: 'TreeSet', correct: false, rationale: 'TreeSet sorts elements, not preserving insertion order.' },
+                { id: 'd', text: 'ArrayList', correct: false, rationale: 'ArrayList doesn\'t automatically remove duplicates.' }
+              ]
+            },
+            {
+              id: 'q5_3_3',
+              prompt: 'Q3. Converting a Set<String> back to a list:',
+              choices: [
+                { id: 'a', text: 'new ArrayList<>(set)', correct: true, rationale: 'ArrayList constructor accepts a collection.' },
+                { id: 'b', text: 'Arrays.asList(set)', correct: false, rationale: 'asList takes an array, not a Set.' },
+                { id: 'c', text: 'set.toArrayList()', correct: false, rationale: 'No such method exists.' },
+                { id: 'd', text: 'List.copyOfArray(set)', correct: false, rationale: 'No such method exists.' }
+              ]
+            },
+            {
+              id: 'q5_3_4',
+              prompt: 'Q4. A Map<String, Integer> is ideal for:',
+              choices: [
+                { id: 'a', text: 'Dedup only', correct: false, rationale: 'Use Set for deduplication.' },
+                { id: 'b', text: 'Frequency counting', correct: true, rationale: 'Map keys to counts for frequency tracking.' },
+                { id: 'c', text: 'Sorting by length', correct: false, rationale: 'Maps don\'t sort by length.' },
+                { id: 'd', text: 'Splitting strings', correct: false, rationale: 'Use split() for splitting strings.' }
               ]
             }
           ]
@@ -1204,11 +1922,42 @@ String text = sb.toString();`,
           quiz: [
             {
               id: 'q5_4_1',
-              prompt: 'Why is StringBuilder faster than string concatenation in a loop?',
+              prompt: 'Q1. Repeated s = s + piece in a loop is slow mainly because:',
               choices: [
-                { id: 'a', text: 'It uses less memory', correct: false, rationale: 'The main benefit is avoiding repeated object creation.' },
-                { id: 'b', text: 'It avoids creating new String objects on each append', correct: true, rationale: 'StringBuilder modifies in place, avoiding expensive String copying.' },
-                { id: 'c', text: 'It\'s a newer feature', correct: false, rationale: 'Age doesn\'t determine performance.' }
+                { id: 'a', text: 'The JIT forbids +', correct: false, rationale: 'The JIT allows +, but it\'s inefficient for repeated concatenation.' },
+                { id: 'b', text: 'Strings are immutable; each + builds a new string and copies characters', correct: true, rationale: 'Each concatenation creates a new String object.' },
+                { id: 'c', text: '+ is O(1) always', correct: false, rationale: '+ is O(n) for strings due to copying.' },
+                { id: 'd', text: 'The OS blocks it', correct: false, rationale: 'The OS doesn\'t block string concatenation.' }
+              ]
+            },
+            {
+              id: 'q5_4_2',
+              prompt: 'Q2. The drop-in faster replacement is:',
+              choices: [
+                { id: 'a', text: 'StringBuffer/StringBuilder with append then toString()', correct: true, rationale: 'StringBuilder avoids repeated copying by building in place.' },
+                { id: 'b', text: 'Arrays.copyOf', correct: false, rationale: 'copyOf is for arrays, not efficient string building.' },
+                { id: 'c', text: 'Collections.fill', correct: false, rationale: 'fill is for collections, not strings.' },
+                { id: 'd', text: 'System.arraycopy', correct: false, rationale: 'arraycopy is low-level and not designed for strings.' }
+              ]
+            },
+            {
+              id: 'q5_4_3',
+              prompt: 'Q3. Measuring runtime in code is called:',
+              choices: [
+                { id: 'a', text: 'Analytical analysis', correct: false, rationale: 'Analytical analysis is theoretical, not measured.' },
+                { id: 'b', text: 'Empirical analysis', correct: true, rationale: 'Measuring actual runtime is empirical analysis.' },
+                { id: 'c', text: 'Static dispatch', correct: false, rationale: 'Static dispatch is about method resolution.' },
+                { id: 'd', text: 'Profiling is illegal', correct: false, rationale: 'Profiling is a standard practice.' }
+              ]
+            },
+            {
+              id: 'q5_4_4',
+              prompt: 'Q4. Big-Oh analysis for one pass over n characters is:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'Processing n items takes time proportional to n.' },
+                { id: 'b', text: 'O(log n)', correct: false, rationale: 'A single pass is linear, not logarithmic.' },
+                { id: 'c', text: 'O(n)', correct: true, rationale: 'One pass over n characters is O(n).' },
+                { id: 'd', text: 'O(n²)', correct: false, rationale: 'A single pass is O(n), not quadratic.' }
               ]
             }
           ]
