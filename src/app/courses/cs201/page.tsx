@@ -7,6 +7,8 @@
 'use client';
 
 import { useState } from 'react';
+import ChatSidebar from '@/components/ai/ChatSidebar';
+import HighlightPopover from '@/components/ai/HighlightPopover';
 import Link from 'next/link';
 import { cs201Data, SubUnit } from '@/data/study/cs201-subunits';
 import CodeBlock from '@/components/study/CodeBlock';
@@ -20,6 +22,8 @@ export default function CS201Course() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
   const [selectedSubUnit, setSelectedSubUnit] = useState<SubUnit | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatPrefill, setChatPrefill] = useState('');
   const [expandedUnits, setExpandedUnits] = useState<number[]>([0]); // First unit expanded by default
 
   const selectedUnit = cs201Data.units[selectedUnitIndex];
@@ -401,7 +405,7 @@ export default function CS201Course() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col relative">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -602,7 +606,7 @@ export default function CS201Course() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+        <main id="course-content" className="flex-1 overflow-y-auto p-6 lg:p-8">
           {viewMode === 'overview' && renderOverview()}
           {viewMode === 'subunit' && renderSubUnit()}
           {viewMode === 'lab' && renderLab()}
@@ -610,6 +614,15 @@ export default function CS201Course() {
           {viewMode === 'checklist' && renderChecklist()}
         </main>
       </div>
+      {/* Gary entry button + highlight popover + chat sidebar (CS201 only) */}
+      <button
+        onClick={() => setChatOpen(true)}
+        className="fixed bottom-6 right-6 z-30 px-4 py-2 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700"
+      >
+        Ask Gary 🐧
+      </button>
+      <HighlightPopover onAsk={(txt) => { setChatPrefill(txt); setChatOpen(true); }} />
+      <ChatSidebar courseId="cs201" open={chatOpen} onClose={() => setChatOpen(false)} prefill={chatPrefill} />
     </div>
   );
 }
