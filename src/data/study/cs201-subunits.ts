@@ -2037,7 +2037,58 @@ String out2 = sb.toString();`,
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q6_1_1',
+              prompt: 'Q1. The primary reason repeated s = s + part inside a loop can be much slower than using StringBuilder is that:',
+              choices: [
+                { id: 'a', text: '+ is forbidden by the JIT', correct: false, rationale: 'The JIT doesn\'t forbid +, but repeated + is inefficient.' },
+                { id: 'b', text: 'Strings are immutable, so each + allocates and copies a new string', correct: true, rationale: 'Each concatenation creates a new String object and copies all characters.' },
+                { id: 'c', text: 'The GC pauses on every +', correct: false, rationale: 'GC doesn\'t pause on every +; the issue is object creation and copying.' },
+                { id: 'd', text: 'StringBuilder is compiled to assembly while + is not', correct: false, rationale: 'Both compile, but the algorithmic difference matters.' }
+              ]
+            },
+            {
+              id: 'q6_1_2',
+              prompt: 'Q2. For N tokens, the asymptotic time of building once with StringBuilder.append is typically:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'O(1) would be constant time regardless of N.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'StringBuilder doesn\'t use a logarithmic algorithm.' },
+                { id: 'c', text: 'O(N)', correct: true, rationale: 'StringBuilder appends N tokens in O(N) total time.' },
+                { id: 'd', text: 'O(N²)', correct: false, rationale: 'O(N²) is what repeated + gives, not StringBuilder.' }
+              ]
+            },
+            {
+              id: 'q6_1_3',
+              prompt: 'Q3. The best drop-in replacement for slow "string in a loop" concatenation is:',
+              choices: [
+                { id: 'a', text: 'StringBuilder', correct: true, rationale: 'StringBuilder is designed for efficient string building in loops.' },
+                { id: 'b', text: 'StringBuffer only', correct: false, rationale: 'StringBuffer works but is synchronized (slower than StringBuilder).' },
+                { id: 'c', text: 'Arrays.copyOf', correct: false, rationale: 'Arrays.copyOf is for arrays, not string building.' },
+                { id: 'd', text: 'Collections.join', correct: false, rationale: 'String.join is useful but not for iterative building.' }
+              ]
+            },
+            {
+              id: 'q6_1_4',
+              prompt: 'Q4. Which observation is most consistent with the slides\' efficiency demo?',
+              choices: [
+                { id: 'a', text: 'Doubling N roughly multiplies time by four for + concatenation', correct: false, rationale: 'While + is quadratic, this specific wording isn\'t the main observation.' },
+                { id: 'b', text: 'Doubling N roughly doubles time for StringBuilder', correct: true, rationale: 'StringBuilder is O(N), so doubling N doubles time.' },
+                { id: 'c', text: 'StringBuilder is always constant time regardless of N', correct: false, rationale: 'StringBuilder is O(N), not O(1).' },
+                { id: 'd', text: '+ concatenation is O(N log N)', correct: false, rationale: '+ concatenation is O(N²), not O(N log N).' }
+              ]
+            },
+            {
+              id: 'q6_1_5',
+              prompt: 'Q5. When would StringBuffer be preferred over StringBuilder in 201-style code?',
+              choices: [
+                { id: 'a', text: 'Always', correct: false, rationale: 'StringBuilder is usually preferred for single-threaded code.' },
+                { id: 'b', text: 'When threads share the builder', correct: true, rationale: 'StringBuffer is thread-safe (synchronized); use it for multi-threaded scenarios.' },
+                { id: 'c', text: 'When building CSV', correct: false, rationale: 'StringBuilder works fine for CSV building.' },
+                { id: 'd', text: 'Never', correct: false, rationale: 'StringBuffer is needed for thread-safe string building.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u6-2',
@@ -2070,7 +2121,48 @@ for (int i = 0; i < 1000; i++) {
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q6_2_1',
+              prompt: 'Q1. Appending N items to an ArrayList (no inserts in the middle) is typically:',
+              choices: [
+                { id: 'a', text: 'O(1) total', correct: false, rationale: 'O(1) total would mean constant work regardless of N.' },
+                { id: 'b', text: 'O(log N) total', correct: false, rationale: 'ArrayList appending is not logarithmic.' },
+                { id: 'c', text: 'O(N) total with amortized O(1) per add', correct: true, rationale: 'Each add is O(1) amortized, so N adds = O(N) total.' },
+                { id: 'd', text: 'O(N²) total', correct: false, rationale: 'O(N²) would be if each add were O(N), which it\'s not amortized.' }
+              ]
+            },
+            {
+              id: 'q6_2_2',
+              prompt: 'Q2. The occasional expensive resize is accounted for by:',
+              choices: [
+                { id: 'a', text: 'Worst-case analysis', correct: false, rationale: 'Worst-case only considers the slowest operation.' },
+                { id: 'b', text: 'Amortized analysis', correct: true, rationale: 'Amortized analysis spreads the cost of expensive operations over many cheap ones.' },
+                { id: 'c', text: 'Average-of-averages', correct: false, rationale: 'Not a standard complexity analysis technique.' },
+                { id: 'd', text: 'Markov analysis', correct: false, rationale: 'Markov analysis is for probabilistic models, not array growth.' }
+              ]
+            },
+            {
+              id: 'q6_2_3',
+              prompt: 'Q3. Inserting at index 0 repeatedly into an ArrayList is typically:',
+              choices: [
+                { id: 'a', text: 'O(1) each', correct: false, rationale: 'Inserting at index 0 requires shifting all elements.' },
+                { id: 'b', text: 'O(log N) each', correct: false, rationale: 'ArrayList doesn\'t use a logarithmic structure for inserts.' },
+                { id: 'c', text: 'O(N) each', correct: true, rationale: 'Each insert at index 0 shifts all N elements, making it O(N) per insert.' },
+                { id: 'd', text: 'Undefined', correct: false, rationale: 'The complexity is well-defined as O(N).' }
+              ]
+            },
+            {
+              id: 'q6_2_4',
+              prompt: 'Q4. Creating new ArrayList<>(oldList) runs in time:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'Copying requires iterating through all elements.' },
+                { id: 'b', text: 'O(N) to copy', correct: true, rationale: 'The constructor copies all N elements from oldList.' },
+                { id: 'c', text: 'O(N log N)', correct: false, rationale: 'Simple copying doesn\'t involve sorting or tree operations.' },
+                { id: 'd', text: 'O(N²)', correct: false, rationale: 'Copying is linear, not quadratic.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u6-3',
@@ -2108,7 +2200,88 @@ for (String k : freq.keySet()) {
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q6_3_1',
+              prompt: 'Q1. Safest one-liner to increment w\'s count in HashMap<String,Integer> counts (missing keys allowed):',
+              choices: [
+                { id: 'a', text: 'counts.put(w, counts.get(w)+1);', correct: false, rationale: 'This throws NullPointerException if w is not in the map.' },
+                { id: 'b', text: 'counts.put(w, counts.getOrDefault(w,0)+1);', correct: true, rationale: 'getOrDefault returns 0 for missing keys, preventing null errors.' },
+                { id: 'c', text: 'counts.merge(w, 1, (a,b)->a-b);', correct: false, rationale: 'This subtracts instead of adding.' },
+                { id: 'd', text: 'counts.putIfAbsent(w,1);', correct: false, rationale: 'putIfAbsent only sets 1 if absent; doesn\'t increment existing values.' }
+              ]
+            },
+            {
+              id: 'q6_3_2',
+              prompt: 'Q2. Iterating all key/value pairs most naturally uses:',
+              choices: [
+                { id: 'a', text: 'keySet() + get(k)', correct: false, rationale: 'This works but requires two lookups per pair.' },
+                { id: 'b', text: 'values() only', correct: false, rationale: 'values() only gives values, not keys.' },
+                { id: 'c', text: 'entrySet()', correct: true, rationale: 'entrySet() provides both key and value in each Entry object efficiently.' },
+                { id: 'd', text: 'toArray()', correct: false, rationale: 'Maps don\'t have a toArray() method like collections.' }
+              ]
+            },
+            {
+              id: 'q6_3_3',
+              prompt: 'Q3. Converting List<String> words to a frequency map is usually overall:',
+              choices: [
+                { id: 'a', text: 'O(N) expected', correct: true, rationale: 'Each word requires O(1) expected HashMap operations, so N words = O(N).' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'You must process all N words, so it can\'t be O(log N).' },
+                { id: 'c', text: 'O(N²)', correct: false, rationale: 'HashMap operations are O(1) expected, not O(N).' },
+                { id: 'd', text: 'O(√N)', correct: false, rationale: 'This is not a standard complexity for this operation.' }
+              ]
+            },
+            {
+              id: 'q6_3_4',
+              prompt: 'Q4. Calling get("hi")+1 threw an exception. The reason was most likely:',
+              choices: [
+                { id: 'a', text: 'get returns null for missing keys', correct: true, rationale: 'If "hi" is not in the map, get returns null, causing NullPointerException.' },
+                { id: 'b', text: 'Hashing failed', correct: false, rationale: 'Hashing doesn\'t "fail" in a way that throws exceptions here.' },
+                { id: 'c', text: 'Java forbids plus on ints', correct: false, rationale: 'Java allows + on integers.' },
+                { id: 'd', text: 'Need ==', correct: false, rationale: '== is for comparison, not relevant here.' }
+              ]
+            },
+            {
+              id: 'q6_3_5',
+              prompt: 'Q5. The safest "insert a fresh list for key if absent" is:',
+              choices: [
+                { id: 'a', text: 'putIfAbsent(k, new ArrayList<>()) then get(k).add(x)', correct: false, rationale: 'This works but creates the ArrayList even if the key exists.' },
+                { id: 'b', text: 'if (!containsKey(k)) put(k, new ArrayList<>()) then add', correct: false, rationale: 'This works but is verbose and performs two lookups.' },
+                { id: 'c', text: 'computeIfAbsent(k, _ -> new ArrayList<>()).add(x)', correct: true, rationale: 'computeIfAbsent lazily creates the list only if needed and returns it.' },
+                { id: 'd', text: 'Any of the above', correct: false, rationale: 'Option C is the safest and most efficient.' }
+              ]
+            },
+            {
+              id: 'q6_3_6',
+              prompt: 'Q6. values().size() may differ from new HashSet<>(values()).size() because:',
+              choices: [
+                { id: 'a', text: 'Sets double-count', correct: false, rationale: 'Sets don\'t double-count; they eliminate duplicates.' },
+                { id: 'b', text: 'Duplicates collapse in a set', correct: true, rationale: 'If multiple keys map to the same value, the Set will have fewer elements.' },
+                { id: 'c', text: 'Map iteration is random', correct: false, rationale: 'Iteration order doesn\'t affect size.' },
+                { id: 'd', text: 'Hashing is unstable', correct: false, rationale: 'Hash stability doesn\'t affect size counting.' }
+              ]
+            },
+            {
+              id: 'q6_3_7',
+              prompt: 'Q7. Typical average-case complexity for HashMap.get under SUHA is:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: true, rationale: 'Under Simple Uniform Hashing Assumption, HashMap operations are O(1) expected.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'O(log N) is for balanced trees like TreeMap, not HashMap.' },
+                { id: 'c', text: 'O(N)', correct: false, rationale: 'O(N) is worst-case when all keys collide, not average case.' },
+                { id: 'd', text: 'O(N log N)', correct: false, rationale: 'This is typical for sorting algorithms, not hash lookups.' }
+              ]
+            },
+            {
+              id: 'q6_3_8',
+              prompt: 'Q8. Using getOrDefault instead of get mainly prevents:',
+              choices: [
+                { id: 'a', text: 'Autoboxing', correct: false, rationale: 'Both methods involve autoboxing for primitives.' },
+                { id: 'b', text: 'NullPointerException', correct: true, rationale: 'getOrDefault provides a default value instead of returning null.' },
+                { id: 'c', text: 'GC pauses', correct: false, rationale: 'GC pauses aren\'t directly related to getOrDefault.' },
+                { id: 'd', text: 'Rehashing', correct: false, rationale: 'Rehashing happens during insertion, not retrieval.' }
+              ]
+            }
+          ]
         }
       ],
       finalLab: {
@@ -2180,7 +2353,78 @@ int bucketIndex = Math.abs(hashCode) % tableSize;
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q7_1_1',
+              prompt: 'Q1. After hashing a key, a hash table uses the result primarily to:',
+              choices: [
+                { id: 'a', text: 'Choose a bucket index', correct: true, rationale: 'The hash code is converted to a bucket index (hash % tableSize).' },
+                { id: 'b', text: 'Sort keys', correct: false, rationale: 'Hash tables don\'t sort keys; that\'s what TreeMaps do.' },
+                { id: 'c', text: 'Compress strings', correct: false, rationale: 'Hashing isn\'t about compression.' },
+                { id: 'd', text: 'Compute equals', correct: false, rationale: 'equals() is separate from hashing; used after finding the bucket.' }
+              ]
+            },
+            {
+              id: 'q7_1_2',
+              prompt: 'Q2. Collisions are handled in the slides by:',
+              choices: [
+                { id: 'a', text: 'Rejection sampling', correct: false, rationale: 'Rejection sampling is not used in hash table collisions.' },
+                { id: 'b', text: 'Keeping a short list/tree per bucket', correct: true, rationale: 'Each bucket stores a list (or tree) of all keys that hash to it.' },
+                { id: 'c', text: 'Deleting keys', correct: false, rationale: 'Keys aren\'t deleted just because of collisions.' },
+                { id: 'd', text: 'Resizing on every collision', correct: false, rationale: 'Resizing happens when load factor is too high, not on every collision.' }
+              ]
+            },
+            {
+              id: 'q7_1_3',
+              prompt: 'Q3. The find flow in a hash table is:',
+              choices: [
+                { id: 'a', text: 'Scan all buckets → compare identity', correct: false, rationale: 'Hash tables don\'t scan all buckets; that would be O(N).' },
+                { id: 'b', text: 'Compute index → scan that bucket → use .equals', correct: true, rationale: 'Hash to find bucket, then linear search within that bucket using equals().' },
+                { id: 'c', text: 'Compute index → binary search the table', correct: false, rationale: 'Hash tables don\'t use binary search.' },
+                { id: 'd', text: 'Randomly probe until found', correct: false, rationale: 'This describes open addressing, not chaining.' }
+              ]
+            },
+            {
+              id: 'q7_1_4',
+              prompt: 'Q4. With SUHA and a good load factor, the expected time of containsKey is:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: true, rationale: 'Under SUHA, buckets are small and constant-sized on average.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'O(log N) is for balanced trees, not hash tables under SUHA.' },
+                { id: 'c', text: 'O(√N)', correct: false, rationale: 'Not a typical hash table complexity.' },
+                { id: 'd', text: 'O(N)', correct: false, rationale: 'O(N) is worst-case when all keys collide, not expected case.' }
+              ]
+            },
+            {
+              id: 'q7_1_5',
+              prompt: 'Q5. Which change most likely hurts hashing performance?',
+              choices: [
+                { id: 'a', text: 'Better hashCode distribution', correct: false, rationale: 'Better distribution improves performance.' },
+                { id: 'b', text: 'Using a mutable field in the key that changes after insertion', correct: true, rationale: 'Changing the key after insertion can break hash table invariants and lose entries.' },
+                { id: 'c', text: 'Reducing load factor', correct: false, rationale: 'Reducing load factor typically improves performance (fewer collisions).' },
+                { id: 'd', text: 'Using equals consistent with hashCode', correct: false, rationale: 'Consistency between equals and hashCode is required for correctness.' }
+              ]
+            },
+            {
+              id: 'q7_1_6',
+              prompt: 'Q6. Which list structure did the slides use for per-bucket storage (conceptually)?',
+              choices: [
+                { id: 'a', text: 'Linked list / small tree', correct: true, rationale: 'Buckets use linked lists (or trees in Java 8+ when buckets get large).' },
+                { id: 'b', text: 'Heap', correct: false, rationale: 'Heaps are for priority queues, not hash table buckets.' },
+                { id: 'c', text: 'Queue', correct: false, rationale: 'Queues are FIFO structures, not used for bucket storage.' },
+                { id: 'd', text: 'Stack', correct: false, rationale: 'Stacks are LIFO structures, not used for bucket storage.' }
+              ]
+            },
+            {
+              id: 'q7_1_7',
+              prompt: 'Q7. Java defense against adversarial floods primarily matters because worst-case bucketing can approach:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'O(1) is the expected case, not worst-case.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'Java 8+ uses trees for large buckets to get O(log N), but without defenses worst-case is worse.' },
+                { id: 'c', text: 'O(N) / O(N²) behaviors', correct: true, rationale: 'If all keys collide, operations degrade to O(N) per operation.' },
+                { id: 'd', text: 'O(√N)', correct: false, rationale: 'Not a typical worst-case complexity for hash tables.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u7-2',
@@ -2214,7 +2458,58 @@ for (int i = 0; i < words.size(); i++) {
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q7_2_1',
+              prompt: 'Q1. In the Markov assignment, myMap.get(wg) returns a list of:',
+              choices: [
+                { id: 'a', text: 'All words at multiples of k in the training text', correct: false, rationale: 'The map doesn\'t track word positions.' },
+                { id: 'b', text: 'Words observed to follow the WordGram wg', correct: true, rationale: 'The map stores all words that followed each WordGram during training.' },
+                { id: 'c', text: 'Words removed by shiftAdd', correct: false, rationale: 'shiftAdd removes words from the front, doesn\'t relate to map values.' },
+                { id: 'd', text: 'Unique dictionary words', correct: false, rationale: 'The map stores followers, not a dictionary.' }
+              ]
+            },
+            {
+              id: 'q7_2_2',
+              prompt: 'Q2. After training on N tokens, getRandomNextWord in Hash vs Base Markov has complexity:',
+              choices: [
+                { id: 'a', text: 'Same Big-Oh for both', correct: false, rationale: 'Hash version is much faster due to HashMap lookup.' },
+                { id: 'b', text: 'Base is O(N), Hash is O(1)', correct: true, rationale: 'Base scans all tokens; Hash does a constant-time HashMap lookup.' },
+                { id: 'c', text: 'Hash is O(N), Base is O(1)', correct: false, rationale: 'This is backwards; Hash is faster.' },
+                { id: 'd', text: 'Base O(N), Hash O(log N)', correct: false, rationale: 'Hash uses HashMap which is O(1) expected, not O(log N).' }
+              ]
+            },
+            {
+              id: 'q7_2_3',
+              prompt: 'Q3. Calling the default constructor of HashMarkovModel ultimately:',
+              choices: [
+                { id: 'a', text: 'Leaves the internal HashMap null forever', correct: false, rationale: 'The constructor chain initializes the map.' },
+                { id: 'b', text: 'Initializes the internal map (via constructor chain)', correct: true, rationale: 'The default constructor calls super and initializes the HashMap.' },
+                { id: 'c', text: 'Deletes myWords', correct: false, rationale: 'myWords is not deleted by the constructor.' },
+                { id: 'd', text: 'Builds a Trie', correct: false, rationale: 'Markov models use HashMap, not Trie.' }
+              ]
+            },
+            {
+              id: 'q7_2_4',
+              prompt: 'Q4. setTraining in Base vs Hash differs because Hash also:',
+              choices: [
+                { id: 'a', text: 'Splits by lines only', correct: false, rationale: 'Both split by whitespace, not just lines.' },
+                { id: 'b', text: 'Populates a HashMap<WordGram,List<String>>', correct: true, rationale: 'Hash builds the map during training for fast lookup.' },
+                { id: 'c', text: 'Uses TreeMap', correct: false, rationale: 'Hash uses HashMap, not TreeMap.' },
+                { id: 'd', text: 'Sorts tokens', correct: false, rationale: 'Markov models preserve token order, don\'t sort.' }
+              ]
+            },
+            {
+              id: 'q7_2_5',
+              prompt: 'Q5. If you see many identical WordGrams, HashMarkov improves performance mainly by:',
+              choices: [
+                { id: 'a', text: 'Caching followers per WordGram key', correct: true, rationale: 'HashMap stores all followers for each WordGram, avoiding repeated scans.' },
+                { id: 'b', text: 'Sorting followers', correct: false, rationale: 'Sorting isn\'t related to the performance improvement.' },
+                { id: 'c', text: 'Using regex', correct: false, rationale: 'Regex doesn\'t improve WordGram lookup performance.' },
+                { id: 'd', text: 'Eliminating duplicates', correct: false, rationale: 'Duplicates aren\'t eliminated; all followers are stored.' }
+              ]
+            }
+          ]
         }
       ],
       finalLab: {
@@ -2292,7 +2587,88 @@ Collections.sort(list); // uses merge sort`,
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q8_1_1',
+              prompt: 'Q1. for (i=0; i<n; i++) { ... } is:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'O(1) means constant time; this loop runs N times.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'O(log N) requires halving the problem size each iteration.' },
+                { id: 'c', text: 'O(N)', correct: true, rationale: 'A single loop from 0 to N is linear: O(N).' },
+                { id: 'd', text: 'O(N²)', correct: false, rationale: 'O(N²) requires nested loops.' }
+              ]
+            },
+            {
+              id: 'q8_1_2',
+              prompt: 'Q2. A clean two-nested loop over all pairs is:',
+              choices: [
+                { id: 'a', text: 'O(N)', correct: false, rationale: 'Nested loops are quadratic, not linear.' },
+                { id: 'b', text: 'O(N log N)', correct: false, rationale: 'O(N log N) is for algorithms like merge sort.' },
+                { id: 'c', text: 'O(N²)', correct: true, rationale: 'Two nested loops each running N times gives N × N = O(N²).' },
+                { id: 'd', text: 'O(2ⁿ)', correct: false, rationale: 'O(2ⁿ) is exponential; nested loops are polynomial.' }
+              ]
+            },
+            {
+              id: 'q8_1_3',
+              prompt: 'Q3. HashMap.get under SUHA is:',
+              choices: [
+                { id: 'a', text: 'O(1) exp.', correct: true, rationale: 'Under SUHA, expected bucket size is constant, giving O(1) operations.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'O(log N) is for trees like TreeMap, not HashMap under SUHA.' },
+                { id: 'c', text: 'O(N)', correct: false, rationale: 'O(N) is worst-case when all keys collide, not expected case.' },
+                { id: 'd', text: 'O(N²)', correct: false, rationale: 'O(N²) is not relevant for hash table lookups.' }
+              ]
+            },
+            {
+              id: 'q8_1_4',
+              prompt: 'Q4. Leading terms dominate, so 3N + 44 and 15N + 2 are both:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'O(1) would mean constant; these grow linearly with N.' },
+                { id: 'b', text: 'O(N)', correct: true, rationale: 'Drop constants and lower terms; both are dominated by N.' },
+                { id: 'c', text: 'O(N log N)', correct: false, rationale: 'There\'s no log factor in these expressions.' },
+                { id: 'd', text: 'O(N²)', correct: false, rationale: 'There\'s no N² term; these are linear.' }
+              ]
+            },
+            {
+              id: 'q8_1_5',
+              prompt: 'Q5. Adding three separate O(N) loops gives:',
+              choices: [
+                { id: 'a', text: 'O(N)', correct: true, rationale: 'O(N) + O(N) + O(N) = O(3N) = O(N) (drop constants).' },
+                { id: 'b', text: 'O(3N)', correct: false, rationale: 'O(3N) simplifies to O(N); we drop constant factors.' },
+                { id: 'c', text: 'O(N²)', correct: false, rationale: 'Sequential (not nested) loops add, not multiply.' },
+                { id: 'd', text: 'O(N log N)', correct: false, rationale: 'Simple loops don\'t introduce log factors.' }
+              ]
+            },
+            {
+              id: 'q8_1_6',
+              prompt: 'Q6. for (k=1; k<n; k*=2) { ... } is:',
+              choices: [
+                { id: 'a', text: 'O(log N)', correct: true, rationale: 'k doubles each time: 1, 2, 4, 8, ..., N takes log₂(N) steps.' },
+                { id: 'b', text: 'O(N)', correct: false, rationale: 'The loop doesn\'t run N times; k multiplies, not increments.' },
+                { id: 'c', text: 'O(N log N)', correct: false, rationale: 'This is a single logarithmic loop, not N times log N.' },
+                { id: 'd', text: 'O(1)', correct: false, rationale: 'The loop runs log N times, not constant.' }
+              ]
+            },
+            {
+              id: 'q8_1_7',
+              prompt: 'Q7. A worst-case contains check on an ArrayList is:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'ArrayList.contains must scan all elements in worst case.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'ArrayList doesn\'t support binary search for unsorted data.' },
+                { id: 'c', text: 'O(N)', correct: true, rationale: 'ArrayList.contains scans linearly: worst-case is O(N).' },
+                { id: 'd', text: 'O(N²)', correct: false, rationale: 'A single scan is O(N), not O(N²).' }
+              ]
+            },
+            {
+              id: 'q8_1_8',
+              prompt: 'Q8. Counting with HashMap.merge over N words is overall:',
+              choices: [
+                { id: 'a', text: 'O(N)', correct: true, rationale: 'Each merge is O(1) expected; N words = O(N) total.' },
+                { id: 'b', text: 'O(N log N)', correct: false, rationale: 'HashMap operations are O(1), not O(log N).' },
+                { id: 'c', text: 'O(N²)', correct: false, rationale: 'O(N²) would require nested loops or O(N) operations per word.' },
+                { id: 'd', text: 'O(√N)', correct: false, rationale: 'Not a typical complexity for counting with a HashMap.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u8-2',
@@ -2333,7 +2709,48 @@ for (String w : words) {
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q8_2_1',
+              prompt: 'Q1. Checking "have I seen this word?" with ArrayList.contains inside the loop leads to:',
+              choices: [
+                { id: 'a', text: 'O(N) overall', correct: false, rationale: 'Each contains is O(N), and we do it N times.' },
+                { id: 'b', text: 'O(N log N)', correct: false, rationale: 'ArrayList doesn\'t provide logarithmic search.' },
+                { id: 'c', text: 'O(N²) worst-case', correct: true, rationale: 'Each contains scans up to N items; N words gives 1+2+...+N = O(N²).' },
+                { id: 'd', text: 'O(1)', correct: false, rationale: 'ArrayList.contains is not constant time.' }
+              ]
+            },
+            {
+              id: 'q8_2_2',
+              prompt: 'Q2. Swapping to HashSet changes the loop to:',
+              choices: [
+                { id: 'a', text: 'O(N) expected', correct: true, rationale: 'HashSet.add/contains is O(1) expected; N operations = O(N).' },
+                { id: 'b', text: 'O(N²)', correct: false, rationale: 'HashSet avoids the quadratic behavior of ArrayList.' },
+                { id: 'c', text: 'O(log N)', correct: false, rationale: 'HashSet is O(1) per operation, not O(log N).' },
+                { id: 'd', text: 'O(1)', correct: false, rationale: 'O(1) total would mean constant work regardless of N.' }
+              ]
+            },
+            {
+              id: 'q8_2_3',
+              prompt: 'Q3. The correctness reason HashSet still works is that it:',
+              choices: [
+                { id: 'a', text: 'Stores order', correct: false, rationale: 'HashSet doesn\'t maintain insertion order (LinkedHashSet does).' },
+                { id: 'b', text: 'Ignores duplicates by design', correct: true, rationale: 'Sets automatically prevent duplicates, so add() handles deduplication.' },
+                { id: 'c', text: 'Sorts elements', correct: false, rationale: 'HashSet doesn\'t sort (TreeSet does).' },
+                { id: 'd', text: 'Compresses text', correct: false, rationale: 'Sets don\'t compress data.' }
+              ]
+            },
+            {
+              id: 'q8_2_4',
+              prompt: 'Q4. If hashing degrades badly, worst-case add to a HashSet can approach:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'O(1) is the average case, not worst case with bad hashing.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'Java 8+ uses trees for large buckets, getting O(log N) per operation.' },
+                { id: 'c', text: 'O(N)', correct: true, rationale: 'If all keys collide into one bucket, operations become O(N).' },
+                { id: 'd', text: 'O(N²)', correct: false, rationale: 'A single operation can be O(N) worst-case, not O(N²).' }
+              ]
+            }
+          ]
         },
         {
           id: 'u8-3',
@@ -2370,7 +2787,28 @@ y.contains("hello"); // calls HashSet.contains() - O(1)
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q8_3_1',
+              prompt: 'Q1. x.contains(y) runs whichever implementation is chosen:',
+              choices: [
+                { id: 'a', text: 'At compile time', correct: false, rationale: 'Java uses dynamic dispatch; the method is chosen at runtime.' },
+                { id: 'b', text: 'At runtime based on actual type', correct: true, rationale: 'Java determines which contains() to call based on x\'s actual object type at runtime.' },
+                { id: 'c', text: 'Randomly', correct: false, rationale: 'Method dispatch is deterministic, not random.' },
+                { id: 'd', text: 'By JIT hint', correct: false, rationale: 'JIT optimizations don\'t change which method is called.' }
+              ]
+            },
+            {
+              id: 'q8_3_2',
+              prompt: 'Q2. Changing Collection variable from ArrayList to HashSet (actual object) can change:',
+              choices: [
+                { id: 'a', text: 'Only memory address', correct: false, rationale: 'More than just memory changes; behavior and performance change.' },
+                { id: 'b', text: 'Which method body runs at runtime', correct: true, rationale: 'Different object type means different method implementations are called.' },
+                { id: 'c', text: 'Nothing observable', correct: false, rationale: 'Performance and behavior differences are observable.' },
+                { id: 'd', text: 'Java version', correct: false, rationale: 'Object type doesn\'t change the Java version.' }
+              ]
+            }
+          ]
         }
       ],
       finalLab: {
@@ -2447,7 +2885,28 @@ for (String name : ages.keySet()) {
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q9_1_1',
+              prompt: 'Q1. A Map associates each key with:',
+              choices: [
+                { id: 'a', text: 'Many unrelated keys', correct: false, rationale: 'Maps don\'t associate keys with other keys.' },
+                { id: 'b', text: 'A single value (possibly a collection)', correct: true, rationale: 'Each key maps to exactly one value, which could be a List, Set, etc.' },
+                { id: 'c', text: 'An index only', correct: false, rationale: 'Maps associate keys with values, not just indices.' },
+                { id: 'd', text: 'A hash seed', correct: false, rationale: 'Hash seeds are implementation details, not map associations.' }
+              ]
+            },
+            {
+              id: 'q9_1_2',
+              prompt: 'Q2. To summarize counts neatly you\'d iterate:',
+              choices: [
+                { id: 'a', text: 'values()', correct: false, rationale: 'values() gives only counts, not what they\'re counting.' },
+                { id: 'b', text: 'keySet() or entrySet()', correct: true, rationale: 'keySet() or entrySet() lets you access both keys and their counts.' },
+                { id: 'c', text: 'hashCode()', correct: false, rationale: 'hashCode() is not an iteration method.' },
+                { id: 'd', text: 'random()', correct: false, rationale: 'There\'s no random() method for maps.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u9-2',
@@ -2488,7 +2947,78 @@ private String sortLetters(String word) {
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q9_2_1',
+              prompt: 'Q1. The canonical anagram key used in lecture is:',
+              choices: [
+                { id: 'a', text: 'Word length', correct: false, rationale: 'Word length doesn\'t uniquely identify anagrams (e.g., "cat" and "dog").' },
+                { id: 'b', text: 'First/last letter', correct: false, rationale: 'First/last letters don\'t identify anagrams.' },
+                { id: 'c', text: 'Sorted letters of the word', correct: true, rationale: 'Anagrams have the same letters, so sorting produces the same key.' },
+                { id: 'd', text: 'Vowel count', correct: false, rationale: 'Vowel count alone doesn\'t identify anagrams.' }
+              ]
+            },
+            {
+              id: 'q9_2_2',
+              prompt: 'Q2. With that key, a Map<String,List<String>> groups:',
+              choices: [
+                { id: 'a', text: 'Rhymes', correct: false, rationale: 'Rhyming requires phonetic similarity, not letter similarity.' },
+                { id: 'b', text: 'Anagrams', correct: true, rationale: 'Words with the same sorted letters are anagrams.' },
+                { id: 'c', text: 'Palindromes', correct: false, rationale: 'Palindromes read the same forwards and backwards.' },
+                { id: 'd', text: 'Syllables', correct: false, rationale: 'Syllables are about pronunciation, not letters.' }
+              ]
+            },
+            {
+              id: 'q9_2_3',
+              prompt: 'Q3. The key\'s .equals/.hashCode should be based on:',
+              choices: [
+                { id: 'a', text: 'Original spelling only', correct: false, rationale: 'Original spelling differs for anagrams; need sorted form.' },
+                { id: 'b', text: 'Sorted letters representation', correct: true, rationale: 'Using sorted letters ensures anagrams have the same equals/hashCode.' },
+                { id: 'c', text: 'Hash of memory address', correct: false, rationale: 'Memory address is random and changes between runs.' },
+                { id: 'd', text: 'Word length', correct: false, rationale: 'Length alone doesn\'t distinguish anagrams from non-anagrams.' }
+              ]
+            },
+            {
+              id: 'q9_2_4',
+              prompt: 'Q4. Best insertion line to accumulate words by key is:',
+              choices: [
+                { id: 'a', text: 'put(k,new ArrayList<>()) unconditionally', correct: false, rationale: 'This overwrites existing lists, losing data.' },
+                { id: 'b', text: 'computeIfAbsent(k, _-> new ArrayList<>()).add(w)', correct: true, rationale: 'computeIfAbsent creates list only if needed and returns it for adding.' },
+                { id: 'c', text: 'values().add(w)', correct: false, rationale: 'values() returns a collection, not a map operation.' },
+                { id: 'd', text: 'putIfAbsent(k,w)', correct: false, rationale: 'putIfAbsent doesn\'t append to a list, it sets a single value.' }
+              ]
+            },
+            {
+              id: 'q9_2_5',
+              prompt: 'Q5. If you only want groups with size ≥ 4, you would:',
+              choices: [
+                { id: 'a', text: 'Pre-filter dictionary to length 4', correct: false, rationale: 'Word length ≠ group size; this filters words, not groups.' },
+                { id: 'b', text: 'Filter map entries by list.size() >= 4 after building', correct: true, rationale: 'Build the full map, then filter entries where the list has 4+ words.' },
+                { id: 'c', text: 'Use TreeMap', correct: false, rationale: 'TreeMap sorts keys; doesn\'t filter by group size.' },
+                { id: 'd', text: 'Sort lists', correct: false, rationale: 'Sorting doesn\'t filter by size.' }
+              ]
+            },
+            {
+              id: 'q9_2_6',
+              prompt: 'Q6. Using a helper class like AnaWord mainly improves:',
+              choices: [
+                { id: 'a', text: 'equals/hashCode correctness and encapsulation', correct: true, rationale: 'AnaWord encapsulates sorted form and ensures correct equals/hashCode.' },
+                { id: 'b', text: 'I/O speed', correct: false, rationale: 'Helper classes don\'t affect I/O speed.' },
+                { id: 'c', text: 'Sorting time', correct: false, rationale: 'Sorting still happens; the class just encapsulates it.' },
+                { id: 'd', text: 'Regex power', correct: false, rationale: 'Regex isn\'t related to anagram grouping.' }
+              ]
+            },
+            {
+              id: 'q9_2_7',
+              prompt: 'Q7. Counting characters with an int[] "array as map" works because:',
+              choices: [
+                { id: 'a', text: 'char can index an array directly', correct: true, rationale: 'char is a numeric type; can use it as an array index (e.g., counts[\'a\']).' },
+                { id: 'b', text: 'Arrays auto-hash', correct: false, rationale: 'Arrays don\'t have special hashing behavior.' },
+                { id: 'c', text: 'int[] is a Map', correct: false, rationale: 'int[] is an array, not a Map implementation.' },
+                { id: 'd', text: 'Java interns chars', correct: false, rationale: 'String interning is unrelated to array indexing.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u9-3',
@@ -2528,7 +3058,38 @@ map.computeIfAbsent(word, k -> new ArrayList<>()).add(position);`,
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q9_3_1',
+              prompt: 'Q1. putIfAbsent(k, new ArrayList<>()) is preferred over containsKey + put primarily because it:',
+              choices: [
+                { id: 'a', text: 'Uses fewer lines / avoids extra allocation when present', correct: true, rationale: 'putIfAbsent is more concise, but still creates the ArrayList even if not needed.' },
+                { id: 'b', text: 'Sorts keys', correct: false, rationale: 'putIfAbsent doesn\'t sort keys.' },
+                { id: 'c', text: 'Forces uniqueness', correct: false, rationale: 'Map keys are always unique.' },
+                { id: 'd', text: 'Prevents null keys', correct: false, rationale: 'putIfAbsent doesn\'t affect null key handling.' }
+              ]
+            },
+            {
+              id: 'q9_3_2',
+              prompt: 'Q2. computeIfAbsent advantage is that it:',
+              choices: [
+                { id: 'a', text: 'Caches the hash code', correct: false, rationale: 'Hash code caching is not the primary benefit.' },
+                { id: 'b', text: 'Lazily constructs the value only if needed', correct: true, rationale: 'The lambda only runs if the key is absent, avoiding unnecessary object creation.' },
+                { id: 'c', text: 'Rejects duplicates', correct: false, rationale: 'Maps already reject duplicate keys.' },
+                { id: 'd', text: 'Converts to TreeMap', correct: false, rationale: 'computeIfAbsent doesn\'t change the map type.' }
+              ]
+            },
+            {
+              id: 'q9_3_3',
+              prompt: 'Q3. For counting, the most concise is often:',
+              choices: [
+                { id: 'a', text: 'merge(k,1,Integer::sum)', correct: true, rationale: 'merge handles both insert (if absent) and update (if present) in one line.' },
+                { id: 'b', text: 'put(k, get(k)+1)', correct: false, rationale: 'This throws NullPointerException if k is absent.' },
+                { id: 'c', text: 'values().add(1)', correct: false, rationale: 'values() doesn\'t support add().' },
+                { id: 'd', text: 'putIfAbsent(k,1) then put(k, get(k)+1)', correct: false, rationale: 'This is verbose and requires two calls.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u9-4',
@@ -2645,7 +3206,78 @@ counts.merge(word, 1, Integer::sum);
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q10_1_1',
+              prompt: 'Q1. The expression counts.get(word)+1 throws most likely because:',
+              choices: [
+                { id: 'a', text: 'get returned null', correct: true, rationale: 'If word is not in the map, get returns null, causing NullPointerException on +1.' },
+                { id: 'b', text: 'Word too long', correct: false, rationale: 'String length doesn\'t cause this exception.' },
+                { id: 'c', text: 'Hash overflows', correct: false, rationale: 'Hash overflow doesn\'t throw exceptions here.' },
+                { id: 'd', text: 'Integers can\'t add', correct: false, rationale: 'Integer addition works fine; null is the problem.' }
+              ]
+            },
+            {
+              id: 'q10_1_2',
+              prompt: 'Q2. Correct fix is:',
+              choices: [
+                { id: 'a', text: 'getOrDefault(word,0)+1 then put', correct: true, rationale: 'getOrDefault returns 0 for missing keys, avoiding null.' },
+                { id: 'b', text: 'values().add(1)', correct: false, rationale: 'values() doesn\'t support add().' },
+                { id: 'c', text: 'hashCode()+1', correct: false, rationale: 'hashCode() is not related to counting values.' },
+                { id: 'd', text: '== instead of .equals', correct: false, rationale: '== is for comparison, not fixing null issues.' }
+              ]
+            },
+            {
+              id: 'q10_1_3',
+              prompt: 'Q3. Another concise fix that avoids a second lookup is:',
+              choices: [
+                { id: 'a', text: 'merge(word, 1, Integer::sum)', correct: true, rationale: 'merge handles null/absent keys and updates in one atomic operation.' },
+                { id: 'b', text: 'putIfAbsent(word,1)', correct: false, rationale: 'putIfAbsent only sets 1 if absent; doesn\'t increment existing values.' },
+                { id: 'c', text: 'computeIfPresent only', correct: false, rationale: 'computeIfPresent doesn\'t handle absent keys.' },
+                { id: 'd', text: 'clear()', correct: false, rationale: 'clear() removes all entries; doesn\'t fix counting.' }
+              ]
+            },
+            {
+              id: 'q10_1_4',
+              prompt: 'Q4. If your key class breaks the equals/hashCode contract, a HashMap may:',
+              choices: [
+                { id: 'a', text: 'Auto-repair keys', correct: false, rationale: 'HashMap doesn\'t auto-repair broken contracts.' },
+                { id: 'b', text: 'Lose entries or allow "equal" duplicates', correct: true, rationale: 'Broken equals/hashCode can cause entries to be lost or duplicated.' },
+                { id: 'c', text: 'Sort incorrectly', correct: false, rationale: 'HashMap doesn\'t sort; this affects TreeMap.' },
+                { id: 'd', text: 'Resize forever', correct: false, rationale: 'Resizing is based on load factor, not equals/hashCode.' }
+              ]
+            },
+            {
+              id: 'q10_1_5',
+              prompt: 'Q5. values() vs new HashSet<>(values()) sizes differ because:',
+              choices: [
+                { id: 'a', text: 'Set collapses duplicates', correct: true, rationale: 'If multiple keys map to the same value, Set eliminates duplicates.' },
+                { id: 'b', text: 'Map hides entries', correct: false, rationale: 'Maps don\'t hide entries.' },
+                { id: 'c', text: 'Iteration bug', correct: false, rationale: 'This is expected behavior, not a bug.' },
+                { id: 'd', text: 'Hashing forbidden', correct: false, rationale: 'Hashing works fine for values.' }
+              ]
+            },
+            {
+              id: 'q10_1_6',
+              prompt: 'Q6. keySet() iteration order in HashMap is:',
+              choices: [
+                { id: 'a', text: 'Insertion order', correct: false, rationale: 'LinkedHashMap maintains insertion order, not HashMap.' },
+                { id: 'b', text: 'Sorted order', correct: false, rationale: 'TreeMap maintains sorted order, not HashMap.' },
+                { id: 'c', text: 'Arbitrary (implementation-dependent)', correct: true, rationale: 'HashMap makes no guarantees about iteration order.' },
+                { id: 'd', text: 'Reverse order', correct: false, rationale: 'HashMap doesn\'t reverse order.' }
+              ]
+            },
+            {
+              id: 'q10_1_7',
+              prompt: 'Q7. Which pair is both null-safe and concise for counters?',
+              choices: [
+                { id: 'a', text: 'get + put', correct: false, rationale: 'get can return null, causing NPE.' },
+                { id: 'b', text: 'merge / getOrDefault', correct: true, rationale: 'Both handle null/absent keys safely and concisely.' },
+                { id: 'c', text: 'putIfAbsent only', correct: false, rationale: 'putIfAbsent doesn\'t increment existing values.' },
+                { id: 'd', text: 'replaceAll', correct: false, rationale: 'replaceAll transforms existing values, doesn\'t handle counting.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u10-2',
@@ -2694,7 +3326,58 @@ for (int i = 1; i < N; i *= 2) { /* constant work */ }`,
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q10_2_1',
+              prompt: 'Q1. Three back-to-back linear passes are:',
+              choices: [
+                { id: 'a', text: 'O(3N) → O(N)', correct: true, rationale: 'O(N) + O(N) + O(N) = O(3N) = O(N) (drop constants).' },
+                { id: 'b', text: 'O(N log N)', correct: false, rationale: 'No logarithmic factor in sequential linear passes.' },
+                { id: 'c', text: 'O(N²)', correct: false, rationale: 'Sequential loops add, not multiply; O(N²) requires nesting.' },
+                { id: 'd', text: 'O(1)', correct: false, rationale: 'O(1) means constant; these loops depend on N.' }
+              ]
+            },
+            {
+              id: 'q10_2_2',
+              prompt: 'Q2. A loop with k *= 2 in the header most closely costs:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'The loop runs multiple times, not constant.' },
+                { id: 'b', text: 'O(log N)', correct: true, rationale: 'Doubling k each time: 1, 2, 4, 8, ... takes log₂(N) iterations.' },
+                { id: 'c', text: 'O(N)', correct: false, rationale: 'The loop doesn\'t run N times; it grows exponentially.' },
+                { id: 'd', text: 'O(N log N)', correct: false, rationale: 'This is a single logarithmic loop, not N × log N.' }
+              ]
+            },
+            {
+              id: 'q10_2_3',
+              prompt: 'Q3. A double loop where inner index starts at i+1 (pair iteration) is:',
+              choices: [
+                { id: 'a', text: 'O(N)', correct: false, rationale: 'Pair iteration does N(N-1)/2 comparisons, which is quadratic.' },
+                { id: 'b', text: 'O(N log N)', correct: false, rationale: 'No divide-and-conquer; this is nested loop territory.' },
+                { id: 'c', text: 'O(N²)', correct: true, rationale: 'Triangular loop: roughly N²/2 iterations = O(N²).' },
+                { id: 'd', text: 'Data-dependent only', correct: false, rationale: 'The pattern is deterministically O(N²).' }
+              ]
+            },
+            {
+              id: 'q10_2_4',
+              prompt: 'Q4. Transforming "contains in list" to "add to set" can reduce:',
+              choices: [
+                { id: 'a', text: 'O(N²) → O(N) expected', correct: true, rationale: 'List.contains is O(N); N calls = O(N²). Set.add is O(1); N calls = O(N).' },
+                { id: 'b', text: 'O(N) → O(1) worst-case', correct: false, rationale: 'You still need to process N items; can\'t be O(1) total.' },
+                { id: 'c', text: 'O(log N) → O(N)', correct: false, rationale: 'This is backwards; we\'re improving, not degrading.' },
+                { id: 'd', text: 'O(N) → O(N²)', correct: false, rationale: 'This is backwards; we\'re reducing complexity.' }
+              ]
+            },
+            {
+              id: 'q10_2_5',
+              prompt: 'Q5. Finding divisors up to √N hints at an:',
+              choices: [
+                { id: 'a', text: 'O(√N) approach', correct: true, rationale: 'Checking divisors from 1 to √N is O(√N).' },
+                { id: 'b', text: 'O(N²)', correct: false, rationale: 'O(N²) would be checking all pairs; √N is much smaller.' },
+                { id: 'c', text: 'O(N³)', correct: false, rationale: 'O(N³) is cubic; divisor checking is much faster.' },
+                { id: 'd', text: 'O(log N)', correct: false, rationale: 'O(log N) is for doubling/halving; √N is different.' }
+              ]
+            }
+          ]
         },
         {
           id: 'u10-3',
@@ -2735,7 +3418,28 @@ for (String word : words) {
               ]
             }
           ],
-          quiz: []
+          quiz: [
+            {
+              id: 'q10_3_1',
+              prompt: 'Q1. Under SUHA (simple uniform hashing assumption), expected bucket size is:',
+              choices: [
+                { id: 'a', text: 'Constant', correct: true, rationale: 'SUHA assumes even distribution; with N keys and M buckets, each bucket has O(N/M) = O(1) keys.' },
+                { id: 'b', text: 'Logarithmic', correct: false, rationale: 'Bucket size is not logarithmic under SUHA.' },
+                { id: 'c', text: 'Linear', correct: false, rationale: 'Linear bucket size would degrade performance to O(N).' },
+                { id: 'd', text: 'Quadratic', correct: false, rationale: 'Quadratic bucket size would be catastrophic.' }
+              ]
+            },
+            {
+              id: 'q10_3_2',
+              prompt: 'Q2. A crafted set of colliding keys can degrade HashMap operations toward:',
+              choices: [
+                { id: 'a', text: 'O(1)', correct: false, rationale: 'O(1) is the expected case, not the degraded case.' },
+                { id: 'b', text: 'O(log N)', correct: false, rationale: 'Java 8+ uses trees for large buckets to get O(log N), but without defenses it\'s worse.' },
+                { id: 'c', text: 'O(N) or worse', correct: true, rationale: 'All keys in one bucket means linear search per operation: O(N).' },
+                { id: 'd', text: 'O(√N)', correct: false, rationale: 'Not a typical degradation for hash collisions.' }
+              ]
+            }
+          ]
         }
       ],
       finalLab: {
