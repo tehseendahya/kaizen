@@ -1,7 +1,9 @@
+import type { JSX, ReactNode } from 'react';
+
 interface SectionHeadingProps {
   id: string;
   level?: 2 | 3 | 4;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
@@ -38,4 +40,3 @@ export default function SectionHeading({
     </Tag>
   );
 }
-
