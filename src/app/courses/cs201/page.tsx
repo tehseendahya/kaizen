@@ -617,9 +617,10 @@ export default function CS201Course() {
       {/* Gary entry button + highlight popover + chat sidebar (CS201 only) */}
       <button
         onClick={() => setChatOpen(true)}
-        className="fixed bottom-6 right-6 z-30 px-4 py-2 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700"
+        className="fixed bottom-6 right-6 z-30 px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow-2xl hover:shadow-3xl hover:scale-110 hover:bg-blue-700 transition-all duration-300 flex items-center gap-2 border-2 border-white"
       >
-        Ask Gary 🐧
+        <span className="text-2xl">🐧</span>
+        <span>Ask Gary</span>
       </button>
       <HighlightPopover onAsk={(txt) => { setChatPrefill(txt); setChatOpen(true); }} />
       <ChatSidebar courseId="cs201" open={chatOpen} onClose={() => setChatOpen(false)} prefill={chatPrefill} />
