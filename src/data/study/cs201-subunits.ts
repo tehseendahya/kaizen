@@ -31,7 +31,7 @@ export type SubUnit = {
 };
 
 export type StudyUnit = {
-  unitId: 'u1' | 'u2' | 'u3' | 'u4' | 'u5';
+  unitId: 'u1' | 'u2' | 'u3' | 'u4' | 'u5' | 'u6' | 'u7' | 'u8' | 'u9' | 'u10';
   unitNumber: number;
   title: string;
   overview: string[];
@@ -58,7 +58,7 @@ export type CourseData = {
 
 export const cs201Data: CourseData = {
   courseTitle: 'CS201: Data Structures and Algorithms',
-  courseSubtitle: '5 UNITS • 15 SUB-UNITS',
+  courseSubtitle: '10 UNITS • 30 SUB-UNITS',
   units: [
     {
       unitId: 'u1',
@@ -1987,6 +1987,780 @@ String text = sb.toString();`,
         'Convert between arrays, lists, and sets',
         'Use StringBuilder for string building in loops',
         'Understand why string immutability matters for performance'
+      ]
+    },
+    {
+      unitId: 'u6',
+      unitNumber: 6,
+      title: 'ArrayLists, Maps, and Efficiency',
+      overview: [
+        'Understand why repeated string concatenation is O(N²) and how StringBuilder fixes it.',
+        'Learn how ArrayList achieves amortized O(1) add() through doubling strategy.',
+        'Master HashMap basics including safe counting with getOrDefault().'
+      ],
+      subUnits: [
+        {
+          id: 'u6-1',
+          title: 'Why naïve string building is slow (and how that connects to Big-Oh)',
+          description: 'Learn why repeated string concatenation is O(N²) and how StringBuilder fixes it',
+          content: {
+            keyPoints: [
+              'String is immutable in Java—every concatenation creates a new String object.',
+              'Repeatedly doing ret = ret + s in a loop creates strings of length 1, 2, 3, … N.',
+              'The total work is 1 + 2 + 3 + … + N = O(N²), which is why large concatenations feel slow.',
+              'StringBuilder maintains a mutable buffer and only copies when needed, giving O(N) total time.',
+              'Use StringBuilder when building strings in a loop; use + for occasional concatenation.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// O(N²): repeated concatenation
+String out = "";
+for (String w : words) {
+  out += w;  // creates new string each time
+}
+
+// O(N): StringBuilder
+StringBuilder sb = new StringBuilder();
+for (String w : words) {
+  sb.append(w);  // modifies buffer in place
+}
+String out2 = sb.toString();`,
+              caption: 'Comparing inefficient string concatenation with efficient StringBuilder'
+            }
+          },
+          practice: [
+            {
+              title: 'Measure performance',
+              problems: [
+                'Time both approaches with a 1000-word list',
+                'Explain why the difference grows with N'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u6-2',
+          title: 'ArrayList growth: amortized constant time',
+          description: 'Understand how ArrayList resizes and why add() is still O(1) amortized',
+          content: {
+            keyPoints: [
+              'ArrayList wraps a plain array and grows when capacity is exceeded.',
+              'Most add() calls are O(1) since they just fill the next slot.',
+              'Occasionally a resize happens: allocate a bigger array (typically 2× size) and copy elements over.',
+              'Over N insertions, the total copying is at most N + N/2 + N/4 + … ≈ 2N, so amortized cost per add is O(1).',
+              'This means inserting N items into an ArrayList is O(N) overall, not O(N²).'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `ArrayList<Integer> list = new ArrayList<>();
+for (int i = 0; i < 1000; i++) {
+  list.add(i);  // amortized O(1) per add
+}
+// Total: O(N) for N adds`,
+              caption: 'ArrayList.add() is amortized O(1)'
+            }
+          },
+          practice: [
+            {
+              title: 'Analyze growth',
+              problems: [
+                'Why is doubling the capacity important?',
+                'What if ArrayList only grew by 1 each time?'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u6-3',
+          title: 'Maps 101: key→value with safe updates',
+          description: 'Master HashMap basics including counting patterns and safe initialization',
+          content: {
+            keyPoints: [
+              'A Map<K,V> stores one value for each unique key.',
+              'Use map.keySet() to iterate over all keys.',
+              'map.get(key) returns null if the key is missing, which can cause NullPointerException when you do arithmetic.',
+              'Use getOrDefault(key, 0) to provide a safe default value.',
+              'Counting with a map is typically O(N) where N is the number of items processed.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `Map<String, Integer> freq = new HashMap<>();
+for (String w : words) {
+  // Safe counting: no NullPointerException
+  freq.put(w, freq.getOrDefault(w, 0) + 1);
+}
+
+// Iterate over results
+for (String k : freq.keySet()) {
+  System.out.println(k + " -> " + freq.get(k));
+}`,
+              caption: 'Safe word frequency counting with getOrDefault'
+            }
+          },
+          practice: [
+            {
+              title: 'Counting practice',
+              problems: [
+                'Count character frequencies in a string',
+                'Find the most common word in a list'
+              ]
+            }
+          ],
+          quiz: []
+        }
+      ],
+      finalLab: {
+        title: 'Lab 6 — Efficient Text Analysis',
+        spec: ['Build a word frequency analyzer that handles large texts efficiently.'],
+        tasks: [
+          'Read a text file and split into words',
+          'Count word frequencies using HashMap',
+          'Find the top 10 most frequent words',
+          'Compare ArrayList vs HashSet for unique word counting',
+          'Measure and report timing differences'
+        ],
+        extension: ['Add filtering for common "stop words"']
+      },
+      finalProject: {
+        title: 'Project P6 — Performance Analyzer',
+        spec: ['Create a tool that compares algorithm performance.'],
+        focus: ['HashMap usage, ArrayList amortization, StringBuilder efficiency']
+      },
+      checklist: [
+        'Understand why repeated string concatenation is O(N²)',
+        'Use StringBuilder for building strings in loops',
+        'Know that ArrayList.add() is amortized O(1)',
+        'Use getOrDefault() to safely count with maps',
+        'Iterate maps with keySet()'
+      ]
+    },
+    {
+      unitId: 'u7',
+      unitNumber: 7,
+      title: 'Maps under the hood: hashing and buckets',
+      overview: [
+        'Learn how hashing turns objects into bucket indices for O(1) lookup.',
+        'Understand hash table internals: buckets, collisions, and the equals/hashCode contract.',
+        'Use advanced map patterns like computeIfAbsent() for complex values.'
+      ],
+      subUnits: [
+        {
+          id: 'u7-1',
+          title: 'Intuition for hashing',
+          description: 'Learn how hashing turns objects into bucket indices for fast lookup',
+          content: {
+            keyPoints: [
+              'Hashing turns an object into a big integer (its hash code) using .hashCode().',
+              'That integer is mapped to a small bucket index using hash % tableSize.',
+              'You only search the items in that one bucket, so lookups are O(1) on average.',
+              'Collisions happen when different keys map to the same bucket—handled by keeping a list per bucket.',
+              'The "locker/bucket picture": keys like "hello" and "cat" might land in bucket 1, while "dog" lands in bucket 4.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// Simplified hashing concept
+int hashCode = key.hashCode();
+int bucketIndex = Math.abs(hashCode) % tableSize;
+// Look only in bucket[bucketIndex]
+
+// Example hash codes
+"hello".hashCode(); // returns some big integer
+"cat".hashCode();   // returns a different integer`,
+              caption: 'How hashing maps keys to bucket indices'
+            }
+          },
+          practice: [
+            {
+              title: 'Hash exploration',
+              problems: [
+                'Print hash codes for several strings',
+                'Explain why collisions can happen'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u7-2',
+          title: 'From client to implementer',
+          description: 'Understand what happens inside HashSet and HashMap',
+          content: {
+            keyPoints: [
+              'ArrayList.add() is amortized O(1) due to doubling strategy.',
+              'HashSet/HashMap give O(1) add/contains/remove in the average case by routing each key to its bucket.',
+              'Inside: Java\'s hash tables keep an array of buckets, each holding a small list of items that collided.',
+              'Find flow: Compute bucket index → scan that bucket\'s list → compare with .equals().',
+              'If equals() and hashCode() are inconsistent, HashSet/HashMap won\'t work correctly.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// Using computeIfAbsent for complex values
+Map<String, List<Integer>> positions = new HashMap<>();
+for (int i = 0; i < words.size(); i++) {
+  positions.computeIfAbsent(words.get(i), k -> new ArrayList<>()).add(i);
+}
+// Maps each word to all positions where it appears`,
+              caption: 'Advanced map pattern: storing lists as values'
+            }
+          },
+          practice: [
+            {
+              title: 'Implementation understanding',
+              problems: [
+                'Draw a hash table with 5 buckets and show where keys land',
+                'Explain why equals() and hashCode() must be consistent'
+              ]
+            }
+          ],
+          quiz: []
+        }
+      ],
+      finalLab: {
+        title: 'Lab 7 — Hash Table Exploration',
+        spec: ['Explore hash codes and collision patterns.'],
+        tasks: [
+          'Print hash codes for a list of strings',
+          'Group strings by their bucket index (hash % 10)',
+          'Find strings that collide in a small hash table',
+          'Implement a simple bucket visualization',
+          'Test HashMap performance vs ArrayList for membership tests'
+        ],
+        extension: ['Research hash collision attacks']
+      },
+      finalProject: {
+        title: 'Project P7 — Collision Analyzer',
+        spec: ['Build a tool to visualize hash distribution.'],
+        focus: ['Understanding hashing, collisions, and bucket load']
+      },
+      checklist: [
+        'Understand how hashing maps keys to buckets',
+        'Know that collisions are handled with lists per bucket',
+        'Explain why HashMap is O(1) average case',
+        'Know the importance of consistent equals() and hashCode()',
+        'Use computeIfAbsent() for complex map values'
+      ]
+    },
+    {
+      unitId: 'u8',
+      unitNumber: 8,
+      title: 'Big-Oh and the Markov warm-up',
+      overview: [
+        'Learn the formal definition of Big-O notation and how to analyze complexity.',
+        'Compare ArrayList vs HashSet performance for unique-word tracking (O(N²) vs O(N)).',
+        'Understand dynamic dispatch and how it affects runtime performance.'
+      ],
+      subUnits: [
+        {
+          id: 'u8-1',
+          title: 'From intuition to formalism',
+          description: 'Learn the formal definition of Big-O notation',
+          content: {
+            keyPoints: [
+              'Intuition: As N grows, the leading term dominates—so 3N + 44 and 15N + 2 are both O(N).',
+              'N² - 6N is O(N²) because the N² term grows much faster than N.',
+              'Formal Big-O: "T(N) is O(g(N)) if the ratio T(N)/g(N) stays bounded by a constant for large N."',
+              'We drop constant factors and lower-order terms: 5N² + 100N becomes O(N²).',
+              'In CS 201, we mostly use the intuition, but it\'s good to know the formal definition exists.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// O(N): single pass
+for (int i = 0; i < N; i++) {
+  // constant work
+}
+
+// O(N²): nested loops
+for (int i = 0; i < N; i++) {
+  for (int j = 0; j < N; j++) {
+    // constant work
+  }
+}
+
+// O(N log N): divide and conquer
+Collections.sort(list); // uses merge sort`,
+              caption: 'Common Big-O examples'
+            }
+          },
+          practice: [
+            {
+              title: 'Complexity analysis',
+              problems: [
+                'Identify the Big-O of: for(i=0; i<N; i++) for(j=i; j<N; j++)',
+                'Why is 1000N + 50000 still O(N)?'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u8-2',
+          title: 'Unique-words example: ArrayList vs HashSet',
+          description: 'Compare O(N²) ArrayList approach with O(N) HashSet approach',
+          content: {
+            keyPoints: [
+              'Checking "is this word new?" with ArrayList.contains() is O(N) for each word.',
+              'If all N words are different, total time is 1 + 2 + … + N = O(N²).',
+              'Switching to HashSet makes each contains() check O(1) average case.',
+              'With HashSet, the whole pass becomes O(N) for N words.',
+              'This shows how data structure choice dramatically affects performance at scale.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// O(N²) worst-case: ArrayList.contains is O(N)
+List<String> uniq = new ArrayList<>();
+for (String w : words) {
+  if (!uniq.contains(w)) {
+    uniq.add(w);
+  }
+}
+
+// O(N) average-case: HashSet.add is O(1)
+Set<String> uniq2 = new HashSet<>();
+for (String w : words) {
+  uniq2.add(w);  // automatically handles duplicates
+}`,
+              caption: 'Performance difference between ArrayList and HashSet for deduplication'
+            }
+          },
+          practice: [
+            {
+              title: 'Performance comparison',
+              problems: [
+                'Time both approaches with 10,000 random words',
+                'Graph the time difference as N grows'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u8-3',
+          title: 'A note on dynamic dispatch (what actually runs)',
+          description: 'Understand how Java decides which method to call at runtime',
+          content: {
+            keyPoints: [
+              'When you call x.contains(w), Java decides at runtime which contains() to use.',
+              'If x is an ArrayList, it uses ArrayList.contains() which is O(N).',
+              'If x is a HashSet, it uses HashSet.contains() which is O(1) average.',
+              'This is called dynamic dispatch or runtime polymorphism.',
+              'The reference type (e.g., Collection<String>) doesn\'t determine performance—the actual object type does.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `Collection<String> x = new ArrayList<>();
+x.add("hello");
+x.contains("hello"); // calls ArrayList.contains() - O(N)
+
+Collection<String> y = new HashSet<>();
+y.add("hello");
+y.contains("hello"); // calls HashSet.contains() - O(1)
+
+// Same method call, different performance!`,
+              caption: 'Dynamic dispatch determines which method actually runs'
+            }
+          },
+          practice: [
+            {
+              title: 'Dispatch exploration',
+              problems: [
+                'Create a Collection reference to an ArrayList, measure contains()',
+                'Change to HashSet, measure again'
+              ]
+            }
+          ],
+          quiz: []
+        }
+      ],
+      finalLab: {
+        title: 'Lab 8 — Markov Text Generator Prep',
+        spec: ['Build a simple Markov chain text generator.'],
+        tasks: [
+          'Read a text file and split into words',
+          'Build a map from each word to its possible next words',
+          'Generate random text by following the chain',
+          'Compare ArrayList vs HashSet for unique word tracking',
+          'Analyze the Big-O of your implementation'
+        ],
+        extension: ['Use 2-word prefixes instead of single words']
+      },
+      finalProject: {
+        title: 'Project P8 — Markov Text Generator',
+        spec: ['Create a full Markov chain text generator with configurable order.'],
+        focus: ['HashMap usage, Big-O analysis, dynamic dispatch understanding']
+      },
+      checklist: [
+        'Understand formal Big-O definition',
+        'Identify leading terms in complexity expressions',
+        'Know why ArrayList.contains is O(N) and HashSet.contains is O(1)',
+        'Understand dynamic dispatch / runtime polymorphism',
+        'Analyze code to determine Big-O complexity'
+      ]
+    },
+    {
+      unitId: 'u9',
+      unitNumber: 9,
+      title: 'Map review, anagrams, and "arrays as maps"',
+      overview: [
+        'Master core map operations: put, get, keySet(), and safe updates.',
+        'Use sorted strings as keys to group anagrams efficiently.',
+        'Learn to use int[] as a fast "map" for character frequency counting.'
+      ],
+      subUnits: [
+        {
+          id: 'u9-1',
+          title: 'Map concepts reinforced',
+          description: 'Review core map operations and patterns',
+          content: {
+            keyPoints: [
+              'A map associates each key with a value—keys are unique.',
+              'Common operations: put(key, value), get(key), containsKey(key), keySet().',
+              'Iterate over all entries with for (K key : map.keySet()).',
+              'Use getOrDefault(key, defaultValue) to avoid null when counting.',
+              'Maps are essential for grouping, counting, and indexing patterns.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `Map<String, Integer> ages = new HashMap<>();
+ages.put("Alice", 25);
+ages.put("Bob", 30);
+
+// Check if key exists
+if (ages.containsKey("Alice")) {
+  System.out.println(ages.get("Alice"));
+}
+
+// Iterate
+for (String name : ages.keySet()) {
+  System.out.println(name + " is " + ages.get(name));
+}`,
+              caption: 'Basic map operations'
+            }
+          },
+          practice: [
+            {
+              title: 'Map operations',
+              problems: [
+                'Create a map of student names to grades',
+                'Find the average grade using iteration'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u9-2',
+          title: 'Anagrams via a canonicalized key',
+          description: 'Use sorted strings as keys to group anagrams',
+          content: {
+            keyPoints: [
+              'Anagrams are words with the same letters in different order: "listen" and "silent".',
+              'If you sort the letters of a word, anagrams produce the same sorted string.',
+              'Use the sorted string as the map key; the value is the list of anagrams.',
+              'Encapsulating "sorted vs. unsorted" in a helper class (like AnaWord) hides details.',
+              'Make sure equals() and hashCode() use the sorted form for consistent hashing.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `Map<String, List<String>> anagrams = new HashMap<>();
+
+for (String word : dictionary) {
+  String key = sortLetters(word); // "listen" -> "eilnst"
+  anagrams.computeIfAbsent(key, k -> new ArrayList<>()).add(word);
+}
+
+// Helper method
+private String sortLetters(String word) {
+  char[] chars = word.toCharArray();
+  Arrays.sort(chars);
+  return new String(chars);
+}`,
+              caption: 'Grouping anagrams using sorted letters as keys'
+            }
+          },
+          practice: [
+            {
+              title: 'Anagram finder',
+              problems: [
+                'Build an anagram finder for a dictionary file',
+                'Find the largest group of anagrams'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u9-3',
+          title: 'Safer insertion: putIfAbsent vs containsKey',
+          description: 'Learn modern map patterns for conditional insertion',
+          content: {
+            keyPoints: [
+              'Old pattern: if (!map.containsKey(k)) map.put(k, value);',
+              'm.putIfAbsent(k, value) does the same thing in one call.',
+              'computeIfAbsent(k, lambda) is even better—it only creates the value if needed.',
+              'This avoids creating throwaway objects when the key already exists.',
+              'Example: map.computeIfAbsent(word, k -> new ArrayList<>()).add(index);'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// Old way: verbose and creates unnecessary objects
+if (!map.containsKey(word)) {
+  map.put(word, new ArrayList<>());
+}
+map.get(word).add(position);
+
+// Better: putIfAbsent
+map.putIfAbsent(word, new ArrayList<>());
+map.get(word).add(position);
+
+// Best: computeIfAbsent (Java 8+)
+map.computeIfAbsent(word, k -> new ArrayList<>()).add(position);`,
+              caption: 'Evolution of map insertion patterns'
+            }
+          },
+          practice: [
+            {
+              title: 'Modern map patterns',
+              problems: [
+                'Refactor code using containsKey to use computeIfAbsent',
+                'Benchmark the performance difference'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u9-4',
+          title: '"Arrays as maps" for counting characters',
+          description: 'Use int[] as a fast map for character frequencies',
+          content: {
+            keyPoints: [
+              'A char in Java is essentially a small integer (0-65535).',
+              'An int[] can act like a map from character codes to counts.',
+              'This is much faster than HashMap for character-level work.',
+              'Example: int[] counts = new int[256]; then counts[c]++ for each char c.',
+              'Useful for APTs like Anonymous where you compare character frequencies.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// Count character frequencies using array as map
+int[] counts = new int[256]; // supports ASCII
+for (char c : headline.toCharArray()) {
+  counts[c]++;
+}
+
+// Check if character exists
+if (counts['a'] > 0) {
+  System.out.println("Found 'a' " + counts['a'] + " times");
+}
+
+// Compare two strings' character counts
+boolean sameChars = Arrays.equals(counts1, counts2);`,
+              caption: 'Using arrays as maps for character counting'
+            }
+          },
+          practice: [
+            {
+              title: 'Character counting',
+              problems: [
+                'Count letter frequencies in a paragraph',
+                'Check if two strings are anagrams using int[] counts'
+              ]
+            }
+          ],
+          quiz: []
+        }
+      ],
+      finalLab: {
+        title: 'Lab 9 — Anagram Detector',
+        spec: ['Build a complete anagram detection and grouping system.'],
+        tasks: [
+          'Read a dictionary file',
+          'Group words by their sorted letter signature',
+          'Find the largest anagram group',
+          'Implement character frequency comparison using int[]',
+          'Compare HashMap vs array-based approaches'
+        ],
+        extension: ['Add wildcard support for anagram puzzles']
+      },
+      finalProject: {
+        title: 'Project P9 — Word Game Helper',
+        spec: ['Create a tool for word games like Scrabble and anagrams.'],
+        focus: ['Anagram detection, character counting, efficient map usage']
+      },
+      checklist: [
+        'Master map iteration with keySet()',
+        'Use sorted strings as keys for anagram grouping',
+        'Prefer computeIfAbsent over containsKey + put',
+        'Use int[] as a fast "map" for character frequencies',
+        'Understand when to use HashMap vs array-based counting'
+      ]
+    },
+    {
+      unitId: 'u10',
+      unitNumber: 10,
+      title: 'Big-O review, Map gotchas, and Probability (SUHA)',
+      overview: [
+        'Use getOrDefault() and merge() to avoid NullPointerException in map counting.',
+        'Analyze common loop patterns to determine Big-O complexity.',
+        'Understand SUHA (Simple Uniform Hashing Assumption) and hash collision attacks.'
+      ],
+      subUnits: [
+        {
+          id: 'u10-1',
+          title: 'Safer counting with getOrDefault',
+          description: 'Avoid NullPointerException when working with map values',
+          content: {
+            keyPoints: [
+              'map.get("hello") returns null if the key is missing.',
+              'Doing map.get("hello") + 1 throws NullPointerException if "hello" isn\'t in the map.',
+              'Use getOrDefault(key, 0) to provide a safe default: counts.put(w, counts.getOrDefault(w, 0) + 1);',
+              'Alternative: use merge(key, 1, Integer::sum) which handles the null case automatically.',
+              'These patterns make counting code robust and concise.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `Map<String, Integer> counts = new HashMap<>();
+
+// Unsafe: throws NPE if word not in map
+// counts.put(word, counts.get(word) + 1); // DON'T DO THIS
+
+// Safe: getOrDefault
+counts.put(word, counts.getOrDefault(word, 0) + 1);
+
+// Also safe: merge (Java 8+)
+counts.merge(word, 1, Integer::sum);
+
+// Both handle missing keys correctly`,
+              caption: 'Safe counting patterns that avoid NullPointerException'
+            }
+          },
+          practice: [
+            {
+              title: 'Safe map updates',
+              problems: [
+                'Refactor unsafe counting code to use getOrDefault',
+                'Try merge() and compare readability'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u10-2',
+          title: 'Big-O practice patterns',
+          description: 'Analyze common loop patterns to determine complexity',
+          content: {
+            keyPoints: [
+              'Count constant-time operations, then reason about loops (outer × inner).',
+              'Many nested-loop snippets are O(N²): for(i) { for(j) { … } }',
+              'Some patterns yield O(N log N): divide-and-conquer algorithms like merge sort.',
+              'Growing by factors gives O(log N): for (i=1; i<N; i*=2) is O(log N).',
+              'Triangular loops are still O(N²): for(i=0; i<N; i++) for(j=i; j<N; j++) does N(N+1)/2 iterations.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// O(N): single pass
+for (int i = 0; i < N; i++) { /* constant work */ }
+
+// O(N²): all pairs
+for (int i = 0; i < N; i++) {
+  for (int j = 0; j < N; j++) { /* constant work */ }
+}
+
+// O(N²): triangular (still quadratic)
+for (int i = 0; i < N; i++) {
+  for (int j = i; j < N; j++) { /* constant work */ }
+}
+
+// O(N log N): outer loop N times, inner log N
+for (int i = 0; i < N; i++) {
+  for (int j = 1; j < N; j *= 2) { /* constant work */ }
+}
+
+// O(log N): doubling
+for (int i = 1; i < N; i *= 2) { /* constant work */ }`,
+              caption: 'Common loop patterns and their Big-O complexity'
+            }
+          },
+          practice: [
+            {
+              title: 'Complexity analysis practice',
+              problems: [
+                'Determine Big-O for: for(i=0;i<N;i++) for(j=0;j<i;j++)',
+                'What about: for(i=N;i>0;i/=2)?',
+                'Analyze: Collections.sort() followed by a single pass'
+              ]
+            }
+          ],
+          quiz: []
+        },
+        {
+          id: 'u10-3',
+          title: 'Why HashMap is "O(1) on average"',
+          description: 'Understand the assumptions behind HashMap performance and potential attacks',
+          content: {
+            keyPoints: [
+              'Simple Uniform Hashing Assumption (SUHA): a good hash spreads keys evenly across buckets.',
+              'With even distribution, each bucket holds O(1) items on average, giving O(1) operations.',
+              'Real-world hash functions can be attacked with hash flooding: many keys designed to collide.',
+              'Hash flooding forces all keys into one bucket, degrading performance toward O(N) or O(N²).',
+              'Java adds defenses (like switching to trees for large buckets), but you should still think about worst-case behavior.',
+              'For CS 201: assume SUHA unless told otherwise, but know that worst-case exists.'
+            ],
+            codeExample: {
+              language: 'java',
+              code: `// Average case: O(1) per operation
+Map<String, Integer> map = new HashMap<>();
+for (String word : words) {
+  map.put(word, map.getOrDefault(word, 0) + 1); // O(1) per word
+}
+// Total: O(N) for N words
+
+// Worst case (with malicious hash collision):
+// All keys hash to same bucket → O(N) per operation
+// Total: O(N²) for N words
+// (Java mitigates this with tree buckets in Java 8+)`,
+              caption: 'HashMap performance depends on hash distribution'
+            }
+          },
+          practice: [
+            {
+              title: 'Hash distribution exploration',
+              problems: [
+                'Research hash collision attacks (e.g., HashDoS)',
+                'Explain why Java 8 switched to tree buckets for large collisions',
+                'When would you use TreeMap instead of HashMap?'
+              ]
+            }
+          ],
+          quiz: []
+        }
+      ],
+      finalLab: {
+        title: 'Lab 10 — Complexity & Security Analysis',
+        spec: ['Analyze and optimize code for both correctness and performance.'],
+        tasks: [
+          'Profile code to identify O(N²) bottlenecks',
+          'Refactor using HashMap to achieve O(N)',
+          'Use getOrDefault() safely in all counting code',
+          'Research and explain SUHA',
+          'Write test cases that explore worst-case behavior'
+        ],
+        extension: ['Implement a simple hash table from scratch']
+      },
+      finalProject: {
+        title: 'Project P10 — Performance Profiler',
+        spec: ['Build a tool that profiles code and suggests optimizations.'],
+        focus: ['Big-O analysis, safe map operations, understanding amortization and hashing']
+      },
+      checklist: [
+        'Always use getOrDefault() or merge() when counting with maps',
+        'Analyze loop patterns to determine Big-O complexity',
+        'Understand SUHA and why HashMap is O(1) average case',
+        'Know about hash collision attacks and Java\'s defenses',
+        'Be able to identify and fix O(N²) bottlenecks'
       ]
     }
   ]
