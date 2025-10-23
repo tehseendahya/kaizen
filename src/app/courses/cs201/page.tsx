@@ -13,9 +13,8 @@ import Link from 'next/link';
 import { cs201Data, SubUnit } from '@/data/study/cs201-subunits';
 import CodeBlock from '@/components/study/CodeBlock';
 import Quiz from '@/components/study/Quiz';
-import Checklist from '@/components/study/Checklist';
 
-type ViewMode = 'overview' | 'subunit' | 'lab' | 'project' | 'checklist';
+type ViewMode = 'overview' | 'subunit';
 
 export default function CS201Course() {
   const [selectedUnitIndex, setSelectedUnitIndex] = useState(0);
@@ -109,51 +108,6 @@ export default function CS201Course() {
               </div>
             </button>
           ))}
-        </div>
-      </div>
-
-      {/* Quick access to lab and project */}
-      <div className="mb-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-6">Hands-on activities</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <button
-            onClick={() => setViewMode('lab')}
-            className="p-5 rounded-xl border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 hover:border-purple-400 transition-all text-left group cursor-pointer"
-          >
-            <div className="flex items-center space-x-3 mb-2">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg>
-              <span className="font-semibold text-purple-900">Lab</span>
-            </div>
-            <p className="text-sm text-gray-700">{selectedUnit.finalLab.title}</p>
-          </button>
-          
-          <button
-            onClick={() => setViewMode('project')}
-            className="p-5 rounded-xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 hover:border-orange-400 transition-all text-left group cursor-pointer"
-          >
-            <div className="flex items-center space-x-3 mb-2">
-              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <span className="font-semibold text-orange-900">Project</span>
-            </div>
-            <p className="text-sm text-gray-700">{selectedUnit.finalProject.title}</p>
-          </button>
-          
-          <button
-            onClick={() => setViewMode('checklist')}
-            className="p-5 rounded-xl border-2 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 hover:border-green-400 transition-all text-left group cursor-pointer"
-          >
-            <div className="flex items-center space-x-3 mb-2">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-              <span className="font-semibold text-green-900">Checklist</span>
-            </div>
-            <p className="text-sm text-gray-700">Unit mastery checklist</p>
-          </button>
         </div>
       </div>
 
@@ -301,109 +255,6 @@ export default function CS201Course() {
     );
   };
 
-  const renderLab = () => (
-    <div className="w-full space-y-6">
-      <button
-        onClick={backToOverview}
-        className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm cursor-pointer"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        <span>Back to overview</span>
-      </button>
-      
-      <h1 className="text-4xl font-bold text-gray-900">{selectedUnit.finalLab.title}</h1>
-      
-      <div className="border-2 border-purple-300 rounded-xl p-6 bg-gradient-to-r from-purple-50 to-pink-50">
-        <h3 className="font-bold text-lg mb-4 text-purple-900">Specification</h3>
-        <ul className="space-y-2 mb-6">
-          {selectedUnit.finalLab.spec.map((item, index) => (
-            <li key={index} className="text-gray-800 pl-3 border-l-2 border-purple-400">
-              {item}
-            </li>
-          ))}
-        </ul>
-        
-        <h3 className="font-bold text-lg mb-4 text-purple-900">Tasks</h3>
-        <ol className="space-y-2 mb-6 list-decimal list-inside">
-          {selectedUnit.finalLab.tasks.map((task, index) => (
-            <li key={index} className="text-gray-800 pl-2">{task}</li>
-          ))}
-        </ol>
-        
-        {selectedUnit.finalLab.extension && (
-          <>
-            <h3 className="font-bold text-lg mb-4 text-purple-900">Extension</h3>
-            <ul className="space-y-2">
-              {selectedUnit.finalLab.extension.map((item, index) => (
-                <li key={index} className="text-gray-800 pl-3 border-l-2 border-purple-400">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderProject = () => (
-    <div className="w-full space-y-6">
-      <button
-        onClick={backToOverview}
-        className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm cursor-pointer"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        <span>Back to overview</span>
-      </button>
-      
-      <h1 className="text-4xl font-bold text-gray-900">{selectedUnit.finalProject.title}</h1>
-      
-      <div className="border-2 border-orange-300 rounded-xl p-6 bg-gradient-to-r from-orange-50 to-amber-50">
-        <h3 className="font-bold text-lg mb-4 text-orange-900">Specification</h3>
-        <ul className="space-y-2 mb-6">
-          {selectedUnit.finalProject.spec.map((item, index) => (
-            <li key={index} className="text-gray-800 pl-3 border-l-2 border-orange-400">
-              {item}
-            </li>
-          ))}
-        </ul>
-        
-        <h3 className="font-bold text-lg mb-4 text-orange-900">Focus Areas</h3>
-        <ul className="space-y-2">
-          {selectedUnit.finalProject.focus.map((item, index) => (
-            <li key={index} className="flex items-start">
-              <span className="text-orange-600 mr-3 flex-shrink-0">★</span>
-              <span className="text-gray-800">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-
-  const renderChecklist = () => (
-    <div className="w-full space-y-6">
-      <button
-        onClick={backToOverview}
-        className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm cursor-pointer"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        <span>Back to overview</span>
-      </button>
-      
-      <h1 className="text-4xl font-bold text-gray-900 mb-3">Unit Mastery Checklist</h1>
-      <p className="text-lg text-gray-600 mb-6">Track your progress through Unit {selectedUnit.unitNumber}</p>
-      
-      <Checklist unitId={selectedUnit.unitId} items={selectedUnit.checklist} />
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col relative">
       {/* Header */}
@@ -519,83 +370,13 @@ export default function CS201Course() {
                                 }`}>
                                   {isActiveSubUnit && (
                                     <div className="w-2.5 h-2.5 rounded-full bg-blue-900"></div>
-                                  )}
-                                </div>
+                )}
+              </div>
                                 <span className="text-sm">{subUnit.title}</span>
-                              </div>
-                      </button>
+      </div>
+                  </button>
                           );
                         })}
-                        
-                        {/* Additional resources */}
-                        <div className="pt-2 mt-2 border-t border-gray-200 space-y-1">
-                  <button
-                            onClick={() => {
-                              setViewMode('lab');
-                              setSidebarOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-3 rounded-lg transition-all cursor-pointer ${
-                              viewMode === 'lab' ? 'bg-blue-900 text-white' : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                viewMode === 'lab' 
-                                  ? 'border-white bg-white' 
-                                  : 'border-gray-400'
-                              }`}>
-                                {viewMode === 'lab' && (
-                                  <div className="w-2.5 h-2.5 rounded-full bg-blue-900"></div>
-                                )}
-                              </div>
-                              <span className="text-sm">Lab</span>
-                            </div>
-                  </button>
-                        <button
-                            onClick={() => {
-                              setViewMode('project');
-                              setSidebarOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-3 rounded-lg transition-all cursor-pointer ${
-                              viewMode === 'project' ? 'bg-blue-900 text-white' : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                viewMode === 'project' 
-                                  ? 'border-white bg-white' 
-                                  : 'border-gray-400'
-                              }`}>
-                                {viewMode === 'project' && (
-                                  <div className="w-2.5 h-2.5 rounded-full bg-blue-900"></div>
-                                )}
-                              </div>
-                              <span className="text-sm">Project</span>
-                            </div>
-                        </button>
-                  <button
-                            onClick={() => {
-                              setViewMode('checklist');
-                              setSidebarOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-3 rounded-lg transition-all cursor-pointer ${
-                              viewMode === 'checklist' ? 'bg-blue-900 text-white' : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                viewMode === 'checklist' 
-                                  ? 'border-white bg-white' 
-                                  : 'border-gray-400'
-                              }`}>
-                                {viewMode === 'checklist' && (
-                                  <div className="w-2.5 h-2.5 rounded-full bg-blue-900"></div>
-                                )}
-                              </div>
-                              <span className="text-sm">Checklist</span>
-                            </div>
-                  </button>
-                </div>
               </div>
             )}
           </div>
@@ -609,9 +390,6 @@ export default function CS201Course() {
         <main id="course-content" className="flex-1 overflow-y-auto p-6 lg:p-8">
           {viewMode === 'overview' && renderOverview()}
           {viewMode === 'subunit' && renderSubUnit()}
-          {viewMode === 'lab' && renderLab()}
-          {viewMode === 'project' && renderProject()}
-          {viewMode === 'checklist' && renderChecklist()}
         </main>
       </div>
       {/* Gary entry button + highlight popover + chat sidebar (CS201 only) */}

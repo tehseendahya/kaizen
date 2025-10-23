@@ -3,6 +3,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PenguinAvatar from './PenguinAvatar';
 import { sendChat } from '@/lib/ai/client';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
+import 'katex/dist/katex.min.css';
 
 type Msg = { id: string; role: 'user' | 'assistant'; content: string };
 
@@ -127,7 +133,31 @@ export default function ChatSidebar({
                 ? 'bg-white text-gray-800 border-2 border-blue-100' 
                 : 'bg-blue-600 text-white'
             }`}>
-              <div className="text-sm leading-relaxed whitespace-pre-wrap">{m.content}</div>
+              {m.role === 'assistant' ? (
+                <div className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-800 prose-strong:text-gray-900 prose-code:text-blue-700 prose-pre:bg-gray-100 prose-pre:text-gray-900">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex, rehypeRaw]}
+                    components={{
+                      code({ node, inline, className, children, ...props }: any) {
+                        return inline ? (
+                          <code className="bg-blue-50 text-blue-700 px-1 py-0.5 rounded text-xs" {...props}>
+                            {children}
+                          </code>
+                        ) : (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        );
+                      }
+                    }}
+                  >
+                    {m.content}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <div className="text-sm leading-relaxed whitespace-pre-wrap">{m.content}</div>
+              )}
             </div>
           </div>
         ))}
