@@ -1,0 +1,43 @@
+[
+  {
+    "slug": "cs201",
+    "code": "CS201",
+    "title": "Data Structures and Algorithms",
+    "level": "Intermediate",
+    "lessons": 18,
+    "weeks": 12,
+    "instructor": "Dr. Owen Astrachan",
+    "description": "Fundamental data structures and algorithms in Java."
+  },
+  {
+    "slug": "phys152",
+    "code": "PHYS 152",
+    "title": "Electricity & Magnetism",
+    "level": "Intermediate",
+    "lessons": 35,
+    "weeks": 14,
+    "instructor": "Dr. Sarah Chen",
+    "description": "Vector fields, Gauss’s law, circuits, induction, Maxwell."
+  },
+  {
+    "slug": "cs101",
+    "code": "CS101",
+    "title": "Introduction to Programming",
+    "level": "Beginner",
+    "lessons": 24,
+    "weeks": 8,
+    "instructor": "Prof. Jane Smith",
+    "description": "Intro to CS and Python fundamentals."
+  },
+  {
+    "slug": "cs301",
+    "code": "CS301",
+    "title": "Software Engineering",
+    "level": "Advanced",
+    "lessons": 16,
+    "weeks": 10,
+    "instructor": "Dr. Michael Johnson",
+    "description": "Design patterns, testing, and project management."
+  }
+]
+
