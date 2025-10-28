@@ -7,6 +7,7 @@
 'use client';
 
 import { useState } from 'react';
+import { axis } from '@/lib/theme';
 import ChatSidebar from '@/components/ai/ChatSidebar';
 import HighlightPopover from '@/components/ai/HighlightPopover';
 import Link from 'next/link';
@@ -50,58 +51,73 @@ export default function CS201Course() {
   };
 
   const renderOverview = () => (
-    <div className="w-full">
-      {/* Up next section */}
-      <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-lg p-6">
-        <div className="flex items-start space-x-3">
-          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="w-full space-y-6">
+      {/* Up next section – homepage-style card */}
+      <div className={`${axis.card} ${axis.cardHover} p-6`}>
+        <div className="flex items-start gap-3 justify-between">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-700 inline-flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
+            </div>
+            <div>
+              <p className={`${axis.meta}`}>Up next for you</p>
+              <h2 className="text-[18px] font-semibold text-gray-900">Unit {selectedUnit.unitNumber}: {selectedUnit.title}</h2>
+              <div className="mt-3">
+                <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                  <div className="h-full bg-indigo-600" style={{ width: '75%' }} />
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-blue-800 font-medium mb-1">Up next for you:</p>
-            <h2 className="text-2xl font-bold text-gray-900">Unit {selectedUnit.unitNumber}: {selectedUnit.title}</h2>
-          </div>
+          <div className="hidden md:block text-4xl select-none" aria-hidden>📚</div>
         </div>
       </div>
 
-      {/* About section */}
-      <div className="mb-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">About this unit</h3>
-        <ul className="space-y-2 text-gray-700">
+      {/* About section – homepage-style card */}
+      <div className={`${axis.card} p-6`}>
+        <h3 className={`text-[18px] font-semibold text-gray-900 mb-3`}>About this unit</h3>
+        <ul className={`${axis.body} space-y-2`}>
           {selectedUnit.overview.map((point, index) => (
             <li key={index} className="flex items-start">
-              <span className="text-blue-600 mr-2">•</span>
+              <span className="text-green-600 mr-2 mt-0.5">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
               <span className="leading-relaxed">{point}</span>
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Sub-units grid */}
-      <div className="mb-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-6">Topics in this unit</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Sub-units grid – homepage-style cards */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-indigo-600">&lt;/&gt;</span>
+          <h3 className={`text-[15px] font-semibold text-gray-900`}>Topics in this unit</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {selectedUnit.subUnits.map((subUnit, index) => (
             <button
               key={subUnit.id}
               onClick={() => handleSubUnitClick(subUnit, selectedUnitIndex)}
-              className="text-left p-5 rounded-xl border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-all group bg-white cursor-pointer"
+              className={`text-left p-5 ${axis.card} ${axis.cardHover} rounded-2xl group cursor-pointer`}
             >
-              <div className="flex items-start space-x-3 mb-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
+              <div className="flex items-start gap-3 mb-2">
+                <div className="h-6 px-2 rounded-md bg-indigo-600 text-white text-[12px] font-semibold inline-flex items-center justify-center">
                   {index + 1}
                 </div>
-                <h4 className="font-semibold text-gray-900 group-hover:text-blue-700 flex-1 leading-tight">
+                <h4 className="text-[15px] font-semibold text-gray-900 group-hover:text-indigo-700 flex-1 leading-tight">
                   {subUnit.title}
                 </h4>
               </div>
-              <p className="text-sm text-gray-600 ml-11 leading-relaxed">
+              <p className="text-[13px] text-gray-600 ml-10 leading-relaxed">
                 {subUnit.description}
               </p>
-              <div className="mt-3 ml-11 text-sm text-blue-600 font-medium flex items-center">
-                <span>Start learning</span>
+              <div className={`mt-3 ml-10 ${axis.link} text-sm font-medium inline-flex items-center`}>
+                Start learning
                 <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -256,35 +272,29 @@ export default function CS201Course() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col relative">
+    <div className={`min-h-screen ${axis.pageBg} flex flex-col relative`}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/"
-                className="text-blue-600 hover:text-blue-700"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </Link>
-              <div className="h-6 w-px bg-gray-300"></div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">{cs201Data.courseTitle}</h1>
-                <p className="text-xs text-gray-600 hidden sm:block">{cs201Data.courseSubtitle}</p>
-              </div>
+      <header className="bg-white border-b">
+        <div className={`h-16 pt-4 pb-2 flex items-center justify-between ${axis.container}`}>
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/" className={`${axis.link} text-sm flex items-center gap-2`}>
+              <span className="-rotate-180">➜</span> All Courses
+            </Link>
+            <div className="h-4 w-px bg-gray-200" />
+            <div className="truncate">
+              <h1 className={`${axis.h2} truncate`}>{cs201Data.courseTitle}</h1>
+              <p className={`${axis.meta} hidden sm:block`}>{cs201Data.courseSubtitle}</p>
             </div>
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 rounded-md text-gray-600 cursor-pointer"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
           </div>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 rounded-md text-gray-600 cursor-pointer"
+            aria-label="Toggle outline"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -297,35 +307,37 @@ export default function CS201Course() {
       )}
 
       {/* Main Layout */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className={`flex-1 ${axis.container} px-8 py-8`}>
+        <div className="grid grid-cols-1 lg:[grid-template-columns:270px_1fr] gap-8">
         {/* Left Sidebar */}
-        <aside className={`
-          w-80 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto
-          fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto
-          transform transition-transform duration-300
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}
-        style={{ top: '64px', height: 'calc(100vh - 64px)' }}
+        <aside
+          className={`
+            w-[270px] flex-shrink-0 overflow-y-auto
+            fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto
+            transform transition-transform duration-300
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          `}
+          style={{ top: '64px', height: 'calc(100vh - 64px)' }}
         >
-          <div className="p-6">
-            <div className="mb-6 pb-4 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900">Course Content</h2>
-          </div>
-        
-            <nav className="space-y-2">
+          <div className={`bg-white rounded-xl border border-gray-200 shadow-sm p-5`}>
+            <div className="mb-3">
+              <h2 className="text-xs font-semibold text-gray-500 tracking-wide uppercase">Course Outline</h2>
+            </div>
+
+            <nav className="space-y-1">
               {cs201Data.units.map((unit, index) => {
                 const isExpanded = expandedUnits.includes(index);
                 
                 return (
                   <div key={unit.unitId}>
-                    {/* Unit Header */}
+                    {/* Unit Header with slim progress */}
                 <button
                       onClick={() => {
                         setSelectedUnitIndex(index);
                         backToOverview();
                         toggleUnit(index);
                       }}
-                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors text-left group cursor-pointer"
+                      className="w-full flex items-center justify-between px-2 py-2 hover:bg-gray-50 rounded-lg transition-colors text-left group cursor-pointer"
                     >
                       <div className="flex items-center space-x-3 flex-1">
                         <svg
@@ -337,8 +349,11 @@ export default function CS201Course() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900">
+                          <div className="text-[15px] font-semibold text-gray-900">
                             Unit {unit.unitNumber}: {unit.title}
+                          </div>
+                          <div className="mt-2 h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                            <div className={`h-full bg-indigo-600 transition-all duration-300`} style={{ width: `${selectedUnitIndex === index ? 75 : 0}%` }} />
                           </div>
                         </div>
                       </div>
@@ -350,31 +365,21 @@ export default function CS201Course() {
                         {unit.subUnits.map((subUnit) => {
                           const isActiveSubUnit = selectedSubUnit?.id === subUnit.id && viewMode === 'subunit';
                           return (
-                      <button
-                              key={subUnit.id}
-                              onClick={() => {
-                                handleSubUnitClick(subUnit, index);
-                                setSidebarOpen(false);
-                              }}
-                              className={`w-full text-left px-4 py-3 rounded-lg transition-all cursor-pointer ${
+                       <button
+                               key={subUnit.id}
+                               onClick={() => {
+                                 handleSubUnitClick(subUnit, index);
+                                 setSidebarOpen(false);
+                               }}
+                              className={`w-full text-left px-2 py-1.5 rounded-md transition-colors cursor-pointer flex items-center gap-2 ${
                                 isActiveSubUnit
-                                  ? 'bg-blue-900 text-white'
-                                  : 'text-gray-700 hover:bg-gray-50'
+                                  ? 'bg-indigo-50 text-indigo-700 border-l-2 border-indigo-500 pl-3'
+                                  : `${axis.subitem} hover:bg-gray-50`
                               }`}
                             >
-                              <div className="flex items-center space-x-3">
-                                <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                  isActiveSubUnit 
-                                    ? 'border-white bg-white' 
-                                    : 'border-gray-400'
-                                }`}>
-                                  {isActiveSubUnit && (
-                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-900"></div>
-                )}
-              </div>
-                                <span className="text-sm">{subUnit.title}</span>
-      </div>
-                  </button>
+                              <span className="h-2 w-2 rounded-full bg-indigo-400/70" />
+                              <span className="text-[14px]">{subUnit.title}</span>
+                   </button>
                           );
                         })}
               </div>
@@ -387,10 +392,11 @@ export default function CS201Course() {
         </aside>
 
         {/* Main Content */}
-        <main id="course-content" className="flex-1 overflow-y-auto p-6 lg:p-8">
+        <main id="course-content" className="flex-1 overflow-visible">
           {viewMode === 'overview' && renderOverview()}
           {viewMode === 'subunit' && renderSubUnit()}
         </main>
+        </div>
       </div>
       {/* Gary entry button + highlight popover + chat sidebar (CS201 only) */}
       <button

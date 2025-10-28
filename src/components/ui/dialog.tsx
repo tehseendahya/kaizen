@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 type DialogContextValue = {
   open: boolean;
@@ -14,15 +15,37 @@ export function Dialog({ open, onOpenChange, children }: { open: boolean; onOpen
 
 export function DialogContent({ className = "", children }: { className?: string; children: React.ReactNode }) {
   const { open, onOpenChange } = React.useContext(DialogContext);
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  const [mounted, setMounted] = React.useState(false);
+  const portalEl = React.useRef<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    const el = document.createElement("div");
+    el.setAttribute("data-portal", "dialog");
+    document.body.appendChild(el);
+    portalEl.current = el;
+    setMounted(true);
+    return () => {
+      document.body.removeChild(el);
+      portalEl.current = null;
+    };
+  }, []);
+
+  if (!open || !mounted || !portalEl.current) return null;
+
+  const node = (
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={() => onOpenChange?.(false)} />
-      <div className={`relative z-10 w-full max-w-md rounded-lg border bg-white text-slate-900 p-4 shadow-lg ${className}`} role="dialog" aria-modal="true">
+      <div
+        className={`relative z-10 w-full max-w-md rounded-lg border bg-white text-slate-900 p-4 shadow-lg ${className}`}
+        role="dialog"
+        aria-modal="true"
+      >
         {children}
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(node, portalEl.current);
 }
 
 export function DialogHeader({ className = "", children }: { className?: string; children: React.ReactNode }) {
