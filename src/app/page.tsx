@@ -1,117 +1,78 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import WelcomeModal from "@/components/onboarding/WelcomeModal";
-import { getRole, getSelectedCourses } from "@/lib/user/prefs";
-import { getCoursesRepo } from "@/lib/courses/repo";
-import type { Course } from "@/lib/courses/types";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useRouter } from "next/navigation";
+import { todayPlan } from "@/lib/data";
+import PlanItem from "@/components/PlanItem";
 
 export default function HomePage() {
-  const [open, setOpen] = useState(false);
-  const [role, setRoleState] = useState<"student" | "professor" | null>(null);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [allCourses, setAllCourses] = useState<Course[]>([]);
-
-  useEffect(() => {
-    const r = getRole();
-    const s = getSelectedCourses();
-    setRoleState(r);
-    setSelected(s);
-    if (!r) setOpen(true);
-    getCoursesRepo().listAll().then(setAllCourses);
-  }, []);
-
-  const handleClose = () => {
-    setOpen(false);
-    setRoleState(getRole());
-    setSelected(getSelectedCourses());
-  };
-
-  const coursesToShow = useMemo(() => {
-    if (role === "student" && selected.length > 0) {
-      const set = new Set(selected);
-      return allCourses.filter((c) => set.has(c.slug));
-    }
-    return allCourses;
-  }, [role, selected, allCourses]);
-
-  const showAddBanner = role === "student" && selected.length === 0;
-
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="flex items-center justify-between">
-          <div>
-          <h1 className="text-3xl font-semibold text-slate-900">My Courses</h1>
-          <p className="text-sm text-slate-600">Continue your learning journey</p>
-          </div>
-          <Button variant="outline" onClick={() => setOpen(true)}>
-            Change courses
-          </Button>
-        </div>
-
-        {showAddBanner && (
-          <div className="mt-6">
-            <Alert>
-              <AlertTitle>Pick your course(s)</AlertTitle>
-              <AlertDescription>
-                Select the course you’re enrolled in so only relevant content appears here.
-                <Button className="ml-3" size="sm" onClick={() => setOpen(true)}>
-                  Add now
-                </Button>
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
-
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          {coursesToShow.map((course) => (
-            <CourseCard key={course.slug} course={course} />
-          ))}
-        </section>
-
-        <WelcomeModal open={open} onClose={handleClose} />
-      </div>
-    </main>
+    <div className="mx-auto max-w-5xl space-y-8">
+      <WelcomeCard />
+      <SmartRecommendations />
+      <StudyPlan />
+    </div>
   );
 }
 
-function CourseCard({ course }: { course: Course }) {
-  const router = useRouter();
-  const route =
-    course.slug === "cs201"
-      ? "/courses/cs201"
-      : course.slug === "phys152"
-      ? "/courses/physics-152"
-      : course.slug === "cs101"
-      ? "/courses/cs101"
-      : course.slug === "cs301"
-      ? "/courses/cs301"
-      : "#";
-  const canNavigate = route !== "#";
+function WelcomeCard() {
   return (
-    <div className="rounded-xl border border-slate-200 p-4 shadow-sm bg-white">
-      <div className="flex items-start justify-between">
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm text-slate-600">{course.code}</div>
-          <h3 className="text-lg font-semibold text-slate-900">{course.title}</h3>
+          <h2 className="text-xl font-semibold text-slate-900">Welcome back, Sarah 👋</h2>
+          <p className="text-sm text-slate-600">Here’s your progress and what’s next for today.</p>
         </div>
-        <span className="text-xs rounded-full px-2 py-1 bg-slate-100">{course.level}</span>
+        <Button disabled aria-disabled="true" title="Coming soon" className="pointer-events-none opacity-60 cursor-not-allowed">View Analytics</Button>
       </div>
-      <p className="text-sm text-slate-600 mt-2 line-clamp-2">{course.description}</p>
-      <div className="flex items-center justify-between text-xs mt-4 text-slate-600">
-        <div>{course.weeks} weeks</div>
-        <div>{course.lessons} lessons</div>
+      <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="flex items-center gap-3 text-sm">
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-700">✓</span>
+          <span>You’ve completed 3 of 5 modules this week</span>
+          <span className="ml-auto text-slate-600">60%</span>
+        </div>
+        <div className="mt-3 h-2 w-full rounded-full bg-slate-200">
+          <div className="h-2 w-[60%] rounded-full bg-indigo-500" />
+        </div>
       </div>
-      <Button
-        className="w-full mt-4"
-        onClick={() => canNavigate && router.push(route)}
-        disabled={!canNavigate}
-      >
-        Start Course
-      </Button>
+    </section>
+  );
+}
+
+function SmartRecommendations() {
+  const Card = ({ title, desc, cta }: { title: string; desc: string; cta: string }) => (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="text-slate-900 font-medium">{title}</div>
+      <div className="text-sm text-slate-600 mt-1">{desc}</div>
+      <div className="mt-4">
+        <Button disabled aria-disabled="true" title="Coming soon" className="pointer-events-none opacity-60 cursor-not-allowed">
+          {cta} →
+        </Button>
+      </div>
     </div>
+  );
+  return (
+    <section>
+      <h3 className="mb-3 text-sm font-semibold text-slate-900">Smart Recommendations</h3>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <Card title="AI Tutor Prompt" desc="Chat with Gary the Penguin for help in CS201." cta="Open Chat" />
+        <Card title="Generate Study Set" desc="Upload notes to create flashcards or a quiz." cta="Create Material" />
+        <Card title="Progress Tracker" desc="See trends across all your courses." cta="View Dashboard" />
+      </div>
+    </section>
+  );
+}
+
+function StudyPlan() {
+  return (
+    <section>
+      <div className="flex items-center justify-between">
+        <h3 className="mb-3 text-sm font-semibold text-slate-900">Today’s Study Plan</h3>
+        <span className="text-xs text-slate-500">Auto-generated based on your courses</span>
+      </div>
+      <div className="space-y-3">
+        {todayPlan.map((item) => (
+          <PlanItem key={item.id} item={item} />
+        ))}
+      </div>
+    </section>
   );
 }
