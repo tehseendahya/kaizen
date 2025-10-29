@@ -6,6 +6,21 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!process.env.GOOGLE_API_KEY) {
+      console.error('GOOGLE_API_KEY is not set in environment variables');
+      return new Response(
+        JSON.stringify({ 
+          error: 'API key not configured', 
+          message: 'Please add GOOGLE_API_KEY to your .env.local file' 
+        }), 
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const { message, courseId, history = [] } = await request.json();
 
     if (!message || typeof message !== 'string') {
@@ -139,8 +154,19 @@ Current course: ${courseId}`;
     });
   } catch (error) {
     console.error('Chat API error:', error);
+    
+    // Provide more detailed error information
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorDetails = error instanceof Error ? error.stack : String(error);
+    
+    console.error('Error details:', errorDetails);
+    
     return new Response(
-      JSON.stringify({ error: 'Failed to generate response' }),
+      JSON.stringify({ 
+        error: 'Failed to generate response',
+        message: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? errorDetails : undefined
+      }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
