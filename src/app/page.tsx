@@ -94,7 +94,7 @@ function CourseCard({ course }: { course: Course }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       {/* Top accent bar */}
-      <div className="h-2 bg-blue-700" />
+      <div className="h-2 bg-blue-800" />
 
       <div className="p-5">
         {/* Header */}
@@ -122,7 +122,7 @@ function CourseCard({ course }: { course: Course }) {
             <span>0%</span>
           </div>
           <div className="mt-2 h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-            <div className="h-full w-0 bg-blue-600" />
+            <div className="h-full w-0 bg-blue-800" />
           </div>
           <div className="mt-2 text-xs text-slate-600">0 of {course.lessons} lessons completed</div>
         </div>
@@ -152,7 +152,7 @@ function CourseCard({ course }: { course: Course }) {
       {/* CTA */}
       <div className="px-5 pb-5">
         <Button
-          className="w-full bg-blue-700 hover:bg-blue-800"
+          className="w-full bg-blue-800 hover:bg-blue-900"
           onClick={() => canNavigate && router.push(route)}
           disabled={!canNavigate}
         >
