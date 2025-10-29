@@ -36,9 +36,8 @@ export default function WelcomeModal({ open, onClose }: Props) {
   }, [query, allCourses]);
 
   const toggle = (slug: string) => {
-    setSelected((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : prev.length < 2 ? [...prev, slug] : prev
-    );
+    // Allow selecting any number of courses (no max)
+    setSelected((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
   };
 
   const saveStudent = () => {
@@ -70,7 +69,7 @@ export default function WelcomeModal({ open, onClose }: Props) {
 
         {tab === "student" ? (
           <div className="space-y-3 mt-4">
-            <label className="text-sm text-slate-600">Search and select your course(s) (max 2)</label>
+            <label className="text-sm text-slate-600">Search and select your course(s)</label>
             <Input
               className="bg-white text-slate-900 placeholder:text-slate-500"
               placeholder="Course code or title (e.g., CS201, PHYS 152)"

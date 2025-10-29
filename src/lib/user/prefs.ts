@@ -21,8 +21,8 @@ export const getSelectedCourses = (): string[] => {
 
 export const setSelectedCourses = (slugs: string[]) => {
   if (typeof window !== "undefined") {
-    const unique = Array.from(new Set(slugs)).slice(0, 2);
+    // Allow unlimited selections; persist unique list as-is
+    const unique = Array.from(new Set(slugs));
     localStorage.setItem(COURSES_KEY, JSON.stringify(unique));
   }
 };
-
