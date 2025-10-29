@@ -92,26 +92,73 @@ function CourseCard({ course }: { course: Course }) {
       : "#";
   const canNavigate = route !== "#";
   return (
-    <div className="rounded-xl border border-slate-200 p-4 shadow-sm bg-white">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-sm text-slate-600">{course.code}</div>
-          <h3 className="text-lg font-semibold text-slate-900">{course.title}</h3>
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      {/* Top accent bar */}
+      <div className="h-2 bg-blue-700" />
+
+      <div className="p-5">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-xl font-semibold text-slate-900">
+              {course.code}: {course.title}
+            </h3>
+          </div>
+          <span className="text-xs rounded-full px-2 py-1 bg-slate-100 text-slate-800">
+            {course.level}
+          </span>
         </div>
-        <span className="text-xs rounded-full px-2 py-1 bg-slate-100">{course.level}</span>
+
+        {/* Instructor */}
+        <div className="mt-2 text-sm text-slate-600">by {course.instructor}</div>
+
+        {/* Description */}
+        <p className="text-sm text-slate-700 mt-3 line-clamp-3">{course.description}</p>
+
+        {/* Progress */}
+        <div className="mt-5">
+          <div className="flex items-center justify-between text-sm text-slate-700">
+            <span>Progress</span>
+            <span>0%</span>
+          </div>
+          <div className="mt-2 h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+            <div className="h-full w-0 bg-blue-600" />
+          </div>
+          <div className="mt-2 text-xs text-slate-600">0 of {course.lessons} lessons completed</div>
+        </div>
+
+        {/* Meta */}
+        <div className="mt-4 flex items-center gap-6 text-sm text-slate-700">
+          <div className="flex items-center gap-2">
+            {/* clock icon */}
+            <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>{course.weeks} weeks</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* book icon */}
+            <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M4 4v15.5" />
+              <path d="M20 4v13a2 2 0 0 1-2 2H6.5" />
+            </svg>
+            <span>{course.lessons} lessons</span>
+          </div>
+        </div>
       </div>
-      <p className="text-sm text-slate-600 mt-2 line-clamp-2">{course.description}</p>
-      <div className="flex items-center justify-between text-xs mt-4 text-slate-600">
-        <div>{course.weeks} weeks</div>
-        <div>{course.lessons} lessons</div>
+
+      {/* CTA */}
+      <div className="px-5 pb-5">
+        <Button
+          className="w-full bg-blue-700 hover:bg-blue-800"
+          onClick={() => canNavigate && router.push(route)}
+          disabled={!canNavigate}
+        >
+          Start Course
+        </Button>
       </div>
-      <Button
-        className="w-full mt-4"
-        onClick={() => canNavigate && router.push(route)}
-        disabled={!canNavigate}
-      >
-        Start Course
-      </Button>
     </div>
   );
 }
