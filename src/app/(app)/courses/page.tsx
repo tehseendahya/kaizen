@@ -40,8 +40,8 @@ export default function HomePage() {
   const showAddBanner = role === "student" && selected.length === 0;
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-8">
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="flex items-center justify-between">
           <div>
           <h1 className="text-3xl font-semibold text-slate-900">My Courses</h1>
@@ -66,7 +66,7 @@ export default function HomePage() {
           </div>
         )}
 
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
           {coursesToShow.map((course) => (
             <CourseCard key={course.slug} course={course} />
           ))}
@@ -143,4 +143,3 @@ function CourseCard({ course }: { course: Course }) {
     </div>
   );
 }
-

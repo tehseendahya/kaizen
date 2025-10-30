@@ -11,7 +11,7 @@ export function SiteFooter() {
             </div>
             <span className="font-semibold">Axis</span>
           </div>
-          <p className="mt-3 text-slate-600">AI for University Learning</p>
+          <p className="mt-3 text-slate-600">AI-powered academic platform built for Duke students.</p>
           <div className="mt-4 flex gap-3">
             <a aria-label="LinkedIn" className="rounded-xl border px-3 py-2">in</a>
             <a aria-label="GitHub" className="rounded-xl border px-3 py-2">􀈖</a>
@@ -61,4 +61,3 @@ export function SiteFooter() {
     </footer>
   );
 }
-

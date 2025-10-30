@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 
 type SelectedCourse = { code?: string; title: string };
 
-export function OnboardingDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+export function OnboardingDialog({ open, onOpenChange, prefillSchool }: { open: boolean; onOpenChange: (v: boolean) => void; prefillSchool?: string }) {
   const router = useRouter();
   const [email, setEmail] = React.useState('');
   const [school, setSchool] = React.useState('');
@@ -21,18 +21,18 @@ export function OnboardingDialog({ open, onOpenChange }: { open: boolean; onOpen
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   const listRef = React.useRef<HTMLDivElement | null>(null);
 
-  // Prefill if values exist
+  // Prefill if values exist; allow external prefill to override school
   React.useEffect(() => {
     if (!open) return;
     try {
       const e = localStorage.getItem('axis.email') || '';
-      const s = localStorage.getItem('axis.school') || '';
+      const storedSchool = localStorage.getItem('axis.school') || '';
       const c = localStorage.getItem('axis.courses');
       setEmail(e);
-      setSchool(s);
+      setSchool(prefillSchool ?? storedSchool);
       setSelected(c ? (JSON.parse(c) as SelectedCourse[]) : []);
     } catch {}
-  }, [open]);
+  }, [open, prefillSchool]);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const canContinue = emailValid && school.trim().length > 1 && selected.length > 0;
