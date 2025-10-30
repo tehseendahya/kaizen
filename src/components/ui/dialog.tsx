@@ -12,18 +12,21 @@ export function Dialog({ open, onOpenChange, children }: { open: boolean; onOpen
   return <DialogContext.Provider value={{ open, onOpenChange }}>{children}</DialogContext.Provider>;
 }
 
-export function DialogContent({ className = "", children }: { className?: string; children: React.ReactNode }) {
-  const { open, onOpenChange } = React.useContext(DialogContext);
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={() => onOpenChange?.(false)} />
-      <div className={`relative z-10 w-full max-w-md rounded-lg border bg-white text-slate-900 p-4 shadow-lg ${className}`} role="dialog" aria-modal="true">
-        {children}
+export const DialogContent = React.forwardRef<HTMLDivElement, { className?: string; children: React.ReactNode }>(
+  ({ className = "", children }, ref) => {
+    const { open, onOpenChange } = React.useContext(DialogContext);
+    if (!open) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50" onClick={() => onOpenChange?.(false)} />
+        <div ref={ref} className={`relative z-10 w-full max-w-md rounded-lg border bg-white text-slate-900 p-4 shadow-lg ${className}`} role="dialog" aria-modal="true">
+          {children}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
+DialogContent.displayName = 'DialogContent';
 
 export function DialogHeader({ className = "", children }: { className?: string; children: React.ReactNode }) {
   return <div className={`flex flex-col space-y-1.5 ${className}`}>{children}</div>;

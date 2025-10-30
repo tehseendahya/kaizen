@@ -93,11 +93,8 @@ function CourseCard({ course }: { course: Course }) {
   const canNavigate = route !== "#";
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      {/* Top accent bar */}
       <div className="h-2 bg-blue-800" />
-
       <div className="p-5">
-        {/* Header */}
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-xl font-semibold text-slate-900">
@@ -108,14 +105,8 @@ function CourseCard({ course }: { course: Course }) {
             {course.level}
           </span>
         </div>
-
-        {/* Instructor */}
         <div className="mt-2 text-sm text-slate-600">by {course.instructor}</div>
-
-        {/* Description */}
         <p className="text-sm text-slate-700 mt-3 line-clamp-3">{course.description}</p>
-
-        {/* Progress */}
         <div className="mt-5">
           <div className="flex items-center justify-between text-sm text-slate-700">
             <span>Progress</span>
@@ -126,11 +117,8 @@ function CourseCard({ course }: { course: Course }) {
           </div>
           <div className="mt-2 text-xs text-slate-600">0 of {course.lessons} lessons completed</div>
         </div>
-
-        {/* Meta */}
         <div className="mt-4 flex items-center gap-6 text-sm text-slate-700">
           <div className="flex items-center gap-2">
-            {/* clock icon */}
             <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
@@ -138,7 +126,6 @@ function CourseCard({ course }: { course: Course }) {
             <span>{course.weeks} weeks</span>
           </div>
           <div className="flex items-center gap-2">
-            {/* book icon */}
             <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
               <path d="M4 4v15.5" />
@@ -148,17 +135,12 @@ function CourseCard({ course }: { course: Course }) {
           </div>
         </div>
       </div>
-
-      {/* CTA */}
       <div className="px-5 pb-5">
-        <Button
-          className="w-full bg-blue-800 hover:bg-blue-900"
-          onClick={() => canNavigate && router.push(route)}
-          disabled={!canNavigate}
-        >
+        <Button className="w-full bg-blue-800 hover:bg-blue-900" onClick={() => canNavigate && router.push(route)} disabled={!canNavigate}>
           Start Course
         </Button>
       </div>
     </div>
   );
 }
+

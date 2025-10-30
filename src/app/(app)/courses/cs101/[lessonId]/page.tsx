@@ -80,7 +80,6 @@ export default function CS101Lesson({ params }: LessonPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -99,7 +98,6 @@ export default function CS101Lesson({ params }: LessonPageProps) {
         </div>
       </div>
 
-      {/* Body */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <p className="text-gray-700 mb-6 leading-relaxed">{lesson.description}</p>
         <div className="bg-white rounded-xl border border-gray-200 p-6">
