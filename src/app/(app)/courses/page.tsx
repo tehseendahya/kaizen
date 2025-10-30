@@ -66,7 +66,7 @@ export default function HomePage() {
           </div>
         )}
 
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10 items-stretch">
           {coursesToShow.map((course) => (
             <CourseCard key={course.slug} course={course} />
           ))}
@@ -92,22 +92,24 @@ function CourseCard({ course }: { course: Course }) {
       : "#";
   const canNavigate = route !== "#";
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="h-2 bg-blue-800" />
-      <div className="p-5">
+    <div className="h-full min-h-[360px] flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+      {/* Optional top accent bar */}
+      <div className="h-2 bg-blue-800 rounded-t-xl -mx-5 -mt-5 mb-4" />
+
+      {/* CONTENT WRAPPER */}
+      <div className="flex-1 flex flex-col gap-3">
         <div className="flex items-start justify-between">
-          <div>
-            <h3 className="text-xl font-semibold text-slate-900">
-              {course.code}: {course.title}
-            </h3>
-          </div>
+          <h3 className="text-xl font-semibold text-slate-900">
+            {course.code}: {course.title}
+          </h3>
           <span className="text-xs rounded-full px-2 py-1 bg-slate-100 text-slate-800">
             {course.level}
           </span>
         </div>
-        <div className="mt-2 text-sm text-slate-600">by {course.instructor}</div>
-        <p className="text-sm text-slate-700 mt-3 line-clamp-3">{course.description}</p>
-        <div className="mt-5">
+        <div className="text-sm text-slate-600">by {course.instructor}</div>
+        <p className="text-sm text-slate-700 line-clamp-3">{course.description}</p>
+
+        <div className="mt-2">
           <div className="flex items-center justify-between text-sm text-slate-700">
             <span>Progress</span>
             <span>0%</span>
@@ -117,7 +119,8 @@ function CourseCard({ course }: { course: Course }) {
           </div>
           <div className="mt-2 text-xs text-slate-600">0 of {course.lessons} lessons completed</div>
         </div>
-        <div className="mt-4 flex items-center gap-6 text-sm text-slate-700">
+
+        <div className="flex items-center gap-6 text-sm text-slate-700">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
@@ -135,7 +138,9 @@ function CourseCard({ course }: { course: Course }) {
           </div>
         </div>
       </div>
-      <div className="px-5 pb-5">
+
+      {/* BUTTON ROW pinned to bottom */}
+      <div className="mt-4">
         <Button className="w-full bg-blue-800 hover:bg-blue-900" onClick={() => canNavigate && router.push(route)} disabled={!canNavigate}>
           Start Course
         </Button>

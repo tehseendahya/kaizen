@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 
 type SelectedCourse = { code?: string; title: string };
 
-export function OnboardingDialog({ open, onOpenChange, prefillSchool }: { open: boolean; onOpenChange: (v: boolean) => void; prefillSchool?: string }) {
+export function OnboardingDialog({ open, onOpenChange, prefillSchool, prefillUniversity }: { open: boolean; onOpenChange: (v: boolean) => void; prefillSchool?: string; prefillUniversity?: string }) {
   const router = useRouter();
   const [email, setEmail] = React.useState('');
   const [school, setSchool] = React.useState('');
@@ -29,10 +29,10 @@ export function OnboardingDialog({ open, onOpenChange, prefillSchool }: { open: 
       const storedSchool = localStorage.getItem('axis.school') || '';
       const c = localStorage.getItem('axis.courses');
       setEmail(e);
-      setSchool(prefillSchool ?? storedSchool);
+      setSchool((prefillUniversity ?? prefillSchool) ?? storedSchool);
       setSelected(c ? (JSON.parse(c) as SelectedCourse[]) : []);
     } catch {}
-  }, [open, prefillSchool]);
+  }, [open, prefillSchool, prefillUniversity]);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const canContinue = emailValid && school.trim().length > 1 && selected.length > 0;

@@ -22,5 +22,5 @@ export function OnboardingRoot() {
     window.addEventListener('axis:openOnboarding', h as EventListener);
     return () => window.removeEventListener('axis:openOnboarding', h as EventListener);
   }, []);
-  return <OnboardingDialog open={open} onOpenChange={setOpen} prefillSchool={prefill} />;
+  return <OnboardingDialog open={open} onOpenChange={setOpen} prefillUniversity={prefill} />;
 }
