@@ -5,7 +5,6 @@ import { AVAILABLE_COURSES } from '@/data/courses';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
@@ -62,4 +61,3 @@ export function CourseSelectDialog({ open, onOpenChange }: Props) {
     </Dialog>
   );
 }
-

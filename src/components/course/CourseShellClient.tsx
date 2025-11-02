@@ -9,7 +9,10 @@ type Props = {
 
 export default function CourseShellClient({ courseData, contentMap, courseShort }: Props) {
   const getLessonContent = (lessonId: string) => contentMap[lessonId] ?? '';
-  const getLessonEquations = (_lessonId: string) => [] as string[];
+  const getLessonEquations = (_lessonId: string) => {
+    void _lessonId;
+    return [] as string[];
+  };
   return (
     <CourseShell
       courseData={courseData}
@@ -20,4 +23,3 @@ export default function CourseShellClient({ courseData, contentMap, courseShort 
     />
   );
 }
-

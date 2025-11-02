@@ -17,9 +17,11 @@ export function Sheet({ children }: { children: React.ReactNode }) {
 export function SheetTrigger({ children, asChild = false }: { children: React.ReactNode; asChild?: boolean }) {
   const ctx = React.useContext(SheetContext)!;
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as any, {
-      onClick: (e: any) => {
-        (children as any).props?.onClick?.(e);
+    type ClickableElement = React.ReactElement<{ onClick?: React.MouseEventHandler }>;
+    const child = children as ClickableElement;
+    return React.cloneElement(child, {
+      onClick: (e: React.MouseEvent) => {
+        child.props?.onClick?.(e);
         ctx.setOpen(true);
       },
     });
@@ -62,4 +64,3 @@ export function SheetContent({ side = 'right', children }: { side?: 'right' | 'l
     </>
   );
 }
-

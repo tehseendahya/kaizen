@@ -18,8 +18,14 @@ const courseData: CourseData = {
   ],
 };
 
-const getLessonContent = (lessonId: string) => 'Content for this lesson will be available soon.';
-const getLessonEquations = (lessonId: string) => [] as string[];
+const getLessonContent = (lessonId: string) => {
+  void lessonId;
+  return 'Content for this lesson will be available soon.';
+};
+const getLessonEquations = (lessonId: string) => {
+  void lessonId;
+  return [] as string[];
+};
 
 export default function CoursePage() {
   return (
@@ -31,4 +37,3 @@ export default function CoursePage() {
     />
   );
 }
-

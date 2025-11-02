@@ -53,7 +53,7 @@ export default function AnnouncementBar() {
 function openOnboardingWithDuke() {
   try {
     // same opener used elsewhere
-    (openOnboarding as any)?.({ prefillUniversity: 'Duke University' });
+    openOnboarding({ prefillUniversity: 'Duke University' });
   } catch {
     // fallback: dispatch event with detail
     window.dispatchEvent(
@@ -61,4 +61,3 @@ function openOnboardingWithDuke() {
     );
   }
 }
-

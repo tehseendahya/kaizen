@@ -4,14 +4,25 @@ import { getCourseMeta, getCourseIndex, getSubunitContent } from "@/lib/courses-
 
 export default async function Phys152Page() {
   const slug = "phys152";
-  const courseMeta: any = await getCourseMeta(slug);
-  const index: any = await getCourseIndex(slug);
+  const courseMeta = (await getCourseMeta(slug)) as {
+    course?: { title?: string };
+    title?: string;
+  };
+  const index = (await getCourseIndex(slug)) as
+    | { units?: Array<{ id: string; title: string; subunits?: Array<{ id: string; title: string; file: string }> }> }
+    | Array<{ id: string; title: string; subunits?: Array<{ id: string; title: string; file: string }> }>;
 
   // Map YAML-based index to CourseShell CourseData shape
-  const units = (index.units ?? index).map((u: any, idx: number) => ({
-    id: u.id ?? `unit${idx + 1}`,
-    title: u.title,
-    lessons: (u.subunits ?? []).map((s: any) => ({
+  type UnitShape = { id?: string; title: string; subunits?: Array<{ id: string; title: string; file?: string }> };
+  function hasUnits(x: unknown): x is { units: UnitShape[] } {
+    return typeof x === 'object' && x !== null && 'units' in x;
+  }
+  const rawUnits: UnitShape[] = hasUnits(index) ? index.units ?? [] : (index as UnitShape[]);
+  const units = rawUnits.map(
+    (u: UnitShape, idx: number) => ({
+      id: u.id ?? `unit${idx + 1}`,
+      title: u.title,
+    lessons: (u.subunits ?? []).map((s: { id: string; title: string }) => ({
       id: s.id,
       title: s.title,
       description: "",
@@ -25,10 +36,15 @@ export default async function Phys152Page() {
 
   // Preload subunit content keyed by subunit id
   const contentMap: Record<string, string> = {};
-  for (const u of (index.units ?? index)) {
+  for (const u of rawUnits) {
+    const unitId = u.id;
     for (const s of u.subunits ?? []) {
       try {
-        const raw = await getSubunitContent(slug, u.id, s.file);
+        if (!unitId) {
+          contentMap[s.id] = "";
+          continue;
+        }
+        const raw = await getSubunitContent(slug, unitId, s.file ?? s.id);
         contentMap[s.id] = raw as string;
       } catch {
         contentMap[s.id] = "";
