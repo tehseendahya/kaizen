@@ -1,0 +1,8 @@
+unit:
+  title: "Inductors, LR & LC"
+  overview: "Inductance as field energy storage, transient behavior in LR circuits, and undamped oscillations in LC systems."
+  learning_objectives:
+    - "Define self and mutual inductance and compute basic examples."
+    - "Solve LR and LC circuit dynamics and interpret energy exchange."
+  key_textbook_chapters: []
+

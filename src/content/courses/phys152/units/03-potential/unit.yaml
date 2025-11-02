@@ -1,0 +1,8 @@
+unit:
+  title: "Electric Potential"
+  overview: "Scalar potential as the line integral of electric field. Techniques for computing potentials of common charge distributions and linking E to −∇V."
+  learning_objectives:
+    - "Derive potential from the electric field via path integrals."
+    - "Relate potential gradients to electric fields and interpret equipotentials."
+  key_textbook_chapters: []
+

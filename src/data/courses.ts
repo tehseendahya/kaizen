@@ -9,7 +9,7 @@ export type Course = {
 
 export const AVAILABLE_COURSES: Course[] = [
   { slug: 'cs201', code: 'CS201', title: 'Data Structures & Algorithms', weeks: 12, lessons: 18, level: 'Intermediate' },
-  { slug: 'phys-152', code: 'PHYS 152', title: 'Electricity & Magnetism', weeks: 14, lessons: 35, level: 'Intermediate' },
+  { slug: 'phys152', code: 'PHYS152', title: 'Physics 152: Electricity & Magnetism', weeks: 14, lessons: 35, level: 'Intermediate' },
   { slug: 'cs101', code: 'CS101', title: 'Introduction to Programming', weeks: 8, lessons: 24, level: 'Beginner' },
   { slug: 'cs301', code: 'CS301', title: 'Software Engineering', weeks: 10, lessons: 16, level: 'Advanced' },
 ];

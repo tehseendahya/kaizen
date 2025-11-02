@@ -1,0 +1,8 @@
+unit:
+  title: "RC Circuits"
+  overview: "Transient behavior of resistor–capacitor circuits, analytic solutions for charging and discharging, and introductory energy flow with the Poynting vector."
+  learning_objectives:
+    - "Solve RC differential equations and interpret time constants."
+    - "Discuss real-world component non-idealities and measurement nuances."
+  key_textbook_chapters: []
+

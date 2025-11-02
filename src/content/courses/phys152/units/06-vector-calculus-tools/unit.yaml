@@ -1,0 +1,8 @@
+unit:
+  title: "Vector Calculus Tools"
+  overview: "Mathematical toolbox for electromagnetism: gradients, divergence, curl, and integral theorems applied to electrostatics."
+  learning_objectives:
+    - "Compute and interpret grad, div, and curl in physical contexts."
+    - "Use the divergence theorem and curl properties for electrostatic fields."
+  key_textbook_chapters: []
+

@@ -1,0 +1,8 @@
+unit:
+  title: "Gauss’s Law"
+  overview: "Electric flux through closed surfaces and the profound relation between charge and field. Focus on symmetry to compute fields efficiently."
+  learning_objectives:
+    - "Compute electric flux and apply Gauss’s law to symmetric charge distributions."
+    - "Explain conductor behavior and charge distribution in electrostatic equilibrium."
+  key_textbook_chapters: []
+

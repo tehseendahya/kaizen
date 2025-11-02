@@ -1,0 +1,13 @@
+course:
+  code: PHYS152
+  slug: phys152
+  title: "Physics 152: Electricity, Magnetism & Waves"
+  university: "Duke University"
+  description: >
+    A rigorous treatment of electrostatics, Gauss’s law, potential and energy,
+    circuits (DC/RC/LR/LC), magnetism, electromagnetic induction, Maxwell’s
+    equations, and an introduction to waves. Emphasis on full derivations,
+    vector calculus, and problem-solving with physical intuition.
+  level: "Intermediate"
+  credits: 1
+

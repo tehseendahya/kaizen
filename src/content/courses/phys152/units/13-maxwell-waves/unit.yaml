@@ -1,0 +1,8 @@
+unit:
+  title: "Maxwell & Waves (Intro)"
+  overview: "Unified view of electricity and magnetism via Maxwell’s equations and the emergence of electromagnetic waves; comparison with mechanical waves."
+  learning_objectives:
+    - "Write Maxwell’s equations in integral and differential form."
+    - "Derive the EM wave equation and interpret the Poynting vector."
+  key_textbook_chapters: []
+

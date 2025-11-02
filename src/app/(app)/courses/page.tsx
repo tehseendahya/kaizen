@@ -84,7 +84,7 @@ function CourseCard({ course }: { course: Course }) {
     course.slug === "cs201"
       ? "/courses/cs201"
       : course.slug === "phys152"
-      ? "/courses/physics-152"
+      ? "/courses/phys152"
       : course.slug === "cs101"
       ? "/courses/cs101"
       : course.slug === "cs301"

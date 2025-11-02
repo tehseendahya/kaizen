@@ -1,0 +1,176 @@
+units:
+  - id: 01-coulomb-electric-field
+    title: "Coulomb’s Law & Electric Field"
+    subunits:
+      - id: sub-01-coulomb-law
+        title: "Electric Charge & Coulomb’s Law"
+        file: sub-01-coulomb-law.mdx
+      - id: sub-02-e-field
+        title: "Electric Field of Point Charges (vector form)"
+        file: sub-02-e-field.mdx
+      - id: sub-03-superposition
+        title: "Field Lines & Superposition"
+        file: sub-03-superposition.mdx
+      - id: sub-04-vector-fields
+        title: "Vector Fields Refresher (coords, visualization)"
+        file: sub-04-vector-fields.mdx
+
+  - id: 02-gauss
+    title: "Gauss’s Law"
+    subunits:
+      - id: sub-01-gauss-flux
+        title: "Electric Flux & Gaussian Surfaces"
+        file: sub-01-gauss-flux.mdx
+      - id: sub-02-gauss-symmetry
+        title: "Gauss’s Law: Symmetry Cases (line/plane/sphere/cylinder)"
+        file: sub-02-gauss-symmetry.mdx
+      - id: sub-03-conductors
+        title: "Conductors & Electrostatic Equilibrium"
+        file: sub-03-conductors.mdx
+
+  - id: 03-potential
+    title: "Electric Potential"
+    subunits:
+      - id: sub-01-potential-from-E
+        title: "Potential from Fields (line integral), conservative nature"
+        file: sub-01-potential-from-E.mdx
+      - id: sub-02-potential-common
+        title: "Potential of Common Charge Distributions"
+        file: sub-02-potential-common.mdx
+      - id: sub-03-gradV
+        title: "Relation E=−∇V, equipotentials"
+        file: sub-03-gradV.mdx
+
+  - id: 04-energy-capacitors
+    title: "Energy & Capacitors (Intro)"
+    subunits:
+      - id: sub-01-work-energy
+        title: "Work & Potential Energy for Continuous Charge"
+        file: sub-01-work-energy.mdx
+      - id: sub-02-capacitance
+        title: "Capacitance, Parallel-plate/Spherical/Cylindrical, Dielectrics (intro)"
+        file: sub-02-capacitance.mdx
+      - id: sub-03-energy-density
+        title: "Energy Density in the Electric Field"
+        file: sub-03-energy-density.mdx
+
+  - id: 05-capacitors-dielectrics
+    title: "Capacitors & Dielectrics (Full)"
+    subunits:
+      - id: sub-01-capacitor-families
+        title: "Exact expressions: parallel-plate, spherical, coaxial"
+        file: sub-01-capacitor-families.mdx
+      - id: sub-02-dielectrics-polarization
+        title: "Polarization P, bound charge, D-field (intro)"
+        file: sub-02-dielectrics-polarization.mdx
+      - id: sub-03-energy-with-dielectrics
+        title: "Forces, energy with dielectric insertion"
+        file: sub-03-energy-with-dielectrics.mdx
+
+  - id: 06-vector-calculus-tools
+    title: "Vector Calculus Tools"
+    subunits:
+      - id: sub-01-grad-div-curl
+        title: "Grad, Div, Curl (physicist’s view)"
+        file: sub-01-grad-div-curl.mdx
+      - id: sub-02-divergence-theorem
+        title: "Divergence theorem in electrostatics"
+        file: sub-02-divergence-theorem.mdx
+      - id: sub-03-curl-free-E
+        title: "Curl-free nature of electrostatic fields"
+        file: sub-03-curl-free-E.mdx
+
+  - id: 07-dc-circuits
+    title: "DC Circuits: Resistance & Networks"
+    subunits:
+      - id: sub-01-ohm-micro
+        title: "Ohm’s law, microscopic conduction model"
+        file: sub-01-ohm-micro.mdx
+      - id: sub-02-kirchhoff
+        title: "Series/parallel, Kirchhoff’s rules"
+        file: sub-02-kirchhoff.mdx
+      - id: sub-03-power-internal
+        title: "Power, internal resistance"
+        file: sub-03-power-internal.mdx
+
+  - id: 08-rc-circuits
+    title: "RC Circuits"
+    subunits:
+      - id: sub-01-rc-transients
+        title: "Charging/discharging solutions & time constant"
+        file: sub-01-rc-transients.mdx
+      - id: sub-02-energy-flow-poynting
+        title: "Energy flow; Poynting vector (intro context)"
+        file: sub-02-energy-flow-poynting.mdx
+      - id: sub-03-real-components
+        title: "Non-idealities: leakage, ESR, measurement notes"
+        file: sub-03-real-components.mdx
+
+  - id: 09-magnetism-forces
+    title: "Magnetic Fields & Forces"
+    subunits:
+      - id: sub-01-force-on-charges
+        title: "Magnetic force on moving charge"
+        file: sub-01-force-on-charges.mdx
+      - id: sub-02-force-on-wires
+        title: "Force/torque on current-carrying wires & loops"
+        file: sub-02-force-on-wires.mdx
+      - id: sub-03-motion-in-B
+        title: "Charged particle motion (cyclotron radius, helical paths)"
+        file: sub-03-motion-in-B.mdx
+
+  - id: 10-fields-of-currents
+    title: "Fields of Currents"
+    subunits:
+      - id: sub-01-biot-savart
+        title: "Biot–Savart: line/loop/solenoid"
+        file: sub-01-biot-savart.mdx
+      - id: sub-02-ampere
+        title: "Ampère’s law with symmetry"
+        file: sub-02-ampere.mdx
+      - id: sub-03-magnetization
+        title: "Materials & magnetization (brief)"
+        file: sub-03-magnetization.mdx
+
+  - id: 11-induction
+    title: "Faraday’s Law & Induction"
+    subunits:
+      - id: sub-01-faraday-lenz
+        title: "Induced EMF & Lenz’s law (signs carefully)"
+        file: sub-01-faraday-lenz.mdx
+      - id: sub-02-motional-emf
+        title: "Motional EMF; rails & sliding bars"
+        file: sub-02-motional-emf.mdx
+      - id: sub-03-energy-induction
+        title: "Energy & fields in induction"
+        file: sub-03-energy-induction.mdx
+
+  - id: 12-inductors-lr-lc
+    title: "Inductors, LR & LC"
+    subunits:
+      - id: sub-01-self-mutual
+        title: "Self-inductance & mutual inductance"
+        file: sub-01-self-mutual.mdx
+      - id: sub-02-lr-transient
+        title: "LR transient analysis"
+        file: sub-02-lr-transient.mdx
+      - id: sub-03-lc-oscillations
+        title: "LC oscillations; energy exchange"
+        file: sub-03-lc-oscillations.mdx
+
+  - id: 13-maxwell-waves
+    title: "Maxwell & Waves (Intro)"
+    subunits:
+      - id: sub-01-maxwell
+        title: "Maxwell’s equations (integral + differential)"
+        file: sub-01-maxwell.mdx
+      - id: sub-02-em-waves
+        title: "EM wave equation; c=1/μ0ε0"
+        file: sub-02-em-waves.mdx
+      - id: sub-03-poynting
+        title: "Poynting vector & radiation pressure"
+        file: sub-03-poynting.mdx
+      - id: sub-04-mech-waves-intro
+        title: "Mechanical waves (intro) & comparison"
+        file: sub-04-mech-waves-intro.mdx
+
