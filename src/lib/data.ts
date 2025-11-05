@@ -1,37 +1,41 @@
+import { supabase } from '@/lib/supabase';
 
-import { supabase } from '@/lib/supabase'; // Assuming you set up src/lib/supabase.ts
-// We'll define a basic interface for type safety since you are using TypeScript
+
 export interface Unit {
   id: number;
   title: string;
-}
-
-
-export async function fetchUnits(): Promise<Unit[]> {
-  // Use .select('id, title') for a fast, light query
-  const { data, error } = await supabase
-    .from('units')
-    .select('id, title')
-    .order('id', { ascending: true }); // Order by the unit number
-
-  if (error) {
-    console.error('Error fetching units:', error);
-    return []; 
-  }
-  
-  return data || [];
+  subject_id: string; // Added for scalability
 }
 
 export interface SubunitContent {
   intuition: string | null;
   code_sketch: string | null;
   pitfalls: string | null;
+  visual_model: string | null; 
 }
+
+
+
+export async function fetchUnits(subject_id: string): Promise<Unit[]> {
+  const { data, error } = await supabase
+    .from('units')
+    .select('id, title, subject_id')
+    .eq('subject_id', subject_id) // Filter by the subject code
+    .order('id', { ascending: true }); 
+
+  if (error) {
+    console.error(`Error fetching units for subject ${subject_id}:`, error);
+    return []; 
+  }
+  
+  return data || [];
+}
+
 
 export async function fetchSubunitContent(subunit_id: string): Promise<SubunitContent | null> {
   const { data, error } = await supabase
     .from('subunits')
-    .select('intuition, code_sketch, pitfalls') 
+    .select('intuition, code_sketch, pitfalls, visual_model') // Select the fields Gary needs
     .eq('sub_unit_id', subunit_id)
     .single();
 
@@ -40,5 +44,5 @@ export async function fetchSubunitContent(subunit_id: string): Promise<SubunitCo
     return null;
   }
   
-  return data;
+  return data as SubunitContent;
 }
