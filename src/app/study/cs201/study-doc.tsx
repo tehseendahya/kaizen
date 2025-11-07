@@ -152,7 +152,7 @@ export default function StudyDoc({ markdown }: { markdown: string }) {
             ],
           ]}
           components={{
-            code({ node, inline, className, children, ...props }: any) {
+            code({ inline, className, children, ...props }: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { inline?: boolean }) {
               return inline ? (
                 <code className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
                   {children}
@@ -172,4 +172,3 @@ export default function StudyDoc({ markdown }: { markdown: string }) {
     </div>
   );
 }
-

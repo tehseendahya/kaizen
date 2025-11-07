@@ -1,0 +1,8 @@
+unit:
+  title: "DC Circuits: Resistance & Networks"
+  overview: "Macroscopic and microscopic views of resistance and current. Techniques for analyzing series/parallel networks using Kirchhoff’s rules and power considerations."
+  learning_objectives:
+    - "Explain Ohm’s law from a microscopic perspective."
+    - "Solve DC circuit networks with Kirchhoff’s rules and compute power."
+  key_textbook_chapters: []
+

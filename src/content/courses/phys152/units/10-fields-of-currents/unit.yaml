@@ -1,0 +1,8 @@
+unit:
+  title: "Fields of Currents"
+  overview: "Magnetic fields produced by steady currents using Biot–Savart and Ampère’s law; brief introduction to magnetized materials."
+  learning_objectives:
+    - "Compute magnetic fields from current distributions via Biot–Savart."
+    - "Apply Ampère’s law in symmetric situations and describe magnetization."
+  key_textbook_chapters: []
+

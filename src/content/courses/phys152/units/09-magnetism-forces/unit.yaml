@@ -1,0 +1,8 @@
+unit:
+  title: "Magnetic Fields & Forces"
+  overview: "Magnetic forces on charges and currents, and the resulting motion in magnetic fields."
+  learning_objectives:
+    - "Compute magnetic forces on moving charges and current elements."
+    - "Analyze particle motion in uniform magnetic fields."
+  key_textbook_chapters: []
+

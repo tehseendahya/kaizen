@@ -139,7 +139,7 @@ export default function ChatSidebar({
                     remarkPlugins={[remarkGfm, remarkMath]}
                     rehypePlugins={[rehypeKatex, rehypeRaw]}
                     components={{
-                      code({ node, inline, className, children, ...props }: any) {
+                      code({ inline, className, children, ...props }: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { inline?: boolean }) {
                         return inline ? (
                           <code className="bg-blue-50 text-blue-700 px-1 py-0.5 rounded text-xs" {...props}>
                             {children}

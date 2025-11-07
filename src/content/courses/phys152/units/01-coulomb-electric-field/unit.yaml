@@ -1,0 +1,8 @@
+unit:
+  title: "Coulomb’s Law & Electric Field"
+  overview: "Foundations of electrostatics: properties of electric charge, Coulomb’s inverse-square law, and the vector definition of the electric field. Emphasis on superposition and field-line intuition."
+  learning_objectives:
+    - "Apply Coulomb’s law to compute forces between point charges."
+    - "Construct electric fields from multiple sources using vector superposition."
+  key_textbook_chapters: []
+

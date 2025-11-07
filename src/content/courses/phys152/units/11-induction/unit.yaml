@@ -1,0 +1,8 @@
+unit:
+  title: "Faraday’s Law & Induction"
+  overview: "Changing magnetic flux induces electric fields and EMF. Physical interpretation of Lenz’s law and energy in induction."
+  learning_objectives:
+    - "Apply Faraday’s law with correct sign conventions to compute induced EMF."
+    - "Analyze motional EMF scenarios and energy flow during induction."
+  key_textbook_chapters: []
+

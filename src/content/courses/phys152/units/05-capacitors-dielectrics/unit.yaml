@@ -1,0 +1,8 @@
+unit:
+  title: "Capacitors & Dielectrics (Full)"
+  overview: "Comprehensive treatment of capacitor families and dielectric materials, including polarization and energy considerations."
+  learning_objectives:
+    - "Derive exact capacitance expressions for common geometries."
+    - "Explain dielectric polarization and evaluate energy/forces with dielectrics."
+  key_textbook_chapters: []
+

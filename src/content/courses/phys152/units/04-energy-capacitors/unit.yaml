@@ -1,0 +1,8 @@
+unit:
+  title: "Energy & Capacitors (Intro)"
+  overview: "Energy concepts in electrostatics and the introduction to capacitors and dielectrics. Focus on work, potential energy, and energy storage in fields."
+  learning_objectives:
+    - "Compute work and potential energy for point and continuous charge."
+    - "Define capacitance and analyze simple capacitor geometries."
+  key_textbook_chapters: []
+
