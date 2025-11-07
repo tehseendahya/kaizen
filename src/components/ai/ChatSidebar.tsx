@@ -9,6 +9,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
+import { useAuth } from '@/hooks/useAuth';
 
 type Msg = { id: string; role: 'user' | 'assistant'; content: string };
 
@@ -23,6 +24,7 @@ export default function ChatSidebar({
   onClose: () => void;
   prefill?: string;
 }) {
+  const { user, isAuthenticated } = useAuth();
   const storageKey = useMemo(() => `chat:gary:${courseId}`, [courseId]);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
@@ -112,7 +114,11 @@ export default function ChatSidebar({
           </div>
           <div>
             <div className="font-bold text-white text-lg">Gary 🐧</div>
-            <div className="text-xs text-blue-100">Your CS201 Tutor</div>
+            <div className="text-xs text-blue-100">
+              {isAuthenticated && user?.fullName 
+                ? `Helping ${user.fullName.split(' ')[0]}` 
+                : 'Your CS201 Tutor'}
+            </div>
           </div>
         </div>
         <button 

@@ -11,8 +11,6 @@ import ChatSidebar from '@/components/ai/ChatSidebar';
 import HighlightPopover from '@/components/ai/HighlightPopover';
 import Link from 'next/link';
 import { cs201Data, SubUnit } from '@/data/study/cs201-subunits';
-import CodeBlock from '@/components/study/CodeBlock';
-import Quiz from '@/components/study/Quiz';
 import LessonView from '@/components/learn/LessonView';
 import PracticeBlock from '@/components/learn/PracticeBlock';
 import ChallengeBlock from '@/components/learn/ChallengeBlock';

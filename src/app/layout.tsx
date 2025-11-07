@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { fetchUnits, Unit } from '@/lib/data'; 
+import { SessionProvider } from '@/components/auth/SessionProvider';
+import { getSession } from '@/lib/auth-utils'; 
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,12 +24,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const units: Unit[] = await fetchUnits(); 
+  // Authentication temporarily disabled
+  const session = null; // await getSession();
   
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#F8FAFC] text-slate-900 antialiased`}>
-        {children}
+        <SessionProvider session={session}>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
