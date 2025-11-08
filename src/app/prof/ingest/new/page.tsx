@@ -55,7 +55,77 @@ export default function NewIngestionPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newCourse),
         });
-        if (!courseRes.ok) throw new Error('Failed to create course');
+        if (!courseRes.ok) {
+          let errorData: any = {};
+          let responseText = '';
+          try {
+            responseText = await courseRes.text();
+            if (responseText && responseText.trim()) {
+              try {
+                errorData = JSON.parse(responseText);
+              } catch (parseError) {
+                errorData = { error: responseText, raw: responseText };
+              }
+            } else {
+              errorData = { error: 'Empty response', status: courseRes.status };
+            }
+          } catch (readError: any) {
+            errorData = {
+              error: 'Failed to read error response',
+              readError: readError?.message || 'Unknown error',
+              status: courseRes.status,
+              statusText: courseRes.statusText,
+            };
+          }
+          
+          // Build comprehensive error details
+          const errorDetails: any = {
+            status: courseRes.status || 'unknown',
+            statusText: courseRes.statusText || 'unknown',
+            url: courseRes.url || 'unknown',
+          };
+          
+          // Extract all error properties from errorData
+          if (errorData && typeof errorData === 'object') {
+            // Check if errorData is an empty object
+            const errorDataKeys = Object.keys(errorData);
+            if (errorDataKeys.length === 0) {
+              errorDetails.error = 'Empty error object received from server';
+              errorDetails.details = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+            } else {
+              // Extract all properties from errorData
+              errorDataKeys.forEach(key => {
+                const value = errorData[key];
+                if (value !== undefined && value !== null) {
+                  errorDetails[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+                }
+              });
+            }
+          } else if (errorData) {
+            errorDetails.error = String(errorData);
+          }
+          
+          // Also try to extract from response headers or other sources
+          if (!errorDetails.error && !errorDetails.details) {
+            // Try to get error from response headers
+            const contentType = courseRes.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              errorDetails.hint = 'Response was JSON but no error details found';
+            }
+            errorDetails.error = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+            errorDetails.details = errorDetails.error;
+          }
+          
+          // Ensure we have meaningful error information
+          if (!errorDetails.message && !errorDetails.details && !errorDetails.error) {
+            errorDetails.error = 'Unknown error occurred';
+            errorDetails.details = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+          }
+          
+          const errorMessage = errorDetails.details || errorDetails.error || errorDetails.hint || errorDetails.message || 'Failed to create course';
+          console.error('Course creation error:', errorDetails);
+          throw new Error(errorMessage);
+        }
         const courseData = await courseRes.json();
         finalCourseId = courseData.id;
       }
@@ -67,17 +137,104 @@ export default function NewIngestionPage() {
       });
       formData.append('courseId', finalCourseId);
 
-      const uploadRes = await fetch('/api/prof/ingest/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!uploadRes.ok) {
-        const errorData = await uploadRes.json();
-        throw new Error(errorData.error || 'Upload failed');
+      let uploadRes: Response;
+      try {
+        uploadRes = await fetch('/api/prof/ingest/upload', {
+          method: 'POST',
+          body: formData,
+        });
+      } catch (networkError: any) {
+        console.error('Network error during upload:', {
+          message: networkError?.message || 'Unknown network error',
+          name: networkError?.name || 'Error',
+          stack: networkError?.stack,
+        });
+        throw new Error(
+          `Failed to connect to server. Please check your internet connection and try again. ${networkError?.message || ''}`
+        );
       }
 
-      const { ingestionId } = await uploadRes.json();
+      if (!uploadRes.ok) {
+        let errorData: any = {};
+        let responseText = '';
+        try {
+          responseText = await uploadRes.text();
+          if (responseText && responseText.trim()) {
+            try {
+              errorData = JSON.parse(responseText);
+            } catch (parseError) {
+              errorData = { error: responseText, raw: responseText };
+            }
+          } else {
+            errorData = { error: 'Empty response', status: uploadRes.status };
+          }
+        } catch (readError: any) {
+          errorData = {
+            error: 'Failed to read error response',
+            readError: readError?.message || 'Unknown error',
+            status: uploadRes.status,
+            statusText: uploadRes.statusText,
+          };
+        }
+
+        // Build comprehensive error details
+        const errorDetails: any = {
+          status: uploadRes.status || 'unknown',
+          statusText: uploadRes.statusText || 'unknown',
+        };
+
+        // Extract all error properties
+        if (errorData && typeof errorData === 'object') {
+          // Check if errorData is an empty object
+          const errorDataKeys = Object.keys(errorData);
+          if (errorDataKeys.length === 0) {
+            errorDetails.error = 'Empty error object received from server';
+            errorDetails.details = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+          } else {
+            // Extract all properties from errorData
+            errorDataKeys.forEach(key => {
+              const value = errorData[key];
+              if (value !== undefined && value !== null) {
+                errorDetails[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+              }
+            });
+          }
+        } else if (errorData) {
+          errorDetails.error = String(errorData);
+        }
+
+        // Ensure we have at least one error message
+        if (!errorDetails.error && !errorDetails.details) {
+          errorDetails.error = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+          errorDetails.details = errorDetails.error;
+        }
+
+        // Build a comprehensive error message
+        let errorMessage = errorDetails.details || errorDetails.error || errorDetails.hint || 'Upload failed';
+        
+        // If there are upload errors, include them
+        if (errorData?.uploadErrors && Array.isArray(errorData.uploadErrors)) {
+          const uploadErrorMessages = errorData.uploadErrors
+            .map((e: any) => `${e.fileName}: ${e.error?.message || 'Unknown error'}`)
+            .join('\n');
+          errorMessage = `${errorMessage}\n\nFile upload errors:\n${uploadErrorMessages}`;
+        }
+        
+        console.error('Upload error:', errorDetails);
+        throw new Error(errorMessage);
+      }
+
+      let ingestionId: string;
+      try {
+        const uploadData = await uploadRes.json();
+        ingestionId = uploadData.ingestionId;
+        if (!ingestionId) {
+          throw new Error('No ingestion ID returned from server');
+        }
+      } catch (parseError: any) {
+        console.error('Failed to parse upload response:', parseError);
+        throw new Error('Invalid response from server. Please try again.');
+      }
 
       // Step 3: Start processing
       const startRes = await fetch(`/api/prof/ingest/start?ingestionId=${ingestionId}`, {
@@ -240,8 +397,22 @@ function CourseSelector({ value, onChange }: { value: string; onChange: (v: stri
     fetch('/api/prof/courses')
       .then(async (res) => {
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.error || `HTTP ${res.status}`);
+          let errorData: any = {};
+          try {
+            const text = await res.text();
+            if (text) {
+              errorData = JSON.parse(text);
+            }
+          } catch (e) {
+            errorData = { error: `HTTP ${res.status}: ${res.statusText}` };
+          }
+          const errorMessage = errorData.details || errorData.error || errorData.hint || `HTTP ${res.status}`;
+          console.error('Courses API error:', {
+            status: res.status,
+            statusText: res.statusText,
+            error: errorData,
+          });
+          throw new Error(errorMessage);
         }
         return res.json();
       })
@@ -258,7 +429,7 @@ function CourseSelector({ value, onChange }: { value: string; onChange: (v: stri
       })
       .catch((err) => {
         console.error('Error fetching courses:', err);
-        setError(err.message || 'Failed to load courses');
+        setError(err.message || 'Failed to load courses. Check console for details.');
         setLoading(false);
         setCourses([]); // Ensure it's always an array
       });

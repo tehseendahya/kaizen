@@ -47,8 +47,18 @@ export async function GET(request: NextRequest) {
         code: error?.code || '',
         details: error?.details || '',
         hint: error?.hint || '',
+        createdError: createdError,
+        profError: profError,
       });
-      return NextResponse.json({ error: 'Failed to fetch courses' }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: 'Failed to fetch courses',
+          details: error?.message || error?.details || 'Unknown error',
+          code: error?.code || '',
+          hint: error?.hint || 'Check if courses and course_professors tables exist',
+        },
+        { status: 500 }
+      );
     }
 
     // Get additional courses from course_professors
@@ -145,15 +155,92 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error creating course:', error);
-      return NextResponse.json({ error: 'Failed to create course' }, { status: 500 });
+      // Extract all error properties explicitly to avoid serialization issues
+      const errorDetails: any = {};
+      
+      // Method 1: Direct property access (most reliable)
+      if (error.message) errorDetails.message = String(error.message);
+      if (error.code) errorDetails.code = String(error.code);
+      if (error.details) errorDetails.details = String(error.details);
+      if (error.hint) errorDetails.hint = String(error.hint);
+      if (error.name) errorDetails.name = String(error.name);
+      
+      // Method 2: Try to get all own properties
+      try {
+        const ownProps = Object.getOwnPropertyNames(error);
+        ownProps.forEach(prop => {
+          if (!errorDetails[prop]) {
+            try {
+              const value = (error as any)[prop];
+              if (value !== undefined && value !== null) {
+                errorDetails[prop] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+              }
+            } catch (e) {
+              // Skip properties that can't be accessed
+            }
+          }
+        });
+      } catch (e) {
+        // If we can't enumerate properties, continue with what we have
+      }
+      
+      // Method 3: Try JSON.stringify as fallback
+      try {
+        const errorString = JSON.stringify(error, Object.getOwnPropertyNames(error));
+        if (errorString && errorString !== '{}') {
+          errorDetails.rawJson = errorString;
+        }
+      } catch (e) {
+        // JSON.stringify failed, that's okay
+      }
+      
+      // Ensure we have at least one error message
+      if (!errorDetails.message && !errorDetails.details) {
+        errorDetails.message = String(error) || 'Unknown database error';
+        errorDetails.details = errorDetails.message;
+      }
+      
+      console.error('Error creating course:', errorDetails);
+      
+      // Build response with all available error information
+      const responseError: any = {
+        error: 'Failed to create course',
+        message: errorDetails.message || errorDetails.details || 'Unknown error',
+      };
+      
+      if (errorDetails.details) responseError.details = errorDetails.details;
+      if (errorDetails.code) responseError.code = errorDetails.code;
+      if (errorDetails.hint) responseError.hint = errorDetails.hint;
+      if (errorDetails.rawJson) responseError.rawJson = errorDetails.rawJson;
+      
+      // Add helpful hint if it's a schema error
+      if (errorDetails.message && (
+        errorDetails.message.includes('full_name') || 
+        errorDetails.message.includes('column') ||
+        errorDetails.message.includes('constraint')
+      )) {
+        responseError.hint = 'Database schema issue. Please run the SQL fix: fix-full-name-constraint.sql';
+      }
+      
+      return NextResponse.json(responseError, { status: 500 });
     }
 
     // Add professor to course_professors
-    await supabase.from('course_professors').insert({
+    const { error: cpError } = await supabase.from('course_professors').insert({
       course_id: course.id,
       professor_id: user.id,
     });
+
+    if (cpError) {
+      console.error('Error adding professor to course_professors:', {
+        message: cpError.message || 'Unknown error',
+        code: cpError.code || '',
+        details: cpError.details || '',
+        hint: cpError.hint || '',
+      });
+      // Don't fail the request - course is created, just log the error
+      // The professor can still access the course via created_by
+    }
 
     return NextResponse.json(course);
   } catch (error) {

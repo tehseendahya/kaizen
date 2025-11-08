@@ -26,7 +26,8 @@ export default async function ProfDashboard() {
   }
 
   // Fetch ingestions for this professor
-  const { data: ingestions, error } = await supabase
+  // First try with the relation, if that fails, try without
+  let { data: ingestions, error } = await supabase
     .from('ingestions')
     .select(`
       id,
@@ -34,6 +35,7 @@ export default async function ProfDashboard() {
       created_at,
       updated_at,
       error,
+      course_id,
       courses (
         id,
         code,
@@ -44,13 +46,97 @@ export default async function ProfDashboard() {
     .order('created_at', { ascending: false })
     .limit(50);
 
+  // If the query with relation fails, try without the relation
   if (error) {
-    console.error('Error fetching ingestions:', {
-      message: error.message || 'Unknown error',
+    console.warn('Initial query with relation failed, trying without relation:', {
+      message: error.message || 'Unknown',
       code: error.code || '',
-      details: error.details || '',
-      hint: error.hint || '',
     });
+    
+    const { data: ingestionsWithoutRelation, error: errorWithoutRelation } = await supabase
+      .from('ingestions')
+      .select('id, status, created_at, updated_at, error, course_id')
+      .eq('created_by', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    
+    if (!errorWithoutRelation && ingestionsWithoutRelation) {
+      // Fetch courses separately
+      const courseIds = ingestionsWithoutRelation
+        .map(i => i.course_id)
+        .filter((id): id is string => id !== null);
+      
+      if (courseIds.length > 0) {
+        const { data: courses } = await supabase
+          .from('courses')
+          .select('id, code, title')
+          .in('id', courseIds);
+        
+        // Merge course data into ingestions
+        ingestions = ingestionsWithoutRelation.map(ingestion => ({
+          ...ingestion,
+          courses: courses?.find(c => c.id === ingestion.course_id) || null,
+        }));
+        error = null; // Clear error since we succeeded with fallback
+      } else {
+        ingestions = ingestionsWithoutRelation;
+        error = null;
+      }
+    } else {
+      error = errorWithoutRelation || error;
+    }
+  }
+
+  if (error) {
+    // Extract all error properties explicitly to avoid serialization issues
+    // Use multiple methods to ensure we capture all error information
+    const errorDetails: any = {};
+    
+    // Method 1: Direct property access
+    if (error.message) errorDetails.message = String(error.message);
+    if (error.code) errorDetails.code = String(error.code);
+    if (error.details) errorDetails.details = String(error.details);
+    if (error.hint) errorDetails.hint = String(error.hint);
+    if (error.name) errorDetails.name = String(error.name);
+    
+    // Method 2: Try to get all own properties
+    try {
+      const ownProps = Object.getOwnPropertyNames(error);
+      ownProps.forEach(prop => {
+        if (!errorDetails[prop]) {
+          try {
+            const value = (error as any)[prop];
+            if (value !== undefined && value !== null) {
+              errorDetails[prop] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+            }
+          } catch (e) {
+            // Skip properties that can't be accessed
+          }
+        }
+      });
+    } catch (e) {
+      // If we can't enumerate properties, continue with what we have
+    }
+    
+    // Method 3: Try JSON.stringify with error handling
+    try {
+      const errorString = JSON.stringify(error, Object.getOwnPropertyNames(error));
+      if (errorString && errorString !== '{}') {
+        errorDetails.rawJson = errorString;
+      }
+    } catch (e) {
+      // JSON.stringify failed, that's okay
+    }
+    
+    // Ensure we have at least one error message
+    if (!errorDetails.message && !errorDetails.details) {
+      errorDetails.message = 'Unknown error occurred';
+      errorDetails.errorType = typeof error;
+      errorDetails.errorString = String(error);
+    }
+    
+    // Log the structured error
+    console.error('Error fetching ingestions:', errorDetails);
   }
 
   return (

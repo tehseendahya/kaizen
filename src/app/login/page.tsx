@@ -43,26 +43,52 @@ export default function LoginPage() {
 
           if (!response.ok) {
             let errorData: any = {};
+            let responseText = '';
             try {
-              const responseText = await response.text();
-              if (responseText) {
-                errorData = JSON.parse(responseText);
+              responseText = await response.text();
+              if (responseText && responseText.trim()) {
+                try {
+                  errorData = JSON.parse(responseText);
+                } catch (parseError) {
+                  errorData = { error: responseText, raw: responseText };
+                }
               } else {
                 errorData = { error: 'Empty response', status: response.status };
               }
-            } catch (parseError) {
+            } catch (readError: any) {
               errorData = {
-                error: 'Failed to parse error response',
+                error: 'Failed to read error response',
+                readError: readError?.message || 'Unknown error',
                 status: response.status,
                 statusText: response.statusText,
               };
             }
-            console.error('Profile ensure error:', {
-              status: response.status,
-              statusText: response.statusText,
-              error: errorData.error || 'Unknown error',
-              details: errorData.details || '',
-            });
+            
+            // Build comprehensive error details
+            const errorDetails: any = {
+              status: response.status || 'unknown',
+              statusText: response.statusText || 'unknown',
+              url: response.url || 'unknown',
+            };
+            
+            // Extract all error properties
+            if (errorData && typeof errorData === 'object') {
+              if (errorData.error) errorDetails.error = errorData.error;
+              if (errorData.details) errorDetails.details = errorData.details;
+              if (errorData.code) errorDetails.code = errorData.code;
+              if (errorData.hint) errorDetails.hint = errorData.hint;
+              if (errorData.message) errorDetails.message = errorData.message;
+              if (errorData.raw) errorDetails.raw = errorData.raw;
+            } else if (errorData) {
+              errorDetails.error = String(errorData);
+            }
+            
+            // Ensure we have at least one error message
+            if (!errorDetails.error && !errorDetails.details) {
+              errorDetails.error = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+            }
+            
+            console.error('Profile ensure error:', errorDetails);
             // Continue anyway - profile can be created later via trigger
           }
         } catch (apiError: any) {

@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB
 
+// Configure route to allow larger body sizes
+export const runtime = 'nodejs';
+export const maxDuration = 300; // 5 minutes for large file uploads
+
 /**
  * POST /api/prof/ingest/upload
  * Upload course files and create ingestion record
@@ -30,7 +34,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse form data
-    const formData = await request.formData();
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch (parseError: any) {
+      console.error('Error parsing form data:', {
+        message: parseError?.message || 'Unknown error',
+        name: parseError?.name || 'Error',
+      });
+      return NextResponse.json(
+        { error: 'Failed to parse form data', details: parseError?.message || 'Invalid request format' },
+        { status: 400 }
+      );
+    }
+
     const courseId = formData.get('courseId') as string;
     const files = formData.getAll('files') as File[];
 
@@ -41,6 +58,13 @@ export async function POST(request: NextRequest) {
     if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No files provided' }, { status: 400 });
     }
+
+    // Log file info for debugging
+    console.log(`Uploading ${files.length} file(s):`, files.map(f => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+    })));
 
     // Verify course ownership
     const { data: course } = await supabase
@@ -83,34 +107,98 @@ export async function POST(request: NextRequest) {
 
     // Upload files to Supabase Storage
     const uploadedFiles: string[] = [];
+    const uploadErrors: Array<{ fileName: string; error: any }> = [];
+    
     for (const file of files) {
       if (file.size > MAX_FILE_SIZE) {
-        continue; // Skip oversized files
-      }
-
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const filePath = `${courseId}/${ingestion.id}/${file.name}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('course-uploads')
-        .upload(filePath, buffer, {
-          contentType: file.type || 'application/octet-stream',
-          upsert: false,
+        uploadErrors.push({
+          fileName: file.name,
+          error: { message: `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB (max ${MAX_FILE_SIZE / 1024 / 1024}MB)` }
         });
-
-      if (uploadError) {
-        console.error(`Error uploading ${file.name}:`, uploadError);
         continue;
       }
 
-      uploadedFiles.push(filePath);
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const filePath = `${courseId}/${ingestion.id}/${file.name}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('course-uploads')
+          .upload(filePath, buffer, {
+            contentType: file.type || 'application/octet-stream',
+            upsert: false,
+          });
+
+        if (uploadError) {
+          // Extract error details properly
+          const errorInfo: any = {
+            message: uploadError.message || 'Unknown storage error',
+            statusCode: uploadError.statusCode || '',
+            error: uploadError.error || '',
+          };
+          
+          // Try to get all properties
+          try {
+            const ownProps = Object.getOwnPropertyNames(uploadError);
+            ownProps.forEach(prop => {
+              if (!errorInfo[prop]) {
+                try {
+                  const value = (uploadError as any)[prop];
+                  if (value !== undefined && value !== null) {
+                    errorInfo[prop] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+                  }
+                } catch (e) {
+                  // Skip
+                }
+              }
+            });
+          } catch (e) {
+            // Continue
+          }
+          
+          console.error(`Error uploading ${file.name}:`, errorInfo);
+          uploadErrors.push({ fileName: file.name, error: errorInfo });
+          continue;
+        }
+
+        if (uploadData) {
+          uploadedFiles.push(filePath);
+          console.log(`Successfully uploaded ${file.name} to ${filePath}`);
+        } else {
+          uploadErrors.push({
+            fileName: file.name,
+            error: { message: 'Upload returned no data' }
+          });
+        }
+      } catch (fileError: any) {
+        const errorInfo: any = {
+          message: fileError?.message || 'Unknown file processing error',
+          name: fileError?.name || 'Error',
+        };
+        
+        if (fileError?.stack) errorInfo.stack = fileError.stack;
+        
+        console.error(`Error processing file ${file.name}:`, errorInfo);
+        uploadErrors.push({ fileName: file.name, error: errorInfo });
+      }
     }
 
     if (uploadedFiles.length === 0) {
       // Delete ingestion if no files uploaded
       await supabase.from('ingestions').delete().eq('id', ingestion.id);
-      return NextResponse.json({ error: 'No files were uploaded successfully' }, { status: 400 });
+      
+      // Return detailed error information
+      return NextResponse.json(
+        { 
+          error: 'No files were uploaded successfully',
+          details: uploadErrors.length > 0 
+            ? uploadErrors.map(e => `${e.fileName}: ${e.error.message || 'Unknown error'}`).join('; ')
+            : 'All files failed to upload',
+          uploadErrors: uploadErrors,
+        },
+        { status: 400 }
+      );
     }
 
     // Update ingestion with file count
@@ -121,9 +209,25 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ingestionId: ingestion.id });
   } catch (error) {
-    console.error('Unexpected error:', error);
+    // Extract comprehensive error details
+    const errorDetails: any = {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      name: error instanceof Error ? error.name : 'Error',
+    };
+    
+    if (error instanceof Error) {
+      if (error.stack) errorDetails.stack = error.stack;
+      if (error.cause) errorDetails.cause = error.cause;
+    }
+    
+    console.error('Unexpected error in upload route:', errorDetails);
+    
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Internal server error', 
+        details: errorDetails.message,
+        hint: 'Check server logs for more details',
+      },
       { status: 500 }
     );
   }

@@ -21,7 +21,20 @@ export default async function ProfCoursesPage() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching courses:', error);
+    // Extract all error properties explicitly to avoid serialization issues
+    const errorDetails: any = {
+      message: error.message || 'Unknown error',
+      code: error.code || '',
+      details: error.details || '',
+      hint: error.hint || '',
+    };
+    
+    // Try to extract any additional properties
+    if (error.name) errorDetails.name = error.name;
+    if (error.stack) errorDetails.stack = error.stack;
+    
+    // Log the structured error
+    console.error('Error fetching courses:', errorDetails);
   }
 
   return (
