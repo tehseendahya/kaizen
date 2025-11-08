@@ -245,8 +245,8 @@ export function OnboardingDialog({ open, onOpenChange, prefillSchool, prefillUni
               type="button"
               onClick={() => {
                 onOpenChange(false);
-                // Use window.location for reliable navigation
-                window.location.href = '/signup?role=professor';
+                // Navigate to professor signup page
+                window.location.href = '/signup/professor';
               }}
               className="text-sm text-blue-600 hover:text-blue-700 underline cursor-pointer bg-transparent border-none p-0"
             >

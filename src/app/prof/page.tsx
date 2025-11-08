@@ -45,7 +45,12 @@ export default async function ProfDashboard() {
     .limit(50);
 
   if (error) {
-    console.error('Error fetching ingestions:', error);
+    console.error('Error fetching ingestions:', {
+      message: error.message || 'Unknown error',
+      code: error.code || '',
+      details: error.details || '',
+      hint: error.hint || '',
+    });
   }
 
   return (

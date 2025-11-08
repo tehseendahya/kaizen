@@ -42,12 +42,34 @@ export default function LoginPage() {
           });
 
           if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Profile ensure error:', errorData);
+            let errorData: any = {};
+            try {
+              const responseText = await response.text();
+              if (responseText) {
+                errorData = JSON.parse(responseText);
+              } else {
+                errorData = { error: 'Empty response', status: response.status };
+              }
+            } catch (parseError) {
+              errorData = {
+                error: 'Failed to parse error response',
+                status: response.status,
+                statusText: response.statusText,
+              };
+            }
+            console.error('Profile ensure error:', {
+              status: response.status,
+              statusText: response.statusText,
+              error: errorData.error || 'Unknown error',
+              details: errorData.details || '',
+            });
             // Continue anyway - profile can be created later via trigger
           }
-        } catch (apiError) {
-          console.error('Failed to ensure profile:', apiError);
+        } catch (apiError: any) {
+          console.error('Failed to ensure profile:', {
+            error: apiError?.message || 'Unknown error',
+            type: apiError?.name || 'Error',
+          });
           // Continue anyway - not critical for login
         }
 
@@ -149,7 +171,7 @@ export default function LoginPage() {
             </div>
             <div className="text-center">
               <Link 
-                href="/signup?role=professor" 
+                href="/signup/professor" 
                 className="text-xs text-blue-600 hover:text-blue-700 underline"
               >
                 Sign up as professor

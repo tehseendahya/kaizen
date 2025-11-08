@@ -234,18 +234,45 @@ export default function NewIngestionPage() {
 function CourseSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [courses, setCourses] = useState<Array<{ id: string; code: string; title: string }>>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/prof/courses')
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || `HTTP ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        setCourses(data);
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setCourses(data);
+        } else {
+          console.error('Courses API returned non-array:', data);
+          setCourses([]);
+          setError('Invalid response format');
+        }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error('Error fetching courses:', err);
+        setError(err.message || 'Failed to load courses');
+        setLoading(false);
+        setCourses([]); // Ensure it's always an array
+      });
   }, []);
 
   if (loading) return <div className="text-sm text-gray-500">Loading courses...</div>;
+
+  if (error) {
+    return (
+      <div className="text-sm text-red-600">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <select

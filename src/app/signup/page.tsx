@@ -7,33 +7,25 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import IconAxis from '@/components/icons/IconAxis';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [isProfessor, setIsProfessor] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
-  // Check URL params for pre-filled data or role
+  // Check URL params for pre-filled data
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const emailParam = params.get('email');
     const schoolParam = params.get('school');
-    const roleParam = params.get('role');
     
     if (emailParam) setEmail(emailParam);
-    if (schoolParam) {
-      // Could store school in a field if you have one
-    }
-    if (roleParam === 'professor') {
-      setIsProfessor(true);
-    }
+    // Note: school param is for student onboarding, can be stored if needed
   }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -42,79 +34,53 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      // Sign up the user
+      const profileUsername = username.trim() || email.split('@')[0];
+      
+      // Sign up the user as student with role in metadata (so trigger can read it)
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            username: profileUsername,
+            role: 'student',  // Always student for this page
+          },
+        },
       });
 
       if (authError) throw authError;
 
       if (authData.user) {
-        // Wait a moment for session to be fully established
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Create profile using server-side API route to avoid RLS issues
-        const profileUsername = username.trim() || email.split('@')[0];
+        // Wait a bit longer to ensure trigger has run
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         try {
-          const desiredRole = isProfessor ? 'professor' : 'student';
-          
-          // First try direct insert (faster if it works)
-          const { error: directError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authData.user.id,
+          // Use API route (server-side, bypasses RLS)
+          const response = await fetch('/api/profile/ensure', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              role: 'student',
               username: profileUsername,
-              role: desiredRole,
-            });
+            }),
+          });
 
-          // If direct insert fails (profile might already exist from trigger), try update
-          if (directError) {
-            console.log('Direct insert failed, trying upsert:', directError);
-            const { error: updateError } = await supabase
-              .from('profiles')
-              .update({
-                username: profileUsername,
-                role: desiredRole,
-              })
-              .eq('id', authData.user.id);
-
-            // If update also fails, use API route (server-side)
-            if (updateError) {
-              console.log('Update failed, trying API route:', updateError);
-              const response = await fetch('/api/profile/ensure', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  role: desiredRole,
-                }),
-              });
-
-              if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Profile creation error via API:', errorData);
-                // Show error but don't block - database trigger might create it
-                setError(`Account created! Profile setup had issues. You can try logging in - your profile will be created automatically.`);
-                setTimeout(() => {
-                  router.push('/login');
-                }, 3000);
-                return;
-              }
-            }
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Profile creation error via API:', errorData);
+            setError(`Account created! Profile setup had issues. You can try logging in - your profile will be created automatically.`);
+            setTimeout(() => {
+              router.push('/login');
+            }, 3000);
+            return;
           }
 
           // Check if email confirmation is required
           if (authData.session) {
             // User is immediately signed in (email confirmation disabled)
-            // Redirect based on role
-            if (isProfessor) {
-              router.push('/prof');
-            } else {
-              router.push('/courses');
-            }
+            router.push('/courses');
             router.refresh();
           } else {
             // Email confirmation required - show message
@@ -207,23 +173,6 @@ export default function SignupPage() {
               <p className="mt-1 text-xs text-slate-500">Must be at least 6 characters</p>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                checked={isProfessor}
-                onCheckedChange={(checked) => setIsProfessor(checked === true)}
-                id="professor"
-              />
-              <Label
-                htmlFor="professor"
-                className="text-sm font-normal cursor-pointer"
-              >
-                Sign up as professor
-              </Label>
-            </div>
-            <p className="text-xs text-slate-500 -mt-2">
-              Professors can upload and manage course content
-            </p>
-
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700"
@@ -237,6 +186,14 @@ export default function SignupPage() {
             <span className="text-slate-600">Already have an account? </span>
             <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
               Sign in
+            </Link>
+          </div>
+          <div className="mt-3 text-center">
+            <Link 
+              href="/signup/professor" 
+              className="text-xs text-slate-500 hover:text-slate-700 underline"
+            >
+              Sign up as professor instead
             </Link>
           </div>
         </div>

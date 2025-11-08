@@ -7,6 +7,7 @@
 -- 1. UPDATE TRIGGER TO HANDLE ROLE FROM METADATA
 -- ============================================================================
 
+-- Update trigger to handle roles and update on conflict
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
@@ -19,7 +20,7 @@ BEGIN
     ),
     COALESCE(
       NEW.raw_user_meta_data->>'role',
-      'student'
+      'student'  -- Default to student if not specified
     )
   )
   ON CONFLICT (id) DO UPDATE

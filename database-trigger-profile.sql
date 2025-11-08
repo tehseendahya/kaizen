@@ -7,15 +7,22 @@
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.profiles (id, username)
+  INSERT INTO public.profiles (id, username, role)
   VALUES (
     NEW.id,
     COALESCE(
       NEW.raw_user_meta_data->>'username',
       split_part(NEW.email, '@', 1)
+    ),
+    COALESCE(
+      NEW.raw_user_meta_data->>'role',
+      'student'  -- Default to student if not specified
     )
   )
-  ON CONFLICT (id) DO NOTHING; -- Don't error if profile already exists
+  ON CONFLICT (id) DO UPDATE
+  SET 
+    username = COALESCE(EXCLUDED.username, profiles.username),
+    role = COALESCE(EXCLUDED.role, profiles.role);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

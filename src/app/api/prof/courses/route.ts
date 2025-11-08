@@ -28,18 +28,64 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch courses where user is professor
-    const { data: courses, error } = await supabase
+    // Get courses created by user
+    const { data: createdCourses, error: createdError } = await supabase
       .from('courses')
-      .select('id, code, title, description, is_published')
-      .or(`created_by.eq.${user.id},id.in.(SELECT course_id FROM course_professors WHERE professor_id.eq.${user.id})`)
-      .order('created_at', { ascending: false });
+      .select('id, code, title, description, is_published, created_at')
+      .eq('created_by', user.id);
 
-    if (error) {
-      console.error('Error fetching courses:', error);
+    // Get course IDs from course_professors table
+    const { data: professorCourses, error: profError } = await supabase
+      .from('course_professors')
+      .select('course_id')
+      .eq('professor_id', user.id);
+
+    if (createdError || profError) {
+      const error = createdError || profError;
+      console.error('Error fetching courses:', {
+        message: error?.message || 'Unknown error',
+        code: error?.code || '',
+        details: error?.details || '',
+        hint: error?.hint || '',
+      });
       return NextResponse.json({ error: 'Failed to fetch courses' }, { status: 500 });
     }
 
-    return NextResponse.json(courses || []);
+    // Get additional courses from course_professors
+    const professorCourseIds = professorCourses?.map(cp => cp.course_id) || [];
+    let additionalCourses: any[] = [];
+
+    if (professorCourseIds.length > 0) {
+      const { data: profCoursesData, error: profCoursesError } = await supabase
+        .from('courses')
+        .select('id, code, title, description, is_published, created_at')
+        .in('id', professorCourseIds);
+
+      if (!profCoursesError && profCoursesData) {
+        additionalCourses = profCoursesData;
+      }
+    }
+
+    // Combine and deduplicate courses
+    const allCourses = [...(createdCourses || []), ...additionalCourses];
+    const uniqueCourses = Array.from(
+      new Map(allCourses.map(course => [course.id, course])).values()
+    );
+
+    // Sort by id (descending) as fallback if created_at not available
+    // Most recent courses will have higher UUIDs
+    uniqueCourses.sort((a, b) => {
+      if (a.created_at && b.created_at) {
+        const aDate = new Date(a.created_at).getTime();
+        const bDate = new Date(b.created_at).getTime();
+        return bDate - aDate;
+      }
+      // Fallback: sort by id (string comparison)
+      return b.id.localeCompare(a.id);
+    });
+
+    // Always return an array
+    return NextResponse.json(uniqueCourses);
   } catch (error) {
     console.error('Unexpected error:', error);
     return NextResponse.json(
