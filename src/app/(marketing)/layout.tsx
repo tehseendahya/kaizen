@@ -5,7 +5,7 @@ import AnnouncementBar from '@/components/layout/AnnouncementBar';
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-white">
-      <AxisNavbar isAuthenticated={false} />
+      <AxisNavbar />
       <AnnouncementBar />
       {children}
     </div>

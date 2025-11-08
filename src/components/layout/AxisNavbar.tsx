@@ -1,15 +1,55 @@
 "use client";
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import IconAxis from '@/components/icons/IconAxis';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { openOnboarding } from '@/lib/onboarding';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import type { Profile } from '@/lib/supabase/profile';
 
-type Props = { isAuthenticated?: boolean };
-
-export function AxisNavbar({ isAuthenticated = false }: Props) {
+export function AxisNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading, signOut } = useAuth();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    if (user) {
+      // Fetch profile
+      supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setProfile(data);
+          }
+        });
+    } else {
+      setProfile(null);
+    }
+  }, [user, supabase]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+    router.refresh();
+  };
+
+  const isAuthenticated = !!user;
+  const initials = profile?.username
+    ? profile.username
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : user?.email?.[0].toUpperCase() || 'U';
 
   const navLinks = [
     { name: 'Courses', href: '/courses' },
@@ -72,12 +112,19 @@ export function AxisNavbar({ isAuthenticated = false }: Props) {
               {/* Avatar + name */}
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
-                  AJ
+                  {initials}
                 </div>
                 <div className="hidden lg:flex flex-col leading-tight">
-                  <span className="text-sm font-medium">Alex</span>
-                  <span className="text-xs text-slate-500">Data Science</span>
+                  <span className="text-sm font-medium">{profile?.username || user?.email?.split('@')[0] || 'User'}</span>
+                  <span className="text-xs text-slate-500">{profile?.school || 'Student'}</span>
                 </div>
+                <button
+                  onClick={handleSignOut}
+                  className="ml-2 text-xs text-slate-500 hover:text-slate-700"
+                  title="Sign out"
+                >
+                  Sign out
+                </button>
               </div>
             </>
           ) : (
@@ -112,12 +159,21 @@ export function AxisNavbar({ isAuthenticated = false }: Props) {
               <div className="space-y-6">
                 <NavLinks />
                 {isAuthenticated ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">AJ</div>
-                    <div className="leading-tight">
-                      <div className="text-slate-900 text-sm font-semibold">Alex</div>
-                      <div className="text-slate-500 text-xs">Data Science</div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
+                        {initials}
+                      </div>
+                      <div className="leading-tight">
+                        <div className="text-slate-900 text-sm font-semibold">
+                          {profile?.username || user?.email?.split('@')[0] || 'User'}
+                        </div>
+                        <div className="text-slate-500 text-xs">{profile?.school || 'Student'}</div>
+                      </div>
                     </div>
+                    <Button variant="outline" onClick={handleSignOut} className="w-full">
+                      Sign out
+                    </Button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">

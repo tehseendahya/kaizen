@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.80.0",
     "@tailwindcss/typography": "^0.5.19",
     "katex": "^0.16.25",
     "next": "15.5.6",
