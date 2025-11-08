@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BlockMath } from 'react-katex';
 import Quiz from '@/components/study/Quiz';
+import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type CourseLesson = { id: string; title: string; description: string };
 export type CourseUnit = { id: string; title: string; intro?: string; lessons: CourseLesson[] };
@@ -25,6 +27,27 @@ export default function CourseShell({
   const [expandedUnits, setExpandedUnits] = useState<string[]>(['unit1']);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string>('Student');
+  const [userName, setUserName] = useState<string>('Student');
+  const { user } = useAuth();
+  const supabase = createClient();
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from('profiles')
+        .select('role, username')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            const role = data.role === 'professor' || data.role === 'admin' ? 'Professor' : 'Student';
+            setUserRole(role);
+            setUserName(data.username || user.email?.split('@')[0] || 'Student');
+          }
+        });
+    }
+  }, [user, supabase]);
 
   const toggleUnit = (unitId: string) => {
     setExpandedUnits((prev) => (prev.includes(unitId) ? prev.filter((id) => id !== unitId) : [...prev, unitId]));
@@ -60,9 +83,9 @@ export default function CourseShell({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <div className="hidden sm:block text-sm text-gray-600">Welcome back, Student</div>
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">S</span>
+              <div className="hidden sm:block text-sm text-gray-600">Welcome back, {userName}</div>
+              <div className={`w-8 h-8 ${userRole === 'Professor' ? 'bg-green-500' : 'bg-blue-500'} rounded-full flex items-center justify-center`}>
+                <span className="text-white text-sm font-medium">{userRole[0]}</span>
               </div>
             </div>
           </div>

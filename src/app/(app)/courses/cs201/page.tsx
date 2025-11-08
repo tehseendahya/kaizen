@@ -1,5 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { createClient } from '@/lib/supabase/client';
 import CourseShell, { CourseData } from '@/components/course/CourseShell';
 
 const courseData: CourseData = {
@@ -22,6 +26,26 @@ const getLessonContent = (lessonId: string) => `%%CONTENT_${lessonId}%%`;
 const getLessonEquations = (lessonId: string) => [`%%EQ_${lessonId}_1%%`];
 
 export default function CoursePage() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    // Redirect professors to professor portal
+    if (user) {
+      supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.role === 'professor' || data?.role === 'admin') {
+            router.push('/prof');
+          }
+        });
+    }
+  }, [user, router, supabase]);
+
   return (
     <CourseShell
       courseData={courseData}

@@ -72,17 +72,14 @@ export function OnboardingDialog({ open, onOpenChange, prefillSchool, prefillUni
     setTouched({ email: true, school: true, courses: true });
     if (!canContinue) return;
     setIsListOpen(false);
-    try {
-      localStorage.setItem('axis.email', email.trim());
-      localStorage.setItem('axis.school', school.trim());
-      localStorage.setItem('axis.courses', JSON.stringify(selected));
-      const slugs = selected
-        .map((s) => s.code?.toLowerCase())
-        .filter(Boolean) as string[];
-      localStorage.setItem('enrolledCourseSlugs', JSON.stringify(slugs));
-    } catch {}
+    // Redirect to actual signup page with pre-filled data
+    const params = new URLSearchParams({
+      email: email.trim(),
+      school: school.trim(),
+      courses: JSON.stringify(selected),
+    });
     onOpenChange(false);
-    router.push('/courses');
+    router.push(`/signup?${params.toString()}`);
   }
 
   // keyboard handlers for suggestions list
@@ -238,9 +235,24 @@ export function OnboardingDialog({ open, onOpenChange, prefillSchool, prefillUni
         </div>
 
         {/* Actions */}
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={onSubmit} disabled={!canContinue} className={!canContinue ? 'opacity-60 cursor-not-allowed' : ''}>Continue</Button>
+        <div className="mt-6 space-y-3">
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button onClick={onSubmit} disabled={!canContinue} className={!canContinue ? 'opacity-60 cursor-not-allowed' : ''}>Continue as Student</Button>
+          </div>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => {
+                onOpenChange(false);
+                // Use window.location for reliable navigation
+                window.location.href = '/signup?role=professor';
+              }}
+              className="text-sm text-blue-600 hover:text-blue-700 underline cursor-pointer bg-transparent border-none p-0"
+            >
+              Sign up as professor instead
+            </button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

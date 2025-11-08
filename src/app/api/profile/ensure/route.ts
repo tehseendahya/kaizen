@@ -22,15 +22,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get optional role from request body
+    let requestedRole = 'student';
+    try {
+      const body = await request.json();
+      if (body && body.role) {
+        requestedRole = body.role;
+      }
+    } catch {
+      // No body or invalid JSON - use default 'student'
+    }
+
     // Check if profile exists
     const { data: existingProfile, error: checkError } = await supabase
       .from('profiles')
-      .select('id')
+      .select('id, role, username')
       .eq('id', user.id)
       .single();
 
-    // If profile exists, return it
+    // If profile exists, update role if needed
     if (existingProfile && !checkError) {
+      // If role is different from requested, update it
+      if (requestedRole !== 'student' && existingProfile.role !== requestedRole) {
+        const { data: updatedProfile, error: updateError } = await supabase
+          .from('profiles')
+          .update({ role: requestedRole })
+          .eq('id', user.id)
+          .select()
+          .single();
+        
+        if (!updateError && updatedProfile) {
+          return NextResponse.json({ success: true, profile: updatedProfile });
+        }
+      }
       return NextResponse.json({ success: true, profile: existingProfile });
     }
 
@@ -42,6 +66,7 @@ export async function POST(request: NextRequest) {
       .insert({
         id: user.id,
         username: username,
+        role: requestedRole === 'professor' ? 'professor' : 'student',
       })
       .select()
       .single();

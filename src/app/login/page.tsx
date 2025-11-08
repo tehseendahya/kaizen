@@ -51,7 +51,24 @@ export default function LoginPage() {
           // Continue anyway - not critical for login
         }
 
-        router.push('/courses');
+        // Check user role and redirect accordingly
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', authData.user.id)
+          .single();
+
+        // Check for redirect parameter (e.g., from middleware)
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get('redirect');
+
+        if (redirectTo) {
+          router.push(redirectTo);
+        } else if (profile?.role === 'professor' || profile?.role === 'admin') {
+          router.push('/prof');
+        } else {
+          router.push('/courses');
+        }
         router.refresh();
       }
     } catch (error: any) {
@@ -123,11 +140,21 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm">
-            <span className="text-slate-600">Don't have an account? </span>
-            <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
-              Sign up
-            </Link>
+          <div className="mt-6 space-y-3">
+            <div className="text-center text-sm">
+              <span className="text-slate-600">Don't have an account? </span>
+              <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+                Sign up
+              </Link>
+            </div>
+            <div className="text-center">
+              <Link 
+                href="/signup?role=professor" 
+                className="text-xs text-blue-600 hover:text-blue-700 underline"
+              >
+                Sign up as professor
+              </Link>
+            </div>
           </div>
         </div>
       </div>

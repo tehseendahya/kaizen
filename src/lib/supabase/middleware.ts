@@ -35,14 +35,39 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+
+  // Professor routes protection
+  if (pathname.startsWith('/prof') || pathname.startsWith('/professor')) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
+    }
+
+    // Check if user is professor or admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || (profile.role !== 'professor' && profile.role !== 'admin')) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Protected routes - redirect to login if not authenticated
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/signup') &&
-    !request.nextUrl.pathname.startsWith('/api/auth') &&
-    (request.nextUrl.pathname.startsWith('/courses') ||
-      request.nextUrl.pathname.startsWith('/dashboard'))
+    !pathname.startsWith('/login') &&
+    !pathname.startsWith('/signup') &&
+    !pathname.startsWith('/api/auth') &&
+    (pathname.startsWith('/courses') ||
+      pathname.startsWith('/dashboard'))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
@@ -52,11 +77,22 @@ export async function updateSession(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (
     user &&
-    (request.nextUrl.pathname.startsWith('/login') ||
-      request.nextUrl.pathname.startsWith('/signup'))
+    (pathname.startsWith('/login') ||
+      pathname.startsWith('/signup'))
   ) {
+    // Check user role to redirect appropriately
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
     const url = request.nextUrl.clone();
-    url.pathname = '/courses';
+    if (profile?.role === 'professor' || profile?.role === 'admin') {
+      url.pathname = '/prof';
+    } else {
+      url.pathname = '/courses';
+    }
     return NextResponse.redirect(url);
   }
 

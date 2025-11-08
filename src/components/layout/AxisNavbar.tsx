@@ -59,13 +59,18 @@ export function AxisNavbar() {
     { name: 'About', href: '/about' },
   ];
 
+  // For professors, replace Courses with Professor Portal
+  const displayNavLinks = profile?.role === 'professor' || profile?.role === 'admin'
+    ? navLinks.map(link => link.name === 'Courses' ? { name: 'Professor Portal', href: '/prof' } : link)
+    : navLinks;
+
   const NavLinks = () => (
     <nav className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 text-sm font-medium text-slate-600">
-      {navLinks.map((link) => (
+      {displayNavLinks.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className={`transition-colors hover:text-blue-600 ${pathname === link.href ? 'text-blue-600 font-semibold' : ''}`}
+          className={`transition-colors hover:text-blue-600 ${pathname === link.href || (link.href === '/prof' && pathname.startsWith('/prof')) ? 'text-blue-600 font-semibold' : ''}`}
         >
           {link.name}
         </Link>
@@ -102,21 +107,40 @@ export function AxisNavbar() {
                 <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-600" />
               </button>
 
-              {/* Student Chips */}
-              <div className="hidden lg:flex items-center gap-2">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">Sophomore</span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">3.92 GPA</span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">6 Courses</span>
-              </div>
+              {/* Student Chips - only show for students */}
+              {profile?.role !== 'professor' && profile?.role !== 'admin' && (
+                <div className="hidden lg:flex items-center gap-2">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">Sophomore</span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">3.92 GPA</span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">6 Courses</span>
+                </div>
+              )}
+              
+              {/* Professor Portal Link */}
+              {(profile?.role === 'professor' || profile?.role === 'admin') && (
+                <Link 
+                  href="/prof" 
+                  className="hidden lg:flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs text-green-700 hover:bg-green-200 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253" />
+                  </svg>
+                  Professor Portal
+                </Link>
+              )}
 
               {/* Avatar + name */}
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
+                <div className={`h-8 w-8 rounded-full ${profile?.role === 'professor' || profile?.role === 'admin' ? 'bg-green-600' : 'bg-blue-600'} text-white flex items-center justify-center text-sm font-medium`}>
                   {initials}
                 </div>
                 <div className="hidden lg:flex flex-col leading-tight">
                   <span className="text-sm font-medium">{profile?.username || user?.email?.split('@')[0] || 'User'}</span>
-                  <span className="text-xs text-slate-500">{profile?.school || 'Student'}</span>
+                  <span className="text-xs text-slate-500">
+                    {profile?.role === 'professor' || profile?.role === 'admin' 
+                      ? 'Professor' 
+                      : profile?.school || 'Student'}
+                  </span>
                 </div>
                 <button
                   onClick={handleSignOut}
@@ -161,14 +185,18 @@ export function AxisNavbar() {
                 {isAuthenticated ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
+                      <div className={`h-8 w-8 rounded-full ${profile?.role === 'professor' || profile?.role === 'admin' ? 'bg-green-600' : 'bg-blue-600'} text-white flex items-center justify-center text-sm font-medium`}>
                         {initials}
                       </div>
                       <div className="leading-tight">
                         <div className="text-slate-900 text-sm font-semibold">
                           {profile?.username || user?.email?.split('@')[0] || 'User'}
                         </div>
-                        <div className="text-slate-500 text-xs">{profile?.school || 'Student'}</div>
+                        <div className="text-slate-500 text-xs">
+                          {profile?.role === 'professor' || profile?.role === 'admin' 
+                            ? 'Professor' 
+                            : profile?.school || 'Student'}
+                        </div>
                       </div>
                     </div>
                     <Button variant="outline" onClick={handleSignOut} className="w-full">

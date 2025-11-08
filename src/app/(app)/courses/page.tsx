@@ -7,21 +7,42 @@ import type { Course } from "@/lib/courses/types";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { createClient } from "@/lib/supabase/client";
 
 export default function HomePage() {
   const [open, setOpen] = useState(false);
   const [role, setRoleState] = useState<"student" | "professor" | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const { user } = useAuth();
+  const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
+    // Check actual database role for professors
+    if (user) {
+      supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.role === 'professor' || data?.role === 'admin') {
+            // Redirect professors to professor portal
+            router.push('/prof');
+            return;
+          }
+        });
+    }
+
     const r = getRole();
     const s = getSelectedCourses();
     setRoleState(r);
     setSelected(s);
     if (!r) setOpen(true);
     getCoursesRepo().listAll().then(setAllCourses);
-  }, []);
+  }, [user, router, supabase]);
 
   const handleClose = () => {
     setOpen(false);

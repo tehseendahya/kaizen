@@ -56,9 +56,11 @@
 ### 1. Environment Variables
 Add to `.env.local`:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_SUPABASE_URL=https://hnseoyisugkupiexpzdf.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc2VveWlzdWdrdXBpZXhwemRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyOTI1MTMsImV4cCI6MjA3Nzg2ODUxM30.QU9TBodYJ_5DHzY_KQKZSnBre5UUpG0Ycu2kTXIoNUg
 ```
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc2VveWlzdWdrdXBpZXhwemRmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MjI5MjUxMywiZXhwIjoyMDc3ODY4NTEzfQ.cVQfqFAag09QuDX9EXT-A5EJ2ZDkIck3zXhVVyJdOQI
+
 
 ### 2. Test Authentication
 - Sign up a test user
