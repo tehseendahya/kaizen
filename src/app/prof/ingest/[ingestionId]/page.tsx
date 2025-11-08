@@ -18,7 +18,8 @@ export default async function IngestionDetailPage({
   }
 
   // Fetch ingestion with draft content
-  const { data: ingestion } = await supabase
+  // First try with the relation, if that fails, try without
+  let { data: ingestion, error: ingestionError } = await supabase
     .from('ingestions')
     .select(`
       id,
@@ -26,8 +27,7 @@ export default async function IngestionDetailPage({
       error,
       created_at,
       updated_at,
-      processing_started_at,
-      processing_completed_at,
+      course_id,
       courses (
         id,
         code,
@@ -37,7 +37,54 @@ export default async function IngestionDetailPage({
     .eq('id', ingestionId)
     .single();
 
+  // If the query with relation fails, try without the relation
+  if (ingestionError || !ingestion) {
+    console.warn('Initial query with relation failed, trying without relation:', {
+      message: ingestionError?.message || 'Unknown',
+      code: ingestionError?.code || '',
+    });
+    
+    const { data: ingestionWithoutRelation, error: errorWithoutRelation } = await supabase
+      .from('ingestions')
+      .select('id, status, error, created_at, updated_at, course_id')
+      .eq('id', ingestionId)
+      .single();
+    
+    if (!errorWithoutRelation && ingestionWithoutRelation) {
+      // Fetch course separately
+      if (ingestionWithoutRelation.course_id) {
+        const { data: course } = await supabase
+          .from('courses')
+          .select('id, code, title')
+          .eq('id', ingestionWithoutRelation.course_id)
+          .single();
+        
+        ingestion = {
+          ...ingestionWithoutRelation,
+          courses: course || null,
+        };
+        ingestionError = null;
+      } else {
+        ingestion = ingestionWithoutRelation;
+        ingestionError = null;
+      }
+    } else {
+      ingestionError = errorWithoutRelation || ingestionError;
+    }
+  }
+
+  if (ingestionError) {
+    console.error('Error fetching ingestion:', {
+      message: ingestionError.message || 'Unknown error',
+      code: ingestionError.code || '',
+      details: ingestionError.details || '',
+      hint: ingestionError.hint || '',
+    });
+    notFound();
+  }
+
   if (!ingestion) {
+    console.error('Ingestion not found:', ingestionId);
     notFound();
   }
 
