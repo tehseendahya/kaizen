@@ -88,33 +88,23 @@ export default async function IngestionDetailPage({
     notFound();
   }
 
-  // Fetch draft units with subunits
-  const { data: draftUnits } = await supabase
-    .from('draft_units')
-    .select(`
-      id,
-      index,
-      title,
-      summary,
-      draft_subunits (
-        id,
-        index,
-        title,
-        intuition,
-        worked_example,
-        pitfalls,
-        recap,
-        code_sketch,
-        references
-      )
-    `)
-    .eq('ingestion_id', ingestionId)
-    .order('index');
+  // Fetch draft content from course_drafts (new schema)
+  // This replaces the old draft_units/draft_subunits tables
+  let draftContent = null;
+  if (ingestion.course_id) {
+    const { data: draft } = await supabase
+      .from('course_drafts')
+      .select('content, schema_version, updated_at')
+      .eq('course_id', ingestion.course_id)
+      .single();
+    
+    draftContent = draft?.content || null;
+  }
 
   return (
     <IngestionDetailClient
       ingestion={ingestion}
-      draftUnits={draftUnits || []}
+      draftContent={draftContent}
       ingestionId={ingestionId}
     />
   );

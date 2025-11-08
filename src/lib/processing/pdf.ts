@@ -1,4 +1,4 @@
-import pdfParse from 'pdf-parse';
+import { parsePdf } from '../parsing/pdf-parse-wrapper';
 
 export interface ExtractionResult {
   text: string;
@@ -10,10 +10,11 @@ export interface ExtractionResult {
 
 /**
  * Extract text from PDF buffer
+ * Uses wrapper to handle pdf-parse CommonJS module
  */
 export async function extract(buffer: Buffer, filename: string): Promise<ExtractionResult> {
   try {
-    const data = await pdfParse(buffer);
+    const data = await parsePdf(buffer);
     return {
       text: data.text,
       meta: {

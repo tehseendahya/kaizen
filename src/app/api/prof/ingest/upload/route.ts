@@ -165,6 +165,40 @@ export async function POST(request: NextRequest) {
         if (uploadData) {
           uploadedFiles.push(filePath);
           console.log(`Successfully uploaded ${file.name} to ${filePath}`);
+          
+          // Create course_uploads record for this file
+          const mimeType = file.type || 
+            (file.name.endsWith('.pdf') ? 'application/pdf' :
+             file.name.endsWith('.docx') ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
+             file.name.endsWith('.doc') ? 'application/msword' :
+             file.name.endsWith('.txt') ? 'text/plain' :
+             file.name.endsWith('.md') ? 'text/markdown' :
+             'application/octet-stream');
+          
+          const { error: insertError } = await supabase
+            .from('course_uploads')
+            .insert({
+              ingestion_id: ingestion.id,
+              course_id: courseId,
+              storage_path: filePath,
+              mime_type: mimeType,
+              meta: { 
+                filename: file.name, 
+                size: file.size,
+                uploaded_at: new Date().toISOString()
+              }
+            });
+          
+          if (insertError) {
+            console.error(`Error creating course_uploads record for ${file.name}:`, {
+              message: insertError.message || 'Unknown error',
+              code: insertError.code || '',
+              details: insertError.details || '',
+            });
+            // Don't fail the upload, but log the error
+          } else {
+            console.log(`Created course_uploads record for ${file.name}`);
+          }
         } else {
           uploadErrors.push({
             fileName: file.name,

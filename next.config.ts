@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '200mb',
     },
   },
+  // Server-side external dependencies (not bundled)
+  serverExternalPackages: ['pdf-parse', 'canvas', 'jsdom'],
 };
 
 export default nextConfig;
