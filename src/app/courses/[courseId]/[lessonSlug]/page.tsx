@@ -5,6 +5,9 @@ import { courseContentV1ToUnified } from "@/lib/ingest/courseContentV1ToUnified"
 import ActionBar from "@/components/course/ActionBar";
 import { KeyConceptsCard, PracticeCard } from "@/components/course/KeyPracticeCheck";
 import Assessments from "@/components/course/Assessments";
+import Callout from "@/components/course/Callout";
+import ExampleBlock from "@/components/course/ExampleBlock";
+import PitfallsList from "@/components/course/PitfallsList";
 import type { Course } from "@/lib/courses/unified-loader";
 import type { CourseContentV1 } from "@/lib/course-schema";
 
@@ -89,8 +92,12 @@ export default async function LessonPage({
   const section = course.units?.flatMap((u: any) => u.sections ?? []).find((s: any) => s.slug === lessonSlug);
   const title = lesson?.title ?? section?.title ?? "Lesson";
 
-  const keyOverview = lesson?.keyConcepts?.overview ?? section?.intro ?? "";
-  const keyBullets = lesson?.keyConcepts?.bullets ?? (course.units?.find((u: any) => u.sections?.some((s: any) => s.slug === lessonSlug))?.learningObjectives ?? []);
+  // Get content from lesson metadata or section
+  const whyItMatters = lesson?.keyConcepts?.overview ?? section?.intro ?? "";
+  const keyResults = section?.note ?? "";
+  const keyBullets = lesson?.keyConcepts?.bullets ?? [];
+  const workedExample = section?.example ?? "";
+  const pitfalls = section?.pitfalls ?? "";
   const checks = lesson?.checks ?? section?.assessments ?? [];
 
   return (
@@ -99,8 +106,29 @@ export default async function LessonPage({
         <h1 className="text-3xl font-bold">{title}</h1>
         <ActionBar />
 
-        <KeyConceptsCard overview={keyOverview} bullets={keyBullets} />
+        {/* Why it matters */}
+        {whyItMatters && (
+          <Callout variant="note" title="Why it matters">
+            {whyItMatters}
+          </Callout>
+        )}
+
+        {/* Key Concepts */}
+        <KeyConceptsCard 
+          overview={keyResults || whyItMatters} 
+          bullets={keyBullets.length > 0 ? keyBullets : undefined} 
+        />
+
+        {/* Worked Example */}
+        {workedExample && <ExampleBlock content={workedExample} />}
+
+        {/* Common Pitfalls */}
+        {pitfalls && <PitfallsList content={pitfalls} />}
+
+        {/* Practice */}
         <PracticeCard items={lesson?.practice ?? []} />
+
+        {/* Check Your Understanding */}
         <div className="rounded-2xl border bg-white p-5 shadow-sm">
           <div className="text-lg font-semibold">Check Your Understanding</div>
           <div className="mt-3"><Assessments items={checks} label="Questions" /></div>

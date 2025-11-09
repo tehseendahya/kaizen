@@ -26,6 +26,7 @@ const SectionSchema = z.object({
   readings: z.array(ReadingSchema).optional().default([]),
   note: z.string().optional().default(""),
   example: z.string().optional().default(""),
+  pitfalls: z.string().optional().default(""),
   assessments: z.array(AssessmentSchema).optional().default([]),
 });
 

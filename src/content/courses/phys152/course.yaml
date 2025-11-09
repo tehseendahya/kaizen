@@ -1,13 +1,359 @@
-course:
-  code: PHYS152
-  slug: phys152
-  title: "Physics 152: Electricity, Magnetism & Waves"
-  university: "Duke University"
-  description: >
-    A rigorous treatment of electrostatics, Gauss’s law, potential and energy,
-    circuits (DC/RC/LR/LC), magnetism, electromagnetic induction, Maxwell’s
-    equations, and an introduction to waves. Emphasis on full derivations,
-    vector calculus, and problem-solving with physical intuition.
-  level: "Intermediate"
-  credits: 1
+id: phys152
+title: "Physics 152: Electricity, Magnetism & Waves"
+description: "A rigorous treatment of electrostatics, Gauss's law, potential and energy, circuits (DC/RC/LR/LC), magnetism, electromagnetic induction, Maxwell's equations, and an introduction to waves. Emphasis on full derivations, vector calculus, and problem-solving with physical intuition."
 
+units:
+  - number: 1
+    title: Coulomb's Law & Electric Field
+    summary: "Building blocks of electrostatics: point charges, superposition, continuous distributions, field lines, and dipoles."
+    learningObjectives:
+      - Understand Coulomb's law and electric field of point charges
+      - Apply superposition principle to calculate fields from multiple charges
+      - Integrate charge distributions to find electric fields
+      - Visualize fields using field lines and flux
+      - Analyze dipole behavior in electric fields
+    keyTerms: [Point charge, Superposition, Electric field, Flux, Dipole, Torque]
+    sections:
+      - id: "1.1"
+        slug: point-charges-superposition
+        title: Point Charges & Superposition
+        intro: Point charges are the building blocks of electrostatics. Superposition lets you add fields from many sources linearly.
+        note: "Coulomb's law (magnitude) $F=k|q_1q_2|/r^2$. Electric field of a point charge: $E(r)=kq\\hat{r}/r^2$. Principle of superposition: total field is the vector sum from each charge. Field is conservative; $\\nabla \\times E=0$ in electrostatics."
+        example: "Two charges on x-axis: $q$ at $+a$ and $-q$ at $-a$. On the y-axis at $y$, fields from each are equal in magnitude and horizontal components cancel. Net field is vertical with magnitude $E_y=2kqa/(a^2+y^2)^{3/2}$. This is a dipole-on-axis field preview."
+        pitfalls: "(i) Forgetting vector directions. (ii) Using scalar addition for vectors. (iii) Mixing $r$ (distance) with coordinate components."
+        assessments:
+          - id: "1.1-q1"
+            prompt: "If both charges are +q, is the mid-point field zero?"
+            answer: "No; forces cancel, field does not."
+            type: "short"
+          - id: "1.1-q2"
+            prompt: "What are the units of $k$?"
+            answer: "$Nm^2/C^2$"
+            type: "short"
+      - id: "1.2"
+        slug: continuous-charge-distributions
+        title: Continuous Charge Distributions
+        intro: Real objects aren't point charges. Use densities to integrate.
+        note: "Linear: $dQ=\\lambda dl$. Surface: $dQ=\\sigma dA$. Volume: $dQ=\\rho dV$. Field $E(r)=k\\int (dQ)\\hat{R}/R^2$."
+        example: "Finite line of length $2a$ on x-axis with $\\lambda$. Field on the perpendicular bisector distance y: $E_y=2k\\lambda a/(y\\sqrt{a^2+y^2})$, horizontal components cancel."
+        pitfalls: "(i) Failing to exploit symmetry to drop components. (ii) Wrong distance $R$ in denominator. (iii) Not normalizing limits properly."
+        assessments:
+          - id: "1.2-q1"
+            prompt: "As $y \\to \\infty$, does $E$ go like $1/y^2$?"
+            answer: "Yes—behaves like a point charge $Q=2\\lambda a$."
+            type: "short"
+      - id: "1.3"
+        slug: electric-field-lines-flux
+        title: Electric Field Lines & Flux
+        intro: Qualitative field reasoning + the bridge to Gauss's law.
+        note: "Field lines begin on + charges, end on − charges, never cross; density ∝ |E|. Electric flux through a surface: $\\Phi_E=\\int E \\cdot dA$."
+        example: "Uniform field $E=E_0\\hat{x}$ through a square of area $A$ whose normal makes angle $\\theta$ with $\\hat{x}$: $\\Phi_E=E_0A\\cos\\theta$."
+        pitfalls: "(i) Confusing area vector direction. (ii) Treating flux as \"number of lines\" literally—use it as a proportional picture."
+        assessments:
+          - id: "1.3-q1"
+            prompt: "Flux of any closed surface in uniform field with no enclosed charge is zero?"
+            answer: "Yes (equal in/out)."
+            type: "short"
+      - id: "1.4"
+        slug: electric-dipoles-torque
+        title: Electric Dipoles & Torque
+        intro: Molecules and dielectrics behave like dipoles; fields of many bodies far away look dipolar.
+        note: "Dipole moment $p=qd$. Torque in uniform $E$: $\\tau=p \\times E$. Potential energy: $U=-p \\cdot E$. On-axis field $E_{axis}=2kp/r^3$; on-equator $E_\\perp=kp/r^3$."
+        example: "Small dipole in $E=E_0\\hat{x}$ initially at angle $\\theta_0$. Show equilibrium at $\\theta=0$ (stable) and $\\pi$ (unstable) via second derivative of $U$."
+        pitfalls: "Using $1/r^2$ scaling for dipoles—true only for point charges. Dipoles go like $1/r^3$."
+        assessments:
+          - id: "1.4-q1"
+            prompt: "Does a pure dipole in uniform field translate?"
+            answer: "No (net force 0), but it can rotate."
+            type: "short"
+
+  - number: 2
+    title: Gauss's Law
+    summary: "Converts difficult integrals into simple algebra when symmetry is high."
+    learningObjectives:
+      - State and apply Gauss's law
+      - Choose appropriate Gaussian surfaces for different symmetries
+      - Calculate fields using Gauss's law for spherical, cylindrical, and planar symmetry
+    keyTerms: [Gauss's law, Gaussian surface, Flux, Symmetry, Enclosed charge]
+    sections:
+      - id: "2.1"
+        slug: gauss-law-statement-strategy
+        title: Gauss's Law Statement & Strategy
+        intro: Converts difficult integrals into simple algebra when symmetry is high.
+        note: "$\\oint_S E \\cdot dA=Q_{enc}/\\varepsilon_0$. Choose Gaussian surfaces that match symmetry (spherical, cylindrical, planar) so $E$ is constant over surface parts and/or $E \\cdot dA$ is simple."
+        example: "Infinite line with $\\lambda$: cylinder radius r, length L → $E(2\\pi rL)=\\lambda L/\\varepsilon_0 \\Rightarrow E=\\lambda/(2\\pi\\varepsilon_0 r)$."
+        pitfalls: "(i) Using Gauss's law without symmetry—still true but not useful. (ii) Miscounting enclosed charge."
+        assessments:
+          - id: "2.1-q1"
+            prompt: "If $Q_{enc}=0$, must $\\oint E \\cdot dA=0$?"
+            answer: "Yes; but $E$ locally need not be zero."
+            type: "short"
+      - id: "2.2"
+        slug: spherical-symmetry
+        title: Spherical Symmetry
+        intro: Many charge distributions have spherical symmetry, making Gauss's law particularly powerful.
+        note: "For an isolated sphere or spherical shell: $E(r)=kQ/r^2$ for $r>R$. For a solid sphere with uniform $\\rho$: inside $E(r)=kQr/R^3$ (linear in r). Shell interior ($r<R_{inner}$) has $E=0$."
+        example: Solid insulating sphere radius R, charge Q uniform. Show continuity of $E$ at $r=R$ and sketch.
+        pitfalls: "Forgetting that fields inside a conducting shell are zero (charges reside on surface in electrostatics)."
+        assessments:
+          - id: "2.2-q1"
+            prompt: "Why does $E$ go to zero at the center of a uniform sphere?"
+            answer: "Equal charge on all sides cancels."
+            type: "short"
+      - id: "2.3"
+        slug: planar-cylindrical-symmetry
+        title: Planar & Cylindrical Symmetry
+        intro: Infinite planes and cylinders are common idealizations with exact solutions.
+        note: "Planes. Infinite sheet surface density $\\sigma$: $E=\\sigma/(2\\varepsilon_0)$ on each side, direction normal. Slab. Infinite slab of thickness 2a with uniform $\\rho$: inside $E=\\rho x/\\varepsilon_0$ (linear), outside $E=\\rho a/\\varepsilon_0$ constant. Cylinder. Solid with $\\rho$: $E(r)=\\rho r/(2\\varepsilon_0)$ inside; $E(r)=\\rho R^2/(2\\varepsilon_0 r)$ outside."
+        example: Compute field inside and outside a uniformly charged infinite cylinder.
+        pitfalls: "Applying sheet formula to finite plates without edge corrections."
+        assessments:
+          - id: "2.3-q1"
+            prompt: "Why does an infinite plane have constant field?"
+            answer: "Symmetry requires it."
+            type: "short"
+
+  - number: 3
+    title: Electric Potential
+    summary: Potential is a scalar, making calculations often simpler than vector fields.
+    learningObjectives:
+      - Define electric potential and relate it to work and energy
+      - Calculate potential for point charges and continuous distributions
+      - Use equipotentials to visualize fields
+      - Derive fields from potentials using gradient
+    keyTerms: [Potential, Potential energy, Equipotential, Gradient, Conservative field]
+    sections:
+      - id: "3.1"
+        slug: potential-work-conservative-fields
+        title: Potential, Work, and Conservative Fields
+        intro: Potential is a scalar, making calculations often simpler than vector fields.
+        note: "$\\Delta V=-\\int_a^b E \\cdot dl$. For point charge: $V(r)=kQ/r$ (choose $V(\\infty)=0$). Work by field: $W=q\\Delta V$ (signs matter!)."
+        example: "Bring a charge q from $r=a$ to $r=b$ near Q: $\\Delta U=qkQ(1/b-1/a)$."
+        pitfalls: "Mixing potential $V$ (per charge) with potential energy $U=qV$."
+        assessments:
+          - id: "3.1-q1"
+            prompt: "Can potential be negative?"
+            answer: "Yes—it's relative to the reference point."
+            type: "short"
+      - id: "3.2"
+        slug: equipotentials-field-from-potential
+        title: Equipotentials & Field from Potential
+        intro: "Equipotentials help visualize fields, and $E=-\\nabla V$ connects them mathematically."
+        note: "Equipotentials are perpendicular to field lines. $E=-\\nabla V$. Numerically, use finite differences; analytically, compute gradients."
+        example: "Potential $V(x,y)=V_0(x^2-y^2)$. Then $E=-2V_0(x\\hat{x}-y\\hat{y})$."
+        pitfalls: "Thinking large $|V|$ means large $|E|$. Only large gradients of V imply strong E."
+        assessments:
+          - id: "3.2-q1"
+            prompt: "If equipotentials are close together, is the field strong?"
+            answer: "Yes—steep gradient."
+            type: "short"
+      - id: "3.3"
+        slug: potential-continuous-distributions
+        title: Potential of Continuous Distributions
+        intro: Scalar integrals are often easier than vector field calculations.
+        note: "$V(r)=k\\int dQ/R$ (scalar integral—easier than field). Field recovered via gradient."
+        example: "Ring radius a with total charge Q on axis z: $V(z)=kQ/\\sqrt{a^2+z^2}$, $E_z=-\\partial V/\\partial z=kQz/(a^2+z^2)^{3/2}$."
+        pitfalls: "Forgetting the scalar nature—no vector addition needed, just sum contributions."
+        assessments:
+          - id: "3.3-q1"
+            prompt: "Why is potential easier to compute than field?"
+            answer: "Scalar vs vector integration."
+            type: "short"
+
+lessons:
+  - slug: point-charges-superposition
+    unitNumber: 1
+    title: Point Charges & Superposition
+    keyConcepts:
+      overview: Point charges are the building blocks of electrostatics. Superposition lets you add fields from many sources linearly.
+      bullets:
+        - "Coulomb's law (magnitude) $F=k|q_1q_2|/r^2$"
+        - "Electric field of a point charge: $E(r)=kq\\hat{r}/r^2$"
+        - "Principle of superposition: total field is the vector sum from each charge"
+        - "Field is conservative; $\\nabla \\times E=0$ in electrostatics"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "If both charges are +q, is the mid-point field zero?"
+        answer: "No; forces cancel, field does not."
+        type: "short"
+      - id: "check-2"
+        prompt: "What are the units of $k$?"
+        answer: "$Nm^2/C^2$"
+        type: "short"
+
+  - slug: continuous-charge-distributions
+    unitNumber: 1
+    title: Continuous Charge Distributions
+    keyConcepts:
+      overview: Real objects aren't point charges. Use densities to integrate.
+      bullets:
+        - "Linear: $dQ=\\lambda dl$"
+        - "Surface: $dQ=\\sigma dA$"
+        - "Volume: $dQ=\\rho dV$"
+        - "Field $E(r)=k\\int (dQ)\\hat{R}/R^2$"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "As $y \\to \\infty$, does $E$ go like $1/y^2$?"
+        answer: "Yes—behaves like a point charge $Q=2\\lambda a$."
+        type: "short"
+
+  - slug: electric-field-lines-flux
+    unitNumber: 1
+    title: Electric Field Lines & Flux
+    keyConcepts:
+      overview: Qualitative field reasoning + the bridge to Gauss's law.
+      bullets:
+        - "Field lines begin on + charges, end on − charges, never cross"
+        - "Density ∝ |E|"
+        - "Electric flux through a surface: $\\Phi_E=\\int E \\cdot dA$"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "Flux of any closed surface in uniform field with no enclosed charge is zero?"
+        answer: "Yes (equal in/out)."
+        type: "short"
+
+  - slug: electric-dipoles-torque
+    unitNumber: 1
+    title: Electric Dipoles & Torque
+    keyConcepts:
+      overview: Molecules and dielectrics behave like dipoles; fields of many bodies far away look dipolar.
+      bullets:
+        - "Dipole moment $p=qd$"
+        - "Torque in uniform $E$: $\\tau=p \\times E$"
+        - "Potential energy: $U=-p \\cdot E$"
+        - "On-axis field $E_{axis}=2kp/r^3$; on-equator $E_\\perp=kp/r^3$"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "Does a pure dipole in uniform field translate?"
+        answer: "No (net force 0), but it can rotate."
+        type: "short"
+
+  - slug: gauss-law-statement-strategy
+    unitNumber: 2
+    title: Gauss's Law Statement & Strategy
+    keyConcepts:
+      overview: Converts difficult integrals into simple algebra when symmetry is high.
+      bullets:
+        - "$\\oint_S E \\cdot dA=Q_{enc}/\\varepsilon_0$"
+        - "Choose Gaussian surfaces that match symmetry"
+        - "Spherical, cylindrical, and planar symmetries simplify calculations"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "If $Q_{enc}=0$, must $\\oint E \\cdot dA=0$?"
+        answer: "Yes; but $E$ locally need not be zero."
+        type: "short"
+
+  - slug: spherical-symmetry
+    unitNumber: 2
+    title: Spherical Symmetry
+    keyConcepts:
+      overview: Many charge distributions have spherical symmetry, making Gauss's law particularly powerful.
+      bullets:
+        - "For isolated sphere: $E(r)=kQ/r^2$ for $r>R$"
+        - "Solid sphere with uniform $\\rho$: inside $E(r)=kQr/R^3$ (linear in r)"
+        - "Shell interior has $E=0$"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "Why does $E$ go to zero at the center of a uniform sphere?"
+        answer: "Equal charge on all sides cancels."
+        type: "short"
+
+  - slug: planar-cylindrical-symmetry
+    unitNumber: 2
+    title: Planar & Cylindrical Symmetry
+    keyConcepts:
+      overview: Infinite planes and cylinders are common idealizations with exact solutions.
+      bullets:
+        - "Infinite sheet: $E=\\sigma/(2\\varepsilon_0)$ on each side"
+        - "Infinite slab: inside $E=\\rho x/\\varepsilon_0$ (linear), outside constant"
+        - "Solid cylinder: $E(r)=\\rho r/(2\\varepsilon_0)$ inside; $E(r)=\\rho R^2/(2\\varepsilon_0 r)$ outside"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "Why does an infinite plane have constant field?"
+        answer: "Symmetry requires it."
+        type: "short"
+
+  - slug: potential-work-conservative-fields
+    unitNumber: 3
+    title: Potential, Work, and Conservative Fields
+    keyConcepts:
+      overview: Potential is a scalar, making calculations often simpler than vector fields.
+      bullets:
+        - "$\\Delta V=-\\int_a^b E \\cdot dl$"
+        - "For point charge: $V(r)=kQ/r$ (choose $V(\\infty)=0$)"
+        - "Work by field: $W=q\\Delta V$ (signs matter!)"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "Can potential be negative?"
+        answer: "Yes—it's relative to the reference point."
+        type: "short"
+
+  - slug: equipotentials-field-from-potential
+    unitNumber: 3
+    title: Equipotentials & Field from Potential
+    keyConcepts:
+      overview: "Equipotentials help visualize fields, and $E=-\\nabla V$ connects them mathematically."
+      bullets:
+        - "Equipotentials are perpendicular to field lines"
+        - "$E=-\\nabla V$"
+        - "Large gradients of V imply strong E"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "If equipotentials are close together, is the field strong?"
+        answer: "Yes—steep gradient."
+        type: "short"
+
+  - slug: potential-continuous-distributions
+    unitNumber: 3
+    title: Potential of Continuous Distributions
+    keyConcepts:
+      overview: Scalar integrals are often easier than vector field calculations.
+      bullets:
+        - "$V(r)=k\\int dQ/R$ (scalar integral—easier than field)"
+        - "Field recovered via gradient"
+        - "No vector addition needed, just sum contributions"
+    practice:
+      - Paraphrase the core idea of this lesson in your own words.
+      - Create a small example that demonstrates the concept.
+      - Explain one common misconception and why it's incorrect.
+    checks:
+      - id: "check-1"
+        prompt: "Why is potential easier to compute than field?"
+        answer: "Scalar vs vector integration."
+        type: "short"
