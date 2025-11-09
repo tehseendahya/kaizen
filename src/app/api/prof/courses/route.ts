@@ -117,26 +117,79 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { 
+          error: 'Unauthorized',
+          message: 'You must be logged in to create a course',
+          details: 'No user session found'
+        }, 
+        { status: 401 }
+      );
     }
 
     // Verify professor role
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single();
 
-    if (!profile || (profile.role !== 'professor' && profile.role !== 'admin')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (profileError) {
+      console.error('Error fetching profile:', {
+        message: profileError.message,
+        code: profileError.code,
+        details: profileError.details,
+        hint: profileError.hint,
+      });
+      return NextResponse.json(
+        {
+          error: 'Failed to verify profile',
+          message: profileError.message || 'Could not verify your profile',
+          details: profileError.details || '',
+          code: profileError.code || '',
+          hint: profileError.hint || 'Make sure your profile exists',
+        },
+        { status: 500 }
+      );
     }
 
-    const body = await request.json();
+    if (!profile || (profile.role !== 'professor' && profile.role !== 'admin')) {
+      return NextResponse.json(
+        { 
+          error: 'Forbidden',
+          message: 'Only professors can create courses',
+          details: `Your role is: ${profile?.role || 'unknown'}`,
+          hint: 'Contact an administrator if you believe this is an error'
+        }, 
+        { status: 403 }
+      );
+    }
+
+    // Parse request body with error handling
+    let body: any;
+    try {
+      body = await request.json();
+    } catch (jsonError: any) {
+      console.error('Error parsing request body:', jsonError);
+      return NextResponse.json(
+        {
+          error: 'Invalid request body',
+          message: 'Failed to parse request body as JSON',
+          details: jsonError?.message || 'Invalid JSON format',
+        },
+        { status: 400 }
+      );
+    }
+
     const { code, title, description } = body;
 
     if (!code || !title) {
       return NextResponse.json(
-        { error: 'Code and title are required' },
+        { 
+          error: 'Validation error',
+          message: 'Code and title are required',
+          details: `Received: code=${code ? 'present' : 'missing'}, title=${title ? 'present' : 'missing'}`,
+        },
         { status: 400 }
       );
     }
@@ -243,12 +296,31 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(course);
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('Unexpected error in POST /api/prof/courses:', {
+      message: error?.message || 'Unknown error',
+      name: error?.name || 'Error',
+      stack: error?.stack,
+      error: error,
+    });
+
+    // Build detailed error response
+    const errorResponse: any = {
+      error: 'Internal server error',
+      message: error?.message || 'An unexpected error occurred',
+    };
+
+    // Add additional details if available
+    if (error?.code) errorResponse.code = String(error.code);
+    if (error?.details) errorResponse.details = String(error.details);
+    if (error?.hint) errorResponse.hint = String(error.hint);
+    
+    // In development, include stack trace
+    if (process.env.NODE_ENV === 'development' && error?.stack) {
+      errorResponse.stack = error.stack;
+    }
+
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 

@@ -5,6 +5,7 @@ import IconAxis from '@/components/icons/IconAxis';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { openOnboarding } from '@/lib/onboarding';
+import { openLogin } from '@/app/(marketing)/_components/LoginRoot';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -153,9 +154,12 @@ export function AxisNavbar() {
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm text-slate-600 hover:text-blue-600">
+              <button 
+                onClick={() => openLogin()}
+                className="text-sm text-slate-600 hover:text-blue-600"
+              >
                 Log in
-              </Link>
+              </button>
               <Button
                 onClick={(e) => {
                   e.preventDefault();
@@ -205,7 +209,12 @@ export function AxisNavbar() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
-                    <Link href="/login" className="text-sm text-slate-600 hover:text-blue-600">Log in</Link>
+                    <button 
+                      onClick={() => openLogin()}
+                      className="text-sm text-slate-600 hover:text-blue-600"
+                    >
+                      Log in
+                    </button>
                     <Button onClick={() => openOnboarding()}>Sign up</Button>
                   </div>
                 )}

@@ -5,6 +5,7 @@ import { Stats } from './_components/Stats';
 import { FinalCTA } from './_components/FinalCTA';
 import { SiteFooter } from './_components/SiteFooter';
 import { OnboardingRoot } from './_components/OnboardingRoot';
+import { LoginRoot } from './_components/LoginRoot';
 
 export default function LandingClient() {
   return (
@@ -15,6 +16,7 @@ export default function LandingClient() {
       <FinalCTA />
       <SiteFooter />
       <OnboardingRoot />
+      <LoginRoot />
     </>
   );
 }

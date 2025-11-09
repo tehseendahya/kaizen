@@ -60,16 +60,22 @@ export default function NewIngestionPage() {
           let responseText = '';
           try {
             responseText = await courseRes.text();
+            console.log('Course creation error response text:', responseText);
+            
             if (responseText && responseText.trim()) {
               try {
                 errorData = JSON.parse(responseText);
+                console.log('Parsed error data:', errorData);
               } catch (parseError) {
+                console.error('Failed to parse error JSON:', parseError);
                 errorData = { error: responseText, raw: responseText };
               }
             } else {
+              console.warn('Empty response body from course creation API');
               errorData = { error: 'Empty response', status: courseRes.status };
             }
           } catch (readError: any) {
+            console.error('Failed to read error response:', readError);
             errorData = {
               error: 'Failed to read error response',
               readError: readError?.message || 'Unknown error',
@@ -90,8 +96,18 @@ export default function NewIngestionPage() {
             // Check if errorData is an empty object
             const errorDataKeys = Object.keys(errorData);
             if (errorDataKeys.length === 0) {
-              errorDetails.error = 'Empty error object received from server';
-              errorDetails.details = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+              // Empty object - use HTTP status to create meaningful error
+              errorDetails.error = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+              errorDetails.details = `Server returned ${errorDetails.status} with no error details.`;
+              
+              // Provide helpful hints based on status code
+              if (errorDetails.status === 401) {
+                errorDetails.details = 'You are not authenticated. Please log in and try again.';
+              } else if (errorDetails.status === 403) {
+                errorDetails.details = 'You do not have permission to create courses. Make sure you are logged in as a professor.';
+              } else if (errorDetails.status === 500) {
+                errorDetails.details = 'Server error occurred. Please check the server logs or try again later.';
+              }
             } else {
               // Extract all properties from errorData
               errorDataKeys.forEach(key => {
@@ -103,10 +119,11 @@ export default function NewIngestionPage() {
             }
           } else if (errorData) {
             errorDetails.error = String(errorData);
+            errorDetails.details = String(errorData);
           }
           
           // Also try to extract from response headers or other sources
-          if (!errorDetails.error && !errorDetails.details) {
+          if (!errorDetails.error && !errorDetails.details && !errorDetails.message) {
             // Try to get error from response headers
             const contentType = courseRes.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
@@ -116,14 +133,35 @@ export default function NewIngestionPage() {
             errorDetails.details = errorDetails.error;
           }
           
-          // Ensure we have meaningful error information
-          if (!errorDetails.message && !errorDetails.details && !errorDetails.error) {
-            errorDetails.error = 'Unknown error occurred';
-            errorDetails.details = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
+          // Ensure we have meaningful error information - prioritize message, then details, then error
+          let errorMessage = errorDetails.message || errorDetails.details || errorDetails.error;
+          
+          // If still no message, use status-based defaults
+          if (!errorMessage) {
+            if (errorDetails.status === 401) {
+              errorMessage = 'You must be logged in to create a course';
+            } else if (errorDetails.status === 403) {
+              errorMessage = 'Only professors can create courses';
+            } else if (errorDetails.status === 500) {
+              errorMessage = 'Server error occurred while creating course';
+            } else {
+              errorMessage = `Failed to create course (HTTP ${errorDetails.status})`;
+            }
           }
           
-          const errorMessage = errorDetails.details || errorDetails.error || errorDetails.hint || errorDetails.message || 'Failed to create course';
-          console.error('Course creation error:', errorDetails);
+          // Add hint if available
+          if (errorDetails.hint && !errorMessage.includes(errorDetails.hint)) {
+            errorMessage = `${errorMessage}. ${errorDetails.hint}`;
+          }
+          
+          console.error('Course creation error - full details:', {
+            errorDetails,
+            errorData,
+            responseText,
+            status: errorDetails.status,
+            statusText: errorDetails.statusText,
+          });
+          
           throw new Error(errorMessage);
         }
         const courseData = await courseRes.json();

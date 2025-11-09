@@ -130,6 +130,18 @@ Return ONLY valid JSON matching this exact structure:
     // Options: 'gpt-3.5-turbo' (default), 'gpt-4-turbo', 'gpt-4o', 'gpt-4'
     const modelName = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
     
+    // Set max_tokens based on model limits
+    // gpt-3.5-turbo: 4096 completion tokens max
+    // gpt-4-turbo, gpt-4o: 4096 completion tokens max (though context is larger)
+    // gpt-4: 8192 completion tokens max
+    // Use 4000 for gpt-3.5-turbo to be safe, allow higher for gpt-4 models
+    let maxTokens = 4000; // Safe default for gpt-3.5-turbo
+    if (modelName.includes('gpt-4') && !modelName.includes('gpt-3.5')) {
+      // GPT-4 models can handle more, but still use 4000 to be safe
+      // If you need more, increase this but be aware of token limits
+      maxTokens = 4000;
+    }
+    
     const completion = await client.chat.completions.create({
       model: modelName,
       messages: [
@@ -138,7 +150,7 @@ Return ONLY valid JSON matching this exact structure:
       ],
       response_format: { type: 'json_object' },
       temperature: 0.3, // Lower temperature for more consistent output
-      max_tokens: 8000, // Increased for comprehensive course content
+      max_tokens: maxTokens, // Set based on model limits
     });
 
     const responseContent = completion.choices[0]?.message?.content;
@@ -266,14 +278,27 @@ Return ONLY valid JSON matching this exact structure:
     
     console.error('[generateCourseDraft.openai-error]', errorDetails);
     
-    // Check if it's a model not found error
+    // Check for specific error types and provide helpful messages
     const errorMessage = error?.message || '';
+    
+    // Model not found error
     if (errorMessage.includes('does not exist') || errorMessage.includes('404') || errorMessage.includes('not found')) {
       const currentModel = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
       throw new Error(
         `Model "${currentModel}" is not available or you don't have access to it. ` +
         `Please set OPENAI_MODEL=gpt-3.5-turbo in your .env.local file, or ensure your OpenAI account has access to the requested model. ` +
         `If you need GPT-4 access, verify your OpenAI account has been approved for GPT-4 usage at https://platform.openai.com/usage`
+      );
+    }
+    
+    // Token limit error
+    if (errorMessage.includes('max_tokens') || errorMessage.includes('too large') || errorMessage.includes('completion tokens')) {
+      const currentModel = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+      throw new Error(
+        `Token limit exceeded for model "${currentModel}". ` +
+        `The course content is too large to generate in a single request. ` +
+        `Try reducing the amount of source material or use a model with higher token limits. ` +
+        `Current limit: 4000 tokens. Consider using GPT-4 models if you need more capacity.`
       );
     }
     

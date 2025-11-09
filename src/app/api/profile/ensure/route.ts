@@ -12,14 +12,16 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     
     // Get optional role, username, and userId from request body
-    let requestedRole = 'student';
+    let requestedRole: string | undefined; // Don't default to 'student' - only use if explicitly provided
     let requestedUsername: string | undefined;
     let userIdFromBody: string | undefined;
+    let roleExplicitlyProvided = false;
     
     try {
       const body = await request.json();
       if (body && body.role) {
         requestedRole = body.role;
+        roleExplicitlyProvided = true; // Mark that role was explicitly provided (signup flow)
       }
       if (body && body.username) {
         requestedUsername = body.username;
@@ -28,8 +30,8 @@ export async function POST(request: NextRequest) {
         userIdFromBody = body.userId;
       }
     } catch (e) {
-      // No body or invalid JSON - use defaults
-      console.log('No body in request, using defaults');
+      // No body or invalid JSON - this is normal for login flow
+      console.log('No body in request (login flow)');
     }
     
     // Get the user ID (from body for signup flow, or from session for login flow)
@@ -102,14 +104,20 @@ export async function POST(request: NextRequest) {
     }
 
     // If profile exists, update role/username if needed
+    // IMPORTANT: Only update role if it was explicitly provided (signup flow)
+    // During login, preserve existing role to prevent accidental role changes
     if (existingProfile) {
       const updates: { role?: string; username?: string; school?: string } = {};
       let needsUpdate = false;
 
-      if (existingProfile.role !== requestedRole) {
+      // Only update role if it was explicitly provided in the request (signup flow)
+      // This prevents login from accidentally changing professor -> student
+      if (roleExplicitlyProvided && requestedRole && existingProfile.role !== requestedRole) {
         updates.role = requestedRole;
         needsUpdate = true;
       }
+      
+      // Update username if provided and different
       if (requestedUsername && existingProfile.username !== requestedUsername) {
         updates.username = requestedUsername;
         needsUpdate = true;
@@ -144,6 +152,7 @@ export async function POST(request: NextRequest) {
         );
       }
       // Profile exists and is already correct - return success
+      // Role is preserved as-is (no accidental changes during login)
       return NextResponse.json({ success: true, profile: existingProfile });
     }
 
@@ -151,12 +160,15 @@ export async function POST(request: NextRequest) {
     // Use requested username or generate one from userId
     const username = requestedUsername || `user_${userId.slice(0, 8)}`;
     
+    // Default to 'student' if no role was provided (shouldn't happen in normal flow, but safe fallback)
+    const roleToCreate = requestedRole || 'student';
+    
     const { data: newProfile, error: createError } = await serviceSupabase
       .from('profiles')
       .insert({
         id: userId,
         username: username,
-        role: requestedRole === 'professor' ? 'professor' : 'student',
+        role: roleToCreate,
       })
       .select()
       .single();

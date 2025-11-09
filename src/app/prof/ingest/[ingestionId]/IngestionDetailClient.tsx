@@ -365,48 +365,33 @@ export default function IngestionDetailClient({
         </div>
       </div>
 
-      {/* Draft Units Preview */}
-      <div className="space-y-6">
-        {draftUnits.length === 0 ? (
+      {/* Draft Content Preview */}
+      <div className="space-y-6 mt-8">
+        {!draftContent ? (
           <Card className="p-8 text-center text-gray-500">
             {status === 'EXTRACTING' || status === 'AI_STRUCTURING' ? (
               <div>
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
                 <p>Processing... This may take a few minutes.</p>
               </div>
+            ) : status === 'READY_FOR_REVIEW' ? (
+              <div>
+                <p className="text-gray-600 mb-4">No draft content available yet.</p>
+                <p className="text-sm text-gray-500">
+                  Click "Generate AI Draft" to create course content from parsed files.
+                </p>
+              </div>
             ) : (
               <p>No draft content available yet.</p>
             )}
           </Card>
         ) : (
-          draftUnits.map((unit) => (
-            <Card key={unit.id} className="p-6">
-              <h2 className="text-xl font-semibold mb-2">
-                Unit {unit.index + 1}: {unit.title}
-              </h2>
-              {unit.summary && (
-                <p className="text-gray-600 mb-4">{unit.summary}</p>
-              )}
-
-              <div className="space-y-4 mt-4">
-                {unit.draft_subunits.map((subunit) => (
-                  <div key={subunit.id} className="border-l-4 border-blue-200 pl-4">
-                    <h3 className="font-medium">
-                      {unit.index + 1}.{subunit.index + 1} {subunit.title}
-                    </h3>
-                    <div className="mt-2 space-y-2 text-sm text-gray-700">
-                      <div>
-                        <strong>Intuition:</strong> {subunit.intuition.slice(0, 200)}...
-                      </div>
-                      <div>
-                        <strong>Recap:</strong> {subunit.recap.slice(0, 200)}...
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Draft Preview</h2>
+            <Card className="p-6">
+              <RenderCourse content={draftContent} />
             </Card>
-          ))
+          </div>
         )}
       </div>
     </div>
