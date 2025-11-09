@@ -112,7 +112,9 @@ export default function ChatSidebar({
           </div>
           <div>
             <div className="font-bold text-white text-lg">Gary 🐧</div>
-            <div className="text-xs text-blue-100">Your CS201 Tutor</div>
+            <div className="text-xs text-blue-100">
+              {courseId === 'phys152' ? 'Your Physics 152 Tutor' : 'Your CS201 Tutor'}
+            </div>
           </div>
         </div>
         <button 
@@ -182,7 +184,7 @@ export default function ChatSidebar({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
           rows={3}
-          placeholder="Ask Gary anything about CS201... 💭"
+          placeholder={courseId === 'phys152' ? 'Ask Gary anything about Physics 152... 💭' : 'Ask Gary anything about CS201... 💭'}
           className="w-full resize-none p-3 border-2 border-blue-200 rounded-2xl bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all duration-200"
         />
         <div className="flex justify-between items-center">

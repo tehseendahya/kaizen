@@ -6,6 +6,7 @@ import { BlockMath } from 'react-katex';
 import Quiz from '@/components/study/Quiz';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import ChatSidebar from '@/components/ai/ChatSidebar';
 
 export type CourseLesson = { id: string; title: string; description: string };
 export type CourseUnit = { id: string; title: string; intro?: string; lessons: CourseLesson[] };
@@ -27,10 +28,16 @@ export default function CourseShell({
   const [expandedUnits, setExpandedUnits] = useState<string[]>(['unit1']);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [garyOpen, setGaryOpen] = useState(false);
   const [userRole, setUserRole] = useState<string>('Student');
   const [userName, setUserName] = useState<string>('Student');
   const { user } = useAuth();
   const supabase = createClient();
+  
+  // Determine course ID from course title or use default
+  const courseId = courseData.title.toLowerCase().includes('physics') || courseData.title.toLowerCase().includes('phys152') 
+    ? 'phys152' 
+    : 'cs201';
 
   useEffect(() => {
     if (user) {
@@ -193,11 +200,14 @@ export default function CourseShell({
                       </svg>
                       <span className="font-medium text-sm">Study Guide</span>
                     </button>
-                    <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-md hover:shadow-lg cursor-pointer">
+                    <button 
+                      onClick={() => setGaryOpen(true)}
+                      className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-md hover:shadow-lg cursor-pointer"
+                    >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span className="font-medium text-sm">Ask AI</span>
+                      <span className="font-medium text-sm">Ask Gary 🐧</span>
                     </button>
                   </div>
                 </div>
@@ -305,6 +315,14 @@ export default function CourseShell({
           </div>
         </div>
       </div>
+      
+      {/* Gary the AI Tutor */}
+      <ChatSidebar
+        courseId={courseId}
+        open={garyOpen}
+        onClose={() => setGaryOpen(false)}
+        prefill={selectedLesson ? `Can you help me understand ${courseData.units.flatMap((u) => u.lessons).find((l) => l.id === selectedLesson)?.title}?` : undefined}
+      />
     </div>
   );
 }
