@@ -296,8 +296,8 @@ export async function generateCourseDraft(
     apiKey: process.env.OPENAI_API_KEY 
   });
 
-  const modelName = process.env.OPENAI_MODEL || 'gpt-5';
-  let maxTokens = 12_000; // default
+  const modelName = process.env.OPENAI_MODEL || 'gpt-4o';
+  let maxTokens = 8_000; // Safe default for most models (gpt-4-turbo limit)
 
   console.log('\n📝 [AI] STAGE 1: Summarizing sources');
   console.log('   → Files to summarize:', parsed.length);
@@ -813,20 +813,20 @@ Return ONLY valid JSON matching this exact structure:
     }
     
     if (errorMessage.includes('does not exist') || errorMessage.includes('404') || errorMessage.includes('not found')) {
-      const currentModel = process.env.OPENAI_MODEL || 'gpt-5';
+      const currentModel = process.env.OPENAI_MODEL || 'gpt-4o';
       throw new Error(
         `Model "${currentModel}" is not available or you don't have access to it. ` +
-        `Ensure your OpenAI account has access to GPT-5. ` +
+        `Try setting OPENAI_MODEL=gpt-4o or gpt-3.5-turbo in your .env.local file. ` +
         `Check your API key and model access at https://platform.openai.com/settings/organization/limits`
       );
     }
     
     if (errorMessage.includes('max_tokens') || errorMessage.includes('too large') || errorMessage.includes('completion tokens')) {
-      const currentModel = process.env.OPENAI_MODEL || 'gpt-5';
+      const currentModel = process.env.OPENAI_MODEL || 'gpt-4o';
       throw new Error(
-        `Token limit exceeded for model "${currentModel}" even after automatic compression and trimming. ` +
-        `This should not happen. Please try uploading fewer or smaller files. ` +
-        `GPT-5 supports up to 200k input tokens and 32k output tokens per request.`
+        `Token limit exceeded for model "${currentModel}". ` +
+        `Try: (1) Upload smaller files, (2) Set OPENAI_MODEL=gpt-4o in .env.local, or (3) Reduce file count. ` +
+        `Current model limits - gpt-4o: 128k input/16k output | gpt-4-turbo: 128k input/4k output`
       );
     }
     

@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { generateCourseDraftWithResearch } from '@/lib/ai/generateCourseDraftWithResearch';
+import { generateCourseGuaranteed } from '@/lib/ai/generateCourseGuaranteed';
 
 // Configure for long-running operations (same as upload route)
 export const maxDuration = 300; // 5 minutes
@@ -115,46 +115,24 @@ export async function POST(
       description: course.description || '' 
     };
 
-    // Generate draft using AI with research enhancement
-    console.log('\n' + '='.repeat(80));
-    console.log('🚀 STARTING RESEARCH-ENHANCED AI GENERATION');
-    console.log('='.repeat(80));
-    console.log(`[generate-draft] Course: ${course.code} - ${course.title}`);
-    console.log(`[generate-draft] Processing ${parsed.length} parsed files`);
-    console.log(`[generate-draft] Total text length: ${parsed.reduce((sum, p) => sum + p.text.length, 0)} characters`);
-    console.log('='.repeat(80) + '\n');
+    // Generate course with GUARANTEED 6 units
+    console.log('\n📚 [API] Starting guaranteed 6-unit generation');
     
-    let result;
+    let draftJson;
     try {
-      result = await generateCourseDraftWithResearch(seedMeta, parsed, {
-        enableResearch: true,
-        maxSources: 5
+      draftJson = await generateCourseGuaranteed(seedMeta, parsed);
+      
+      console.log('[API] ✅ Generation complete:', {
+        units: draftJson?.units?.length || 0,
+        lessons: draftJson?.units?.reduce((sum, u) => sum + (u.lessons?.length || 0), 0) || 0
       });
       
-      console.log('\n' + '='.repeat(80));
-      console.log('✅ RESEARCH-ENHANCED GENERATION COMPLETED');
-      console.log('='.repeat(80));
-      console.log(`[generate-draft] Generated ${result.content.units?.length || 0} units`);
-      console.log(`[generate-draft] Total lessons: ${result.content.units?.reduce((sum: number, u: any) => sum + (u.lessons?.length || 0), 0) || 0}`);
-      console.log(`[generate-draft] Research sources used: ${result.researchSources.length}`);
-      console.log(`[generate-draft] Citations found: ${result.citationsUsed.length}`);
-      if (result.researchSources.length > 0) {
-        console.log(`[generate-draft] Top source: ${result.researchSources[0].title} (${result.researchSources[0].domain})`);
+      if ((draftJson?.units?.length || 0) < 6) {
+        console.error('[API] ❌ CRITICAL: Only generated', draftJson?.units?.length, 'units!');
       }
-      console.log('='.repeat(80) + '\n');
-      
-      // Use the content from the result
-      var draftJson = result.content;
     } catch (aiError: any) {
-      console.log('\n' + '='.repeat(80));
-      console.log('❌ AI COURSE GENERATION FAILED');
-      console.log('='.repeat(80));
-      console.error('[generate-draft.ai-error]', {
-        message: aiError?.message || 'AI generation failed',
-        name: aiError?.name || 'Error',
-        stack: aiError?.stack,
-      });
-      console.log('='.repeat(80) + '\n');
+      console.log('\n❌ GENERATION FAILED');
+      console.error('[generate-draft.error]:', aiError?.message);
       
       return NextResponse.json(
         { 
@@ -165,7 +143,20 @@ export async function POST(
       );
     }
 
-    // Save or update draft with research metadata
+    // Create simple metadata
+    const result = {
+      allSources: [],
+      citationsUsed: [],
+      researchSummary: {
+        totalLessons: draftJson?.units?.reduce((sum, u) => sum + (u.lessons?.length || 0), 0) || 0,
+        totalSources: 0,
+        lessonsWithSources: 0,
+        lessonsWithoutSources: 0,
+        topDomains: []
+      }
+    };
+
+    // Save or update draft with metadata
     const { error: upsertErr } = await supabase
       .from('course_drafts')
       .upsert({
@@ -174,12 +165,13 @@ export async function POST(
         schema_version: 'v1',
         created_by: user.id,
         updated_at: new Date().toISOString(),
-        // Store research metadata
+        // Store metadata
         meta: {
-          researchSources: result.researchSources,
+          researchSources: result.allSources,
           citationsUsed: result.citationsUsed,
           generatedAt: new Date().toISOString(),
-          sourcesCount: result.researchSources.length
+          sourcesCount: result.allSources.length,
+          researchSummary: result.researchSummary
         }
       }, { 
         onConflict: 'course_id' 

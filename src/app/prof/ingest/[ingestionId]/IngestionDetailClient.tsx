@@ -318,51 +318,103 @@ export default function IngestionDetailClient({
 
           {/* Step 3: Preview and Publish */}
           {status === 'READY_FOR_REVIEW' && (
-            <div className="flex items-center gap-4">
-              <Link 
-                href={`/courses/${ingestion.course_id}?preview=1`}
-                target="_blank"
-              >
-                <Button variant="outline">
-                  👁️ Preview as Student
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <Link 
+                  href={`/courses/${ingestion.course_id}?preview=1`}
+                  target="_blank"
+                >
+                  <Button variant="outline">
+                    👁️ Preview as Student
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={handlePublish} 
+                  disabled={approving}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {approving ? (
+                    <>
+                      <span className="animate-spin mr-2">📚</span>
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      🚀 Publish Course
+                    </>
+                  )}
                 </Button>
-              </Link>
-              <Button 
-                onClick={handlePublish} 
-                disabled={approving}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                {approving ? (
-                  <>
-                    <span className="animate-spin mr-2">📚</span>
-                    Publishing...
-                  </>
-                ) : (
-                  <>
-                    🚀 Publish Course
-                  </>
-                )}
-              </Button>
-              <span className="text-sm text-gray-600">
-                Step 3: Review draft and publish for students
-              </span>
+                <span className="text-sm text-gray-600">
+                  Step 3: Review draft and publish for students
+                </span>
+              </div>
+              
+              {/* Regenerate Button */}
+              <div className="flex items-center gap-4 pt-4 border-t">
+                <Button 
+                  onClick={handleGenerateDraft}
+                  disabled={generating}
+                  variant="outline"
+                  className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
+                  {generating ? (
+                    <>
+                      <span className="animate-spin mr-2">🔄</span>
+                      Regenerating with Deep Research...
+                    </>
+                  ) : (
+                    <>
+                      🔄 Regenerate with Deep Research
+                    </>
+                  )}
+                </Button>
+                <span className="text-sm text-gray-600">
+                  Use new deep research system to create comprehensive content (6-10 units, 1,200+ words/lesson)
+                </span>
+              </div>
             </div>
           )}
 
           {/* Already Published */}
           {status === 'PUBLISHED' && (
-            <div className="flex items-center gap-4">
-              <Link 
-                href={`/courses/${ingestion.course_id}`}
-                target="_blank"
-              >
-                <Button className="bg-green-600 hover:bg-green-700">
-                  📖 View Published Course
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <Link 
+                  href={`/courses/${ingestion.course_id}`}
+                  target="_blank"
+                >
+                  <Button className="bg-green-600 hover:bg-green-700">
+                    📖 View Published Course
+                  </Button>
+                </Link>
+                <span className="text-sm text-green-600 font-semibold">
+                  ✅ Course is live for students!
+                </span>
+              </div>
+              
+              {/* Regenerate Button for Published Courses */}
+              <div className="flex items-center gap-4 pt-4 border-t">
+                <Button 
+                  onClick={handleGenerateDraft}
+                  disabled={generating}
+                  variant="outline"
+                  className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
+                  {generating ? (
+                    <>
+                      <span className="animate-spin mr-2">🔄</span>
+                      Regenerating with Deep Research...
+                    </>
+                  ) : (
+                    <>
+                      🔄 Regenerate Course
+                    </>
+                  )}
                 </Button>
-              </Link>
-              <span className="text-sm text-green-600 font-semibold">
-                ✅ Course is live for students!
-              </span>
+                <span className="text-sm text-gray-600">
+                  Use new deep research system (6-10 units, comprehensive content, web sources)
+                </span>
+              </div>
             </div>
           )}
         </div>
@@ -373,7 +425,8 @@ export default function IngestionDetailClient({
         <div className="mt-8">
           <ResearchSourcesBadge 
             sources={researchMeta.researchSources} 
-            citationsUsed={researchMeta.citationsUsed || []} 
+            citationsUsed={researchMeta.citationsUsed || []}
+            researchSummary={researchMeta.researchSummary}
           />
         </div>
       )}

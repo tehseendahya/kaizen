@@ -13,9 +13,15 @@ type ResearchSource = {
 type ResearchSourcesBadgeProps = {
   sources: ResearchSource[];
   citationsUsed: number[];
+  researchSummary?: {
+    totalLessons?: number;
+    totalSources?: number;
+    lessonsWithSources?: number;
+    topDomains?: Array<{ domain: string; count: number }>;
+  };
 };
 
-export function ResearchSourcesBadge({ sources, citationsUsed }: ResearchSourcesBadgeProps) {
+export function ResearchSourcesBadge({ sources, citationsUsed, researchSummary }: ResearchSourcesBadgeProps) {
   const [expanded, setExpanded] = useState(false);
 
   if (!sources || sources.length === 0) {
@@ -30,6 +36,8 @@ export function ResearchSourcesBadge({ sources, citationsUsed }: ResearchSources
   const academicCount = sources.filter(s => 
     s.domain.includes('.edu') || s.domain.includes('.gov')
   ).length;
+
+  const hasDeepResearch = researchSummary && researchSummary.totalLessons && researchSummary.totalLessons > 0;
 
   return (
     <div className="space-y-2">
@@ -57,6 +65,31 @@ export function ResearchSourcesBadge({ sources, citationsUsed }: ResearchSources
               {citationsUsed.length} cited in content
             </span>
           </div>
+
+          {/* Deep Research Summary */}
+          {hasDeepResearch && (
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-3">
+              <div className="text-sm font-semibold text-blue-900 mb-2">
+                🔬 Deep Research Mode
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs text-blue-800">
+                <div>
+                  <span className="font-medium">Lessons researched:</span>{' '}
+                  {researchSummary.lessonsWithSources}/{researchSummary.totalLessons}
+                </div>
+                <div>
+                  <span className="font-medium">Total sources:</span>{' '}
+                  {researchSummary.totalSources}
+                </div>
+              </div>
+              {researchSummary.topDomains && researchSummary.topDomains.length > 0 && (
+                <div className="mt-2 text-xs text-blue-700">
+                  <span className="font-medium">Top domains:</span>{' '}
+                  {researchSummary.topDomains.slice(0, 3).map(d => `${d.domain} (${d.count})`).join(', ')}
+                </div>
+              )}
+            </div>
+          )}
 
           {sources.map((source, index) => {
             const citationNum = index + 1;
