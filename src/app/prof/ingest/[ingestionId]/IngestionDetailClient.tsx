@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import RenderCourse from '@/app/courses/components/RenderCourse';
 import { CourseContentV1 } from '@/lib/course-schema';
+import { ResearchSourcesBadge } from '@/components/ResearchSourcesBadge';
 
 type IngestionStatus = 'UPLOADED' | 'EXTRACTING' | 'AI_STRUCTURING' | 'READY_FOR_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'FAILED';
 
@@ -24,10 +25,12 @@ const statusColors: Record<IngestionStatus, string> = {
 export default function IngestionDetailClient({
   ingestion,
   draftContent,
+  researchMeta,
   ingestionId,
 }: {
   ingestion: any;
   draftContent: CourseContentV1 | null;
+  researchMeta: any;
   ingestionId: string;
 }) {
   const router = useRouter();
@@ -365,6 +368,16 @@ export default function IngestionDetailClient({
         </div>
       </div>
 
+      {/* Research Sources Badge */}
+      {researchMeta && researchMeta.researchSources && researchMeta.researchSources.length > 0 && (
+        <div className="mt-8">
+          <ResearchSourcesBadge 
+            sources={researchMeta.researchSources} 
+            citationsUsed={researchMeta.citationsUsed || []} 
+          />
+        </div>
+      )}
+
       {/* Draft Content Preview */}
       <div className="space-y-6 mt-8">
         {!draftContent ? (
@@ -387,7 +400,14 @@ export default function IngestionDetailClient({
           </Card>
         ) : (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Draft Preview</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Draft Preview</h2>
+              {researchMeta && researchMeta.sourcesCount > 0 && (
+                <span className="text-sm text-gray-600">
+                  Enhanced with {researchMeta.sourcesCount} research source{researchMeta.sourcesCount !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
             <Card className="p-6">
               <RenderCourse data={draftContent} />
             </Card>

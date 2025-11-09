@@ -91,20 +91,23 @@ export default async function IngestionDetailPage({
   // Fetch draft content from course_drafts (new schema)
   // This replaces the old draft_units/draft_subunits tables
   let draftContent = null;
+  let researchMeta = null;
   if (ingestion.course_id) {
     const { data: draft } = await supabase
       .from('course_drafts')
-      .select('content, schema_version, updated_at')
+      .select('content, schema_version, updated_at, meta')
       .eq('course_id', ingestion.course_id)
       .single();
     
     draftContent = draft?.content || null;
+    researchMeta = draft?.meta || null;
   }
 
   return (
     <IngestionDetailClient
       ingestion={ingestion}
       draftContent={draftContent}
+      researchMeta={researchMeta}
       ingestionId={ingestionId}
     />
   );

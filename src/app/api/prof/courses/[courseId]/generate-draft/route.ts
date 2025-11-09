@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { generateCourseDraft } from '@/lib/ai/generateCourseDraft';
+import { generateCourseDraftWithResearch } from '@/lib/ai/generateCourseDraftWithResearch';
 
 // Configure for long-running operations (same as upload route)
 export const maxDuration = 300; // 5 minutes
@@ -115,25 +115,36 @@ export async function POST(
       description: course.description || '' 
     };
 
-    // Generate draft using AI
+    // Generate draft using AI with research enhancement
     console.log('\n' + '='.repeat(80));
-    console.log('🚀 STARTING AI COURSE GENERATION');
+    console.log('🚀 STARTING RESEARCH-ENHANCED AI GENERATION');
     console.log('='.repeat(80));
     console.log(`[generate-draft] Course: ${course.code} - ${course.title}`);
     console.log(`[generate-draft] Processing ${parsed.length} parsed files`);
     console.log(`[generate-draft] Total text length: ${parsed.reduce((sum, p) => sum + p.text.length, 0)} characters`);
     console.log('='.repeat(80) + '\n');
     
-    let draftJson;
+    let result;
     try {
-      draftJson = await generateCourseDraft(seedMeta, parsed);
+      result = await generateCourseDraftWithResearch(seedMeta, parsed, {
+        enableResearch: true,
+        maxSources: 5
+      });
       
       console.log('\n' + '='.repeat(80));
-      console.log('✅ AI COURSE GENERATION COMPLETED');
+      console.log('✅ RESEARCH-ENHANCED GENERATION COMPLETED');
       console.log('='.repeat(80));
-      console.log(`[generate-draft] Generated ${draftJson.units?.length || 0} units`);
-      console.log(`[generate-draft] Total lessons: ${draftJson.units?.reduce((sum: number, u: any) => sum + (u.lessons?.length || 0), 0) || 0}`);
+      console.log(`[generate-draft] Generated ${result.content.units?.length || 0} units`);
+      console.log(`[generate-draft] Total lessons: ${result.content.units?.reduce((sum: number, u: any) => sum + (u.lessons?.length || 0), 0) || 0}`);
+      console.log(`[generate-draft] Research sources used: ${result.researchSources.length}`);
+      console.log(`[generate-draft] Citations found: ${result.citationsUsed.length}`);
+      if (result.researchSources.length > 0) {
+        console.log(`[generate-draft] Top source: ${result.researchSources[0].title} (${result.researchSources[0].domain})`);
+      }
       console.log('='.repeat(80) + '\n');
+      
+      // Use the content from the result
+      var draftJson = result.content;
     } catch (aiError: any) {
       console.log('\n' + '='.repeat(80));
       console.log('❌ AI COURSE GENERATION FAILED');
@@ -154,7 +165,7 @@ export async function POST(
       );
     }
 
-    // Save or update draft
+    // Save or update draft with research metadata
     const { error: upsertErr } = await supabase
       .from('course_drafts')
       .upsert({
@@ -162,7 +173,14 @@ export async function POST(
         content: draftJson,
         schema_version: 'v1',
         created_by: user.id,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        // Store research metadata
+        meta: {
+          researchSources: result.researchSources,
+          citationsUsed: result.citationsUsed,
+          generatedAt: new Date().toISOString(),
+          sourcesCount: result.researchSources.length
+        }
       }, { 
         onConflict: 'course_id' 
       });
