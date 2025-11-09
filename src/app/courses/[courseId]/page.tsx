@@ -1,274 +1,251 @@
-/**
- * Course Page - Student View with Professor Preview Support
- * Shows published content to students, draft preview to professors
- */
+import { notFound } from "next/navigation";
+import { loadCourse } from "@/lib/courses/unified-loader";
+import { createClient } from "@/lib/supabase/server";
+import { courseContentV1ToUnified } from "@/lib/ingest/courseContentV1ToUnified";
+import Link from "next/link";
+import type { Course } from "@/lib/courses/unified-loader";
+import type { CourseContentV1 } from "@/lib/course-schema";
 
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import RenderCourse from '../components/RenderCourse';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
+// Check if string is a UUID
+function isUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
 
-export default async function CoursePage({ 
-  params, 
-  searchParams 
+export default async function CourseHome({ 
+  params 
 }: { 
-  params: { courseId: string };
-  searchParams: { preview?: string };
+  params: Promise<{ courseId: string }>;
 }) {
-  const supabase = await createClient();
-  const preview = searchParams?.preview === '1';
-  
-  // Get the current user
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  // Get course details
-  const { data: course, error: courseError } = await supabase
-    .from('courses')
-    .select('id, created_by, status, title, code, is_published')
-    .eq('id', params.courseId)
-    .single();
-  
-  if (courseError || !course) {
-    console.error('[CoursePage] Course not found:', {
-      courseId: params.courseId,
-      error: courseError?.message
-    });
-    redirect('/courses');
-  }
+  const { courseId } = await params;
+  let course: Course | null = null;
 
-  // Handle preview mode (professor only)
-  if (preview) {
-    // Must be authenticated and own the course
-    if (!user || user.id !== course.created_by) {
-      redirect(`/courses/${params.courseId}`);
-    }
-
-    // Get the draft
-    const { data: draft, error: draftError } = await supabase
-      .from('course_drafts')
-      .select('content, schema_version, updated_at')
-      .eq('course_id', course.id)
+  // If it's a UUID, try loading from database
+  if (isUUID(courseId)) {
+    const supabase = await createClient();
+    
+    // Get course info
+    const { data: dbCourse } = await supabase
+      .from('courses')
+      .select('id, title, code, description')
+      .eq('id', courseId)
       .single();
 
-    if (draftError) {
-      console.error('[CoursePage] Error fetching draft:', {
-        courseId: course.id,
-        error: draftError?.message,
-        code: draftError?.code,
-        details: draftError?.details
-      });
-      redirect(`/courses/${params.courseId}`);
+    if (dbCourse) {
+      // Try to get draft content
+      const { data: draft } = await supabase
+        .from('course_drafts')
+        .select('content, schema_version')
+        .eq('course_id', courseId)
+        .single();
+
+      if (draft?.content) {
+        // Draft content is stored as CourseContentV1 format
+        const draftData = typeof draft.content === 'string' 
+          ? JSON.parse(draft.content) 
+          : draft.content;
+        
+        // Convert from CourseContentV1 to unified format
+        try {
+          course = courseContentV1ToUnified(
+            draftData as CourseContentV1,
+            courseId
+          );
+        } catch (error) {
+          console.error('Error converting draft content:', error);
+          // Create minimal course structure on error
+          course = {
+            id: courseId,
+            title: dbCourse.title || dbCourse.code || 'Untitled Course',
+            description: dbCourse.description || '',
+            units: [],
+            lessons: [],
+          };
+        }
+      } else {
+        // No draft content, create minimal course structure
+        course = {
+          id: courseId,
+          title: dbCourse.title || dbCourse.code || 'Untitled Course',
+          description: dbCourse.description || '',
+          units: [],
+          lessons: [],
+        };
+      }
     }
+  } else {
+    // Try loading from YAML
+    course = loadCourse(courseId);
+  }
 
-    if (!draft?.content) {
-      console.error('[CoursePage] No draft content available:', {
-        courseId: course.id,
-        hasDraft: !!draft,
-        schemaVersion: draft?.schema_version
-      });
-      redirect(`/courses/${params.courseId}`);
-    }
+  if (!course) {
+    notFound();
+  }
 
-    // Validate draft content structure
-    const draftContent = draft.content;
-    console.log('[CoursePage] Draft content structure:', {
-      hasCourseMeta: !!draftContent.courseMeta,
-      unitsCount: draftContent.units?.length || 0,
-      totalLessons: draftContent.units?.reduce((sum: number, u: any) => sum + (u.lessons?.length || 0), 0) || 0,
-      schemaVersion: draft.schema_version
-    });
+  // Get first unit for "Up next"
+  const firstUnit = course.units?.[0];
+  const firstLesson = firstUnit?.sections?.[0] || course.lessons?.[0];
 
-    // Check if content is actually populated
-    if (!draftContent.units || draftContent.units.length === 0) {
-      console.error('[CoursePage] Draft has no units:', {
-        courseId: course.id,
-        contentKeys: Object.keys(draftContent)
-      });
-      
-      // Show helpful message if draft is empty
-      return (
-        <div className="min-h-screen bg-gray-50">
-          <div className="max-w-5xl mx-auto p-8">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-yellow-900 mb-2">
-                Draft Generated But Empty
-              </h2>
-              <p className="text-yellow-800 mb-4">
-                The course draft was generated, but it appears to be empty. This usually happens when:
-              </p>
-              <ul className="list-disc list-inside text-yellow-800 space-y-1 mb-4">
-                <li>The source materials were too brief or didn't contain extractable content</li>
-                <li>The AI couldn't parse the materials properly</li>
-                <li>There was an issue during content generation</li>
-              </ul>
-              <div className="flex gap-3">
-                <Link href={`/prof/ingest`}>
-                  <Button variant="outline">
-                    Back to Dashboard
-                  </Button>
-                </Link>
-                <Link href={`/prof/ingest/new`}>
-                  <Button>
-                    Try Again with Different Materials
-                  </Button>
-                </Link>
+  return (
+    <main className="mx-auto max-w-6xl py-8 px-4">
+      {/* Welcome Section */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          Welcome to {course.title}
+        </h1>
+        <p className="text-gray-600">
+          Choose a lesson from the sidebar to get started
+        </p>
+      </div>
+
+      {/* Up Next Card */}
+      {firstUnit && (
+        <div className="mb-8 border-l-4 border-blue-500 bg-blue-50 rounded-lg p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+              {firstUnit.number}
+            </div>
+            <div className="flex-1">
+              <div className="text-sm text-blue-700 font-medium mb-1">
+                Up next for you:
+              </div>
+              <div className="text-xl font-bold text-gray-900">
+                Unit {firstUnit.number}: {firstUnit.title}
               </div>
             </div>
           </div>
         </div>
-      );
-    }
+      )}
 
-    // Render preview with publish button
-    return (
-      <div className="min-h-screen bg-gray-50">
-        {/* Preview Header */}
-        <div className="bg-yellow-50 border-b border-yellow-200 px-6 py-3">
-          <div className="max-w-5xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Badge className="bg-yellow-600">PREVIEW MODE</Badge>
-              <span className="text-sm text-yellow-800">
-                You are viewing the draft version of this course
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link href={`/prof/ingest`}>
-                <Button variant="outline" size="sm">
-                  Back to Dashboard
-                </Button>
-              </Link>
-              <Link href={`/courses/${course.id}`}>
-                <Button variant="outline" size="sm">
-                  View Published
-                </Button>
-              </Link>
-            </div>
-          </div>
+      {/* About this unit */}
+      {firstUnit && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            About this unit
+          </h2>
+          
+          {firstUnit.summary && (
+            <p className="text-gray-700 mb-4">{firstUnit.summary}</p>
+          )}
+
+          {firstUnit.learningObjectives && firstUnit.learningObjectives.length > 0 && (
+            <ul className="space-y-2 text-gray-700">
+              {firstUnit.learningObjectives.map((objective, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="text-blue-500 mt-1">•</span>
+                  <span>{objective}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
+      )}
 
-        {/* Course Content */}
-        <RenderCourse data={draft.content} />
-
-        {/* Publish Button */}
-        <div className="fixed bottom-6 right-6 z-50">
-          <form action={`/api/prof/courses/${course.id}/publish`} method="POST">
-            <Button 
-              type="submit"
-              size="lg"
-              className="shadow-lg bg-green-600 hover:bg-green-700"
-            >
-              Publish Course
-            </Button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // Regular student/public view
-  // Check if course is published
-  if (course.status !== 'PUBLISHED' || !course.is_published) {
-    // If the owner is viewing, suggest preview mode
-    if (user && user.id === course.created_by) {
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center space-y-4 p-8">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Course Not Published
-            </h1>
-            <p className="text-gray-600">
-              This course is not yet available to students.
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Link href={`/courses/${course.id}?preview=1`}>
-                <Button>Preview Draft</Button>
-              </Link>
-              <Link href="/prof">
-                <Button variant="outline">Back to Dashboard</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    
-    // Non-owners can't see unpublished courses
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center space-y-4 p-8">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Course Not Available
-          </h1>
-          <p className="text-gray-600">
-            This course is not yet published.
-          </p>
-          <Link href="/courses">
-            <Button>Browse Courses</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // Get published content
-  const { data: published, error: publishedError } = await supabase
-    .from('course_published')
-    .select('content, schema_version, published_at')
-    .eq('course_id', course.id)
-    .single();
-
-  if (publishedError || !published?.content) {
-    console.error('[CoursePage] No published content:', {
-      courseId: course.id,
-      error: publishedError?.message
-    });
-    
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center space-y-4 p-8">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Content Not Available
-          </h1>
-          <p className="text-gray-600">
-            The course content is being prepared.
-          </p>
-          <Link href="/courses">
-            <Button>Browse Courses</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // Render published content for students
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* If professor is viewing their published course, show edit option */}
-      {user && user.id === course.created_by && (
-        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
-          <div className="max-w-5xl mx-auto flex items-center justify-between">
-            <span className="text-sm text-blue-800">
-              You are viewing the published version
-            </span>
-            <div className="flex items-center gap-2">
-              <Link href={`/courses/${course.id}?preview=1`}>
-                <Button variant="outline" size="sm">
-                  Preview Draft
-                </Button>
-              </Link>
-              <Link href={`/prof`}>
-                <Button variant="outline" size="sm">
-                  Professor Dashboard
-                </Button>
-              </Link>
-            </div>
+      {/* Topics in this unit */}
+      {firstUnit && firstUnit.sections && firstUnit.sections.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Topics in this unit
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {firstUnit.sections.map((section, idx) => (
+              <div
+                key={section.id}
+                className="border border-gray-200 rounded-xl p-6 bg-white hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold">
+                    {idx + 1}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      {section.id} {section.title}
+                    </h3>
+                    {section.intro && (
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {section.intro}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                <Link
+                  href={`/courses/${courseId}/${section.slug}`}
+                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
+                >
+                  Start learning
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       )}
-      
-      <RenderCourse data={published.content} />
-    </div>
+
+      {/* Get Started Button */}
+      {firstLesson && (
+        <div className="flex justify-center">
+          <Link
+            href={`/courses/${courseId}/${firstLesson.slug}`}
+            className="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Get started
+          </Link>
+        </div>
+      )}
+
+      {/* All Units (collapsed view) */}
+      {course.units && course.units.length > 1 && (
+        <div className="mt-12 border-t pt-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            All Units
+          </h2>
+          <div className="space-y-4">
+            {course.units.map((unit) => (
+              <div
+                key={unit.number}
+                className="border border-gray-200 rounded-lg p-6 bg-white hover:shadow-sm transition-shadow"
+              >
+                <div className="flex items-center gap-4 mb-2">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 font-semibold">
+                    {unit.number}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">
+                      Unit {unit.number}: {unit.title}
+                    </h3>
+                    {unit.summary && (
+                      <p className="text-sm text-gray-600 mt-1">{unit.summary}</p>
+                    )}
+                  </div>
+                </div>
+                
+                {unit.sections && unit.sections.length > 0 && (
+                  <div className="mt-4 pl-14">
+                    <div className="text-sm text-gray-500 mb-2">
+                      {unit.sections.length} topic{unit.sections.length !== 1 ? 's' : ''}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {unit.sections.map((section) => (
+                        <Link
+                          key={section.id}
+                          href={`/courses/${courseId}/${section.slug}`}
+                          className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
+                        >
+                          {section.id}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </main>
   );
 }

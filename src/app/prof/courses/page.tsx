@@ -13,28 +13,21 @@ export default async function ProfCoursesPage() {
     return null;
   }
 
-  // Fetch courses where user is professor
+  // Fetch courses where user is the creator
+  // Note: Later can add join with course_professors if needed
   const { data: courses, error } = await supabase
     .from('courses')
     .select('id, code, title, description, is_published, created_at')
-    .or(`created_by.eq.${user.id},id.in.(SELECT course_id FROM course_professors WHERE professor_id.eq.${user.id})`)
+    .eq('created_by', user.id)
     .order('created_at', { ascending: false });
 
   if (error) {
-    // Extract all error properties explicitly to avoid serialization issues
-    const errorDetails: any = {
-      message: error.message || 'Unknown error',
-      code: error.code || '',
-      details: error.details || '',
-      hint: error.hint || '',
-    };
-    
-    // Try to extract any additional properties
-    if (error.name) errorDetails.name = error.name;
-    if (error.stack) errorDetails.stack = error.stack;
-    
-    // Log the structured error
-    console.error('Error fetching courses:', errorDetails);
+    console.error('Error fetching courses:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    });
   }
 
   return (

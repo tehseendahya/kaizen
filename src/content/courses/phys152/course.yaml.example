@@ -1,0 +1,82 @@
+id: phys152
+title: "Physics 152: Electricity, Magnetism & Waves"
+description: >
+  A rigorous treatment of electrostatics, Gauss's law, potential and energy,
+  circuits (DC/RC/LR/LC), magnetism, electromagnetic induction, Maxwell's
+  equations, and an introduction to waves. Emphasis on full derivations,
+  vector calculus, and problem-solving with physical intuition.
+
+units:
+  - number: 1
+    title: "Coulomb's Law & Electric Field"
+    summary: "Introduction to electric forces and fields"
+    learningObjectives:
+      - "Understand electric field and force interactions"
+      - "Calculate electric potentials and energies"
+    keyTerms: ["Electric field", "Electric force", "Electric potential"]
+    sections:
+      - id: "1.1"
+        slug: "electric-fields"
+        title: "Electric Fields"
+        intro: "Introduction to electric fields and their properties."
+        readings:
+          - title: "Physics 152 Exam1"
+        note: |
+          Electric fields are vectors that exert forces on charged particles. The
+          field direction indicates where a positive charge would move.
+        example: |
+          Calculating the electric field between two point charges.
+        assessments:
+          - id: "q1"
+            prompt: "Compute E at (0,0) for +q at (a,0)."
+            answer: "E = kq/a² in the +x direction"
+            type: "calc"
+
+      - id: "1.2"
+        slug: "electric-potentials"
+        title: "Electric Potentials"
+        intro: "Intro to electric potential and potential energy."
+        readings: []
+        note: ""
+        example: ""
+        assessments: []
+
+  - number: 2
+    title: "Gauss's Law"
+    summary: "Electric flux through closed surfaces and the profound relation between charge and field."
+    learningObjectives:
+      - "Compute electric flux and apply Gauss's law to symmetric charge distributions."
+      - "Explain conductor behavior and charge distribution in electrostatic equilibrium."
+    keyTerms: ["Gauss's law", "Electric flux", "Gaussian surface"]
+    sections:
+      - id: "2.1"
+        slug: "electric-flux-and-gauss"
+        title: "Electric Flux & Gaussian Surfaces"
+        intro: "Understanding flux and applying Gauss's law."
+        readings: []
+        note: ""
+        example: ""
+        assessments: []
+
+lessons:
+  - slug: "electric-flux-and-gauss"
+    unitNumber: 2
+    title: "Electric Flux & Gaussian Surfaces"
+    keyConcepts:
+      overview: >
+        Flux measures field through a surface; Gauss's law connects flux to
+        enclosed charge via symmetry.
+      bullets:
+        - "Define electric flux; compute Φ = ∬ E·dA"
+        - "Apply Gauss's law to high-symmetry charge distributions"
+        - "Distinguish conductor vs insulator behavior in electrostatics"
+    practice:
+      - "Paraphrase the core idea in your own words."
+      - "Create a small example that demonstrates the concept."
+      - "Explain one misconception and why it's incorrect."
+    checks:
+      - id: "c1"
+        prompt: "Flux through a cube in uniform E?"
+        answer: "Zero."
+        type: "short"
+

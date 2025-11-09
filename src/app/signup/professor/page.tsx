@@ -53,101 +53,66 @@ export default function ProfessorSignupPage() {
         try {
           // Use API route (server-side, uses service role to bypass RLS)
           // Pass userId in body since session might not be set yet
-          const response = await fetch('/api/profile/ensure', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              role: 'professor',
-              username: profileUsername,
-              userId: authData.user.id, // Pass user ID explicitly
-            }),
-          });
-
-          // Parse response - handle empty responses
-          let responseData: any = null;
-          let responseText = '';
-          
+          let profileApiSuccess = false;
           try {
-            responseText = await response.text();
-            console.log('API response text:', responseText.substring(0, 200)); // Log first 200 chars for debugging
+            console.log('📤 Calling profile API with userId:', authData.user.id);
             
-            if (responseText && responseText.trim()) {
+            const response = await fetch('/api/profile/ensure', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                role: 'professor',
+                username: profileUsername,
+                userId: authData.user.id,
+              }),
+            });
+
+            const responseText = await response.text();
+            let responseData: any = null;
+            
+            if (responseText.trim()) {
               try {
                 responseData = JSON.parse(responseText);
-              } catch (parseError) {
-                // Not valid JSON
-                responseData = { 
-                  error: responseText, 
-                  raw: responseText,
-                  parseError: parseError instanceof Error ? parseError.message : 'Unknown parse error'
-                };
+              } catch (e) {
+                responseData = { error: 'Invalid JSON', raw: responseText.substring(0, 100) };
               }
-            } else {
-              // Empty response
-              responseData = { 
-                error: 'Empty response from server',
-                status: response.status,
-                statusText: response.statusText 
-              };
             }
-          } catch (e: any) {
-            // Failed to read response
-            responseData = { 
-              error: 'Failed to read response',
-              readError: e?.message || 'Unknown error',
+
+            console.log('📥 Profile API response:', {
+              ok: response.ok,
               status: response.status,
-              statusText: response.statusText 
-            };
+              statusText: response.statusText,
+              data: responseData
+            });
+
+            if (response.ok) {
+              console.log('✅ Profile created via API');
+              profileApiSuccess = true;
+            } else {
+              const errorMsg = responseData?.error || responseData?.details || responseData?.message || response.statusText;
+              console.error('❌ Profile API error:', {
+                status: response.status,
+                error: errorMsg,
+                details: responseData?.details,
+                hint: responseData?.hint
+              });
+            }
+          } catch (fetchError) {
+            console.error('❌ Failed to call profile API:', fetchError);
           }
 
-          if (!response.ok) {
-            // Build comprehensive error details - always include meaningful info
-            const errorDetails: any = {
-              status: response.status || 'unknown',
-              statusText: response.statusText || 'unknown',
-              url: response.url || 'unknown',
-              hasResponseData: !!responseData,
-              responseDataType: responseData ? typeof responseData : 'null',
-            };
-            
-            // Add response data if available
-            if (responseData) {
-              if (typeof responseData === 'object') {
-                // Copy all properties from responseData
-                Object.assign(errorDetails, responseData);
-                // Ensure we have at least an error message
-                if (!errorDetails.error && !errorDetails.details) {
-                  errorDetails.error = 'Error from API (no error message provided)';
-                  errorDetails.rawResponse = JSON.stringify(responseData);
-                }
-              } else {
-                errorDetails.error = String(responseData);
-                errorDetails.rawResponse = responseData;
-              }
-            } else {
-              errorDetails.error = 'No response data - empty response from server';
-              errorDetails.responseText = responseText || '(empty)';
-            }
-            
-            // Ensure we always have an error message
-            if (!errorDetails.error && !errorDetails.details) {
-              errorDetails.error = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
-            }
-            
-            console.error('Profile creation error via API:', errorDetails);
-            
-            // Don't block the flow - the trigger should have created the profile
-            console.warn('API route failed, but trigger may have created profile. Checking...');
-          } else {
-            console.log('API route succeeded:', responseData);
+          // Continue even if API fails - database trigger should handle it
+          if (!profileApiSuccess) {
+            console.warn('⚠️ Profile API failed, database trigger should create profile...');
           }
 
           // Wait a moment for database to sync (trigger might still be running)
           await new Promise(resolve => setTimeout(resolve, 1000));
           
           // Verify the role was set correctly (use maybeSingle to avoid errors)
+          console.log('🔍 Verifying profile creation...');
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('role, username')
@@ -155,16 +120,20 @@ export default function ProfessorSignupPage() {
             .maybeSingle();
           
           if (profileError) {
-            const errorInfo = {
-              message: profileError.message || 'Unknown error',
-              code: profileError.code || '',
-              details: profileError.details || '',
-              hint: profileError.hint || '',
-            };
-            console.error('Error fetching profile for verification:', errorInfo);
+            console.error('❌ Error fetching profile:', {
+              message: profileError.message,
+              code: profileError.code,
+              details: profileError.details,
+              hint: profileError.hint,
+            });
           }
           
-          console.log('Profile after creation:', profile);
+          console.log('📋 Profile status:', {
+            exists: !!profile,
+            role: profile?.role || 'none',
+            username: profile?.username || 'none',
+            expected: 'professor'
+          });
           
           // If profile doesn't exist or role is wrong, try to fix it
           if (!profile || profile.role !== 'professor') {

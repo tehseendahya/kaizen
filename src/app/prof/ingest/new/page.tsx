@@ -217,48 +217,44 @@ export default function NewIngestionPage() {
 
         // Build comprehensive error details
         const errorDetails: any = {
-          status: uploadRes.status || 'unknown',
-          statusText: uploadRes.statusText || 'unknown',
+          status: uploadRes.status,
+          statusText: uploadRes.statusText,
+          responseText: responseText ? responseText.substring(0, 500) : 'No response text',
         };
 
-        // Extract all error properties
+        // Extract error from parsed data
         if (errorData && typeof errorData === 'object') {
-          // Check if errorData is an empty object
-          const errorDataKeys = Object.keys(errorData);
-          if (errorDataKeys.length === 0) {
-            errorDetails.error = 'Empty error object received from server';
-            errorDetails.details = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
-          } else {
-            // Extract all properties from errorData
-            errorDataKeys.forEach(key => {
-              const value = errorData[key];
-              if (value !== undefined && value !== null) {
-                errorDetails[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
-              }
-            });
-          }
-        } else if (errorData) {
-          errorDetails.error = String(errorData);
+          Object.keys(errorData).forEach(key => {
+            const value = errorData[key];
+            if (value !== undefined && value !== null) {
+              errorDetails[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+            }
+          });
         }
 
-        // Ensure we have at least one error message
-        if (!errorDetails.error && !errorDetails.details) {
-          errorDetails.error = `HTTP ${errorDetails.status}: ${errorDetails.statusText}`;
-          errorDetails.details = errorDetails.error;
-        }
-
-        // Build a comprehensive error message
-        let errorMessage = errorDetails.details || errorDetails.error || errorDetails.hint || 'Upload failed';
+        // Build error message
+        let errorMessage = 
+          errorData?.details || 
+          errorData?.error || 
+          errorData?.message || 
+          errorDetails.statusText ||
+          'Upload failed';
         
-        // If there are upload errors, include them
-        if (errorData?.uploadErrors && Array.isArray(errorData.uploadErrors)) {
+        // Add upload-specific errors
+        if (errorData?.uploadErrors && Array.isArray(errorData.uploadErrors) && errorData.uploadErrors.length > 0) {
           const uploadErrorMessages = errorData.uploadErrors
-            .map((e: any) => `${e.fileName}: ${e.error?.message || 'Unknown error'}`)
+            .map((e: any) => `  • ${e.fileName}: ${e.error?.message || 'Unknown error'}`)
             .join('\n');
-          errorMessage = `${errorMessage}\n\nFile upload errors:\n${uploadErrorMessages}`;
+          errorMessage = `Upload failed for some files:\n${uploadErrorMessages}`;
         }
         
-        console.error('Upload error:', errorDetails);
+        console.error('Upload error details:', {
+          status: errorDetails.status,
+          statusText: errorDetails.statusText,
+          errorData,
+          responseText: responseText?.substring(0, 200)
+        });
+        
         throw new Error(errorMessage);
       }
 

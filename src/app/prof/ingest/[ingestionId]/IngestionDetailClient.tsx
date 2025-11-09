@@ -389,7 +389,7 @@ export default function IngestionDetailClient({
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Draft Preview</h2>
             <Card className="p-6">
-              <RenderCourse content={draftContent} />
+              <RenderCourse data={draftContent} />
             </Card>
           </div>
         )}

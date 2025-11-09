@@ -126,21 +126,20 @@ Return ONLY valid JSON matching this exact structure:
   try {
     // Using the chat completions API with response_format
     // Model can be overridden via OPENAI_MODEL environment variable
-    // Default to gpt-3.5-turbo which is widely available
-    // Options: 'gpt-3.5-turbo' (default), 'gpt-4-turbo', 'gpt-4o', 'gpt-4'
-    const modelName = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+    // Default to gpt-4-turbo-preview for best quality (was gpt-3.5-turbo)
+    // Options: 'gpt-4-turbo-preview' (recommended), 'gpt-4o', 'gpt-4', 'gpt-3.5-turbo'
+    const modelName = process.env.OPENAI_MODEL || 'gpt-4-turbo-preview';
     
     // Set max_tokens based on model limits
     // gpt-3.5-turbo: 4096 completion tokens max
-    // gpt-4-turbo, gpt-4o: 4096 completion tokens max (though context is larger)
-    // gpt-4: 8192 completion tokens max
-    // Use 4000 for gpt-3.5-turbo to be safe, allow higher for gpt-4 models
-    let maxTokens = 4000; // Safe default for gpt-3.5-turbo
-    if (modelName.includes('gpt-4') && !modelName.includes('gpt-3.5')) {
-      // GPT-4 models can handle more, but still use 4000 to be safe
-      // If you need more, increase this but be aware of token limits
-      maxTokens = 4000;
-    }
+    // gpt-4-turbo-preview: 4096 completion tokens max (128k context)
+    // gpt-4o: 4096 completion tokens max (128k context)
+    // gpt-4: 8192 completion tokens max (8k context)
+    // For course generation, we need substantial output - use higher limits
+    let maxTokens = 8000; // Increased for better course quality
+    
+    // Log model being used for debugging
+    console.log(`[AI] Using model: ${modelName} with max_tokens: ${maxTokens}`);
     
     const completion = await client.chat.completions.create({
       model: modelName,
@@ -149,8 +148,8 @@ Return ONLY valid JSON matching this exact structure:
         { role: 'user', content: userPrompt }
       ],
       response_format: { type: 'json_object' },
-      temperature: 0.3, // Lower temperature for more consistent output
-      max_tokens: maxTokens, // Set based on model limits
+      temperature: 0.4, // Slightly higher for more creative/detailed content
+      max_tokens: maxTokens, // Increased for comprehensive courses
     });
 
     const responseContent = completion.choices[0]?.message?.content;

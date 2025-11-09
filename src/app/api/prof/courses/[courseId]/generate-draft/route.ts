@@ -13,8 +13,9 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
+  const { courseId } = await params;
   const supabase = await createClient();
   
   // Check authentication
@@ -32,7 +33,7 @@ export async function POST(
     const { data: course, error: cErr } = await supabase
       .from('courses')
       .select('id, created_by, title, code, term, description, status')
-      .eq('id', params.courseId)
+      .eq('id', courseId)
       .single();
 
     if (cErr) {
@@ -142,6 +143,7 @@ export async function POST(
         course_id: course.id,
         content: draftJson,
         schema_version: 'v1',
+        created_by: user.id,
         updated_at: new Date().toISOString()
       }, { 
         onConflict: 'course_id' 

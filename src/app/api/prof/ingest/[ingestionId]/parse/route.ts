@@ -13,8 +13,9 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { ingestionId: string } }
+  { params }: { params: Promise<{ ingestionId: string }> }
 ) {
+  const { ingestionId } = await params;
   const supabase = await createClient();
   
   // Check authentication
@@ -32,7 +33,7 @@ export async function POST(
     const { data: ingestion, error: ingErr } = await supabase
       .from('ingestions')
       .select('id, course_id, created_by')
-      .eq('id', params.ingestionId)
+      .eq('id', ingestionId)
       .single();
 
     if (ingErr) {
@@ -82,16 +83,16 @@ export async function POST(
       .from('course_uploads')
       .select('id, storage_path, parsed_text')
       .eq('course_id', ingestion.course_id)
-      .eq('ingestion_id', params.ingestionId);
+      .eq('ingestion_id', ingestionId);
     
-    console.log(`[parse] Found ${existingUploads?.length || 0} existing course_uploads records for ingestion ${params.ingestionId}`);
+    console.log(`[parse] Found ${existingUploads?.length || 0} existing course_uploads records for ingestion ${ingestionId}`);
     
     // If no records exist, try to create them from storage
     if (!existingUploads || existingUploads.length === 0) {
       console.log(`[parse] No course_uploads records found, checking storage...`);
       
       // Get files from storage for this ingestion
-      const storagePath = `${ingestion.course_id}/${params.ingestionId}/`;
+      const storagePath = `${ingestion.course_id}/${ingestionId}/`;
       console.log(`[parse] Looking for files in storage path: ${storagePath}`);
       
       const { data: storageFiles, error: listError } = await supabase.storage
@@ -136,7 +137,7 @@ export async function POST(
               const { error: insertError } = await supabase
                 .from('course_uploads')
                 .insert({
-                  ingestion_id: params.ingestionId,
+                  ingestion_id: ingestionId,
                   course_id: ingestion.course_id,
                   storage_path: fullPath,
                   mime_type: mimeType,
@@ -171,7 +172,7 @@ export async function POST(
       .from('course_uploads')
       .select('id, storage_path, parsed_text, mime_type')
       .eq('course_id', ingestion.course_id)
-      .eq('ingestion_id', params.ingestionId);
+      .eq('ingestion_id', ingestionId);
     
     if (filesError) {
       console.error('[parse] Error checking files:', filesError);
@@ -183,7 +184,7 @@ export async function POST(
       // Verify files exist in storage before parsing
       if (filesToParse && filesToParse.length > 0) {
         console.log('[parse] Verifying files exist in storage...');
-        const storagePath = `${ingestion.course_id}/${params.ingestionId}/`;
+        const storagePath = `${ingestion.course_id}/${ingestionId}/`;
         const { data: storageFiles, error: verifyError } = await supabase.storage
           .from('course-uploads')
           .list(storagePath);
@@ -208,8 +209,8 @@ export async function POST(
     }
     
     // Parse all uploads for this ingestion
-    console.log(`[parse] Starting to parse files for ingestion ${params.ingestionId}...`);
-    const result = await parseUploads(ingestion.course_id, params.ingestionId, { useServiceClient: true });
+    console.log(`[parse] Starting to parse files for ingestion ${ingestionId}...`);
+    const result = await parseUploads(ingestion.course_id, ingestionId, { useServiceClient: true });
     const { parsed, errors: parseErrors } = result;
     console.log(`[parse] Successfully parsed ${parsed.length} files. Errors: ${parseErrors.length}`);
     
@@ -221,7 +222,7 @@ export async function POST(
           status: 'EXTRACTING',
           updated_at: new Date().toISOString()
         })
-        .eq('id', params.ingestionId);
+        .eq('id', ingestionId);
     }
 
     // Get final count of files
@@ -229,7 +230,7 @@ export async function POST(
       .from('course_uploads')
       .select('id, storage_path, parsed_text')
       .eq('course_id', ingestion.course_id)
-      .eq('ingestion_id', params.ingestionId);
+      .eq('ingestion_id', ingestionId);
 
     const unparsedFiles = finalFiles?.filter(f => !f.parsed_text) || [];
     const parsedFiles = finalFiles?.filter(f => f.parsed_text) || [];
