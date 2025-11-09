@@ -237,22 +237,22 @@ export default function ProfessorSignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-green-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50 px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center gap-2 group">
             <IconAxis size={32} className="transition-transform group-hover:rotate-12" />
-            <span className="text-2xl font-semibold tracking-tight text-slate-900 group-hover:text-green-600 transition-colors">
+            <span className="text-2xl font-semibold tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
               Axis
             </span>
           </Link>
         </div>
 
         {/* Professor Signup Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-green-200 p-8">
+        <div className="bg-white rounded-2xl shadow-xl border border-blue-200 p-8">
           <div className="mb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold mb-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold mb-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253" />
               </svg>
@@ -343,7 +343,7 @@ export default function ProfessorSignupPage() {
 
             <Button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
               disabled={loading}
             >
               {loading ? 'Creating account...' : 'Sign up as Professor'}
@@ -352,7 +352,7 @@ export default function ProfessorSignupPage() {
 
           <div className="mt-6 text-center text-sm">
             <span className="text-slate-600">Already have an account? </span>
-            <Link href="/login" className="text-green-600 hover:text-green-700 font-medium">
+            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
               Sign in
             </Link>
           </div>
