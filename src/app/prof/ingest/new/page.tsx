@@ -169,6 +169,12 @@ export default function NewIngestionPage() {
       }
 
       // Step 2: Upload files
+      console.log('[upload] Selected files:', files.map(f => ({
+        name: f.name,
+        size: f.size,
+        type: f.type,
+      })));
+
       const formData = new FormData();
       files.forEach((file) => {
         formData.append('files', file);

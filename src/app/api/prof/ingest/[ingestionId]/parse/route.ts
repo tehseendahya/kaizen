@@ -214,6 +214,12 @@ export async function POST(
     const { parsed, errors: parseErrors } = result;
     console.log(`[parse] Successfully parsed ${parsed.length} files. Errors: ${parseErrors.length}`);
     
+    // Log detailed information about parsed files
+    console.log('[ingest] Received files:', parsed.map(f => ({
+      source: f.source,
+      length: f.text?.length ?? 0,
+    })));
+    
     // Update ingestion status only if we parsed some files
     if (parsed.length > 0) {
       await supabase

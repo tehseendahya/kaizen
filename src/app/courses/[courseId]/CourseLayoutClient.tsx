@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import { ChevronDown, ChevronRight, Menu, X, ArrowLeft } from "lucide-react";
 import type { Course } from "@/lib/courses/unified-loader";
 
 export default function CourseLayoutClient({
@@ -35,15 +35,23 @@ export default function CourseLayoutClient({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile header */}
-      <div className="lg:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <Link href={`/courses/${course.id}`} className="font-semibold text-gray-900">
-            {course.title}
-          </Link>
+      {/* Top Navigation Bar */}
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/prof"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft size={20} />
+              <span className="font-medium">Back to Dashboard</span>
+            </Link>
+            <div className="h-6 w-px bg-gray-300" />
+            <h1 className="font-semibold text-gray-900">{course.title}</h1>
+          </div>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -54,7 +62,7 @@ export default function CourseLayoutClient({
         {/* Sidebar */}
         <aside
           className={`
-            fixed lg:sticky top-0 left-0 z-40 h-screen w-80 bg-white border-r border-gray-200 
+            fixed lg:sticky top-[57px] left-0 z-40 h-[calc(100vh-57px)] w-80 bg-white border-r border-gray-200 
             transform transition-transform duration-200 ease-in-out overflow-y-auto
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           `}
@@ -66,7 +74,7 @@ export default function CourseLayoutClient({
                 href={`/courses/${course.id}`}
                 className="text-sm text-gray-500 hover:text-gray-700 mb-1 block"
               >
-                ← Back to Course
+                ← Course Home
               </Link>
               <h2 className="text-xl font-bold text-gray-900">Course Content</h2>
             </div>

@@ -116,16 +116,34 @@ export async function POST(
     };
 
     // Generate draft using AI
-    console.log(`[generate-draft] Processing ${parsed.length} parsed files for course ${course.id}`);
+    console.log('\n' + '='.repeat(80));
+    console.log('🚀 STARTING AI COURSE GENERATION');
+    console.log('='.repeat(80));
+    console.log(`[generate-draft] Course: ${course.code} - ${course.title}`);
+    console.log(`[generate-draft] Processing ${parsed.length} parsed files`);
+    console.log(`[generate-draft] Total text length: ${parsed.reduce((sum, p) => sum + p.text.length, 0)} characters`);
+    console.log('='.repeat(80) + '\n');
     
     let draftJson;
     try {
       draftJson = await generateCourseDraft(seedMeta, parsed);
+      
+      console.log('\n' + '='.repeat(80));
+      console.log('✅ AI COURSE GENERATION COMPLETED');
+      console.log('='.repeat(80));
+      console.log(`[generate-draft] Generated ${draftJson.units?.length || 0} units`);
+      console.log(`[generate-draft] Total lessons: ${draftJson.units?.reduce((sum: number, u: any) => sum + (u.lessons?.length || 0), 0) || 0}`);
+      console.log('='.repeat(80) + '\n');
     } catch (aiError: any) {
+      console.log('\n' + '='.repeat(80));
+      console.log('❌ AI COURSE GENERATION FAILED');
+      console.log('='.repeat(80));
       console.error('[generate-draft.ai-error]', {
         message: aiError?.message || 'AI generation failed',
         name: aiError?.name || 'Error',
+        stack: aiError?.stack,
       });
+      console.log('='.repeat(80) + '\n');
       
       return NextResponse.json(
         { 

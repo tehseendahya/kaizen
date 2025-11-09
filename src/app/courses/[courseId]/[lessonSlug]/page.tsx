@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { loadCourse } from "@/lib/courses/unified-loader";
 import { createClient } from "@/lib/supabase/server";
 import { courseContentV1ToUnified } from "@/lib/ingest/courseContentV1ToUnified";
-import SidebarNav from "@/components/course/SidebarNav";
 import ActionBar from "@/components/course/ActionBar";
 import { KeyConceptsCard, PracticeCard } from "@/components/course/KeyPracticeCheck";
 import Assessments from "@/components/course/Assessments";
@@ -95,11 +94,8 @@ export default async function LessonPage({
   const checks = lesson?.checks ?? section?.assessments ?? [];
 
   return (
-    <div className="mx-auto grid max-w-[1100px] grid-cols-12 gap-6 py-8 px-4">
-      <aside className="col-span-3 hidden lg:block">
-        <SidebarNav course={course} activeSlug={lessonSlug} />
-      </aside>
-      <main className="col-span-12 space-y-5 lg:col-span-9">
+    <div className="mx-auto max-w-[1100px] py-8 px-4">
+      <main className="space-y-5">
         <h1 className="text-3xl font-bold">{title}</h1>
         <ActionBar />
 
